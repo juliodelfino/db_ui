@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Hello</title>
+
+<link rel="stylesheet" media="all" href="/assets/css/common.css" />
+<link rel="stylesheet" media="all" href="/assets/css/jquery.dataTables.css" />
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+	integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+	crossorigin="anonymous">
+
+
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, user-scalable=no">
+
+</head>
+<body>
+
+	<nav class="navbar navbar-inverse navbar-fixed-top">
+		<div class="container">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed"
+					data-toggle="collapse" data-target="#navbar" aria-expanded="false"
+					aria-controls="navbar">
+					<span class="sr-only">Toggle navigation</span> <span
+						class="icon-bar"></span> <span class="icon-bar"></span> <span
+						class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="#">Project name</a>
+			</div>
+			<div id="navbar" class="navbar-collapse collapse"></div>
+			<!--/.navbar-collapse -->
+		</div>
+	</nav>
+
+	<!-- Main jumbotron for a primary marketing message or call to action -->
+	<div class="jumbotron">
+		<div class="container">
+			<label>Enter your query here:</label> <input id="qbox" type="text"
+				class="form-control" />
+			<p>
+				<a id="exec-btn" class="btn btn-primary" href="#" role="button">Execute</a>
+			</p>
+		</div>
+	</div>
+
+	<div class="container">
+		<table id="admin_tbl" class="display" cellspacing="0" width="100%">
+			<thead>
+				<tr>
+					<th>col1</th> 
+					<th>col2</th> 
+					<th>col3</th> 
+					<th>col4</th> 
+					<th>col5</th> 
+					<th>col6</th> 
+					<th>col7</th> 
+					<th>col8<th> 
+					<th>col9</th> 
+					<th>col10</th> 
+					<th>Actions</th>
+				</tr>
+			</thead>
+		</table>
+	</div>
+
+	<!-- /container -->
+
+
+	<!-- Bootstrap core JavaScript
+    ================================================== -->
+	<!-- Placed at the end of the document so the pages load faster -->
+	<script
+		src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	<script
+		src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+		integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+		crossorigin="anonymous"></script>
+
+	<script src="/assets/js/common.js"></script>
+	<script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/json2/20160511/json2.min.js" integrity="sha256-Fsw5X9ZUnlJb302irkG8pKCRwerGfxSArAw22uG/QkQ=" crossorigin="anonymous"></script>
+</body>
+</html>
