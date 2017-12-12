@@ -1,0 +1,39 @@
+<hr />
+<form id="settings-form" class="form-horizontal">
+	<h2 class="form-signin-heading">Account settings</h2>
+	
+	<div id="settings-error-div" class="alert alert-danger collapse"><strong>Oops!</strong>
+		<span id="error-msg">Invalid password.</span>	
+	</div>	
+	<div id="settings-success-div" class="alert alert-success collapse">
+		<span>Password successfully changed.</span>	
+	</div>
+
+	<div class="form-group">
+
+		<label class="control-label col-sm-2" for="username-box">User</label>
+		<div class="col-sm-10">
+			<input type="text" id="username-box" name="username"
+				class="form-control" readonly="readonly" placeholder="Username" autofocus value="$SESSION_USER" />
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label class="control-label col-sm-2" for="password-box">Password</label>
+		<div class="col-sm-10">
+			<input type="password" id="password-box" name="password"
+				class="form-control" placeholder="Old Password" required autofocus />
+			<input type="password" id="password-new-box" name="password_new"
+				class="form-control top-buffer" placeholder="New password" required />
+			<input type="password" id="password-confirm-box" name="password_confirm"
+				class="form-control" placeholder="Confirm new password" required />
+		</div>
+	</div>
+
+	<hr class="featurette-divider">
+	<div class="col-sm-offset-2 col-sm-10">
+		<button id="update-btn" class="btn btn-lg btn-primary" type="submit">Update</button>
+		<span id="loading-icon"><img
+			src="/assets/images/loader3.gif" style="width: 40px; display: none" /></span>
+	</div>
+</form>

@@ -1,0 +1,12 @@
+<form id="db-connect-form" class="form-horizontal">
+	<h2 class="form-signin-heading">Connect to a new database</h2>
+
+	#parse( "/public/layouts/db_conn_form.html" )
+
+	<hr class="featurette-divider">
+	<div class="col-sm-offset-2 col-sm-10">
+		<button id="connect-btn" class="btn btn-lg btn-primary" type="submit">Connect</button>
+		<span id="conn-loading-icon"><img
+			src="/assets/images/loader3.gif" style="width: 40px; display: none" /></span>
+	</div>
+</form>

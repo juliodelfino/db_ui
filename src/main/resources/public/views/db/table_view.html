@@ -1,0 +1,46 @@
+
+<div class="row">
+
+
+	<div class="col-lg-12 top-buffer">
+		TABLE: <select class="input-lg table-select"
+			style="border: 0; background-color: white; font-weight: bold; font-size: 24px">
+			#foreach( $table in $tables )
+			<option>$table</option> #end
+		</select>
+
+
+		<div class="dropdown pull-right">
+			<button class="btn btn-default dropdown-toggle" type="button"
+				id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true"
+				aria-expanded="true">
+				<i class="glyphicon glyphicon-cog"></i> <span class="caret"></span>
+			</button>
+			<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+				<li><a href="#" class="conn-info-btn">Connection Info</a></li>
+				<li role="separator" class="divider"></li>
+				<li><a href="#">Query History</a></li>
+			</ul>
+		</div>
+	</div>
+	<div class="col-lg-12 top-buffer">
+		<button class="btn btn-xs btn-info q-columns-btn">COLUMNS</button>
+		<button class="btn btn-xs btn-info q-rowcount-btn">ROW COUNT</button>
+		<button class="btn btn-xs btn-info q-alldata-btn">ALL DATA</button>
+	</div>
+
+
+	<div class="col-lg-12 top-buffer">
+		<form class="col-xs-12 input-group exec-sql-form">
+			<input class="qbox form-control" type="text"
+				placeholder="Enter your SQL query here" /> <span
+				class="exec-btn input-group-addon btn btn-primary btn-sm"> <i
+				class="glyphicon glyphicon-flash"></i>
+			</span>
+		</form>
+	</div>
+
+
+	<div class="col-lg-12 top-buffer dynamic-table"></div>
+</div>
+

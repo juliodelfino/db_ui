@@ -1,0 +1,45 @@
+	<div class="form-group">
+		<label class="control-label col-sm-2" for="db-name-box">Name</label>
+		<div class="col-sm-10">
+			<input type="text" id="db-name-box" name="connectionName"
+				class="form-control" placeholder="Connection Name" required autofocus />
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label class="control-label col-sm-2" for="db-driver-dropdown"
+			class="form-label">DB Driver</label>
+		<div class="col-sm-10">
+			<select id="db-driver-dropdown" name="driver" class="form-control">
+				<option value="Phoenix">Phoenix</option>
+				<option value="Ignite">Ignite</option>
+			</select>
+		</div>
+	</div>
+
+	<div class="form-group">
+
+		<label class="control-label col-sm-2" for="db-url-box">DB URL</label>
+		<div class="col-sm-10">
+			<input type="text" id="db-url-box" name="url" class="form-control"
+				placeholder="DB URL" required autofocus />
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label class="control-label col-sm-2" for="db-username-box">Username</label>
+		<div class="col-sm-10">
+			<input type="text" id="db-username-box" name="username"
+				class="form-control" placeholder="Username" autofocus />
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label class="control-label col-sm-2" for="db-password-box">Password</label>
+		<div class="col-sm-10">
+			<input type="password" id="db-password-box" name="password"
+				class="form-control" placeholder="Password" autofocus />
+		</div>
+	</div>
+	
+	<input type="hidden" name="connId" />

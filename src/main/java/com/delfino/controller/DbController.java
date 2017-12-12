@@ -1,93 +1,113 @@
 package com.delfino.controller;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
-import com.delfino.util.Pair;
-import com.delfino.util.ViewUtil;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.beanutils.BeanUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.delfino.adaptor.ExceptionAdaptor;
+import com.delfino.dao.DbInfoDao;
+import com.delfino.main.Application;
+import com.delfino.model.DbInfo;
+import com.delfino.util.RequestUtil;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import spark.Route;
 
 public class DbController extends ControllerBase {
 
-	private ObjectMapper mapper = new ObjectMapper();
-    
-	
+	private static final Logger LOGGER = LoggerFactory.getLogger(Application.class);
+
+	private DbInfoDao dbDao = new DbInfoDao();
+	private Gson gson = new GsonBuilder().setPrettyPrinting().create();
+	private ExceptionAdaptor exAdaptor = new ExceptionAdaptor();
+
 	public DbController() throws ClassNotFoundException {
 
-	    Class.forName("com.mysql.jdbc.Driver");
+		// Class.forName("com.mysql.jdbc.Driver");
+		// Class.forName("org.apache.phoenix.jdbc.PhoenixDriver");
 
 	}
-	
-	private Route index = (req, res) -> {
 
-		return ViewUtil.renderHtml("db.html");
+	private Route getIndex = (req, res) -> {
+		return renderContent(req, "db/index.html");
 	};
 
-	private Route query = (req, res) -> {
+	private Route postConnectDb = (req, res) -> {
 
-	    String sql = req.queryParams("q");
-	    
-
-	    ResultSet rs = null;
-	    String result = "";
-		Connection conn = null;
-		Statement stmt;
+		String userId = RequestUtil.getUser(req);
+		DbInfo dbInfo = RequestUtil.extract(req, DbInfo.class);
 		try {
-			conn = DriverManager
-			.getConnection("jdbc:mysql://104.199.152.249/lottominer?zeroDateTimeBehavior=convertToNull","root", "***");
-			stmt = conn.createStatement();
-             rs = stmt.executeQuery(sql);
-             result = convertResultSetToJson(rs);
-		} catch(Exception ex) {
-			ex.printStackTrace();
+			dbDao.connect(dbInfo);
+			dbDao.add(dbInfo, userId);
+			return gson.toJson(dbInfo);
+		} catch (Exception ex) {
+			LOGGER.error(ex.getMessage(), ex);
+			return exAdaptor.convert(ex);
 		}
-		
-		finally {
-			rs.close();
-			conn.close();
-		}
-
-	    return result;
 	};
-	
-	public String convertResultSetToJson(ResultSet resultSet) throws SQLException, JsonProcessingException {
 
-	    List<Entry> columns = new ArrayList<Entry>();
-	    List data = new ArrayList<>();
+	private Route getInfo = (req, res) -> {
 
-        ResultSetMetaData metaData = resultSet.getMetaData();
-        for (int i = 1; i <= metaData.getColumnCount(); i++) {
-            String columnName = metaData.getColumnName(i);
-            columns.add(new Pair("title", columnName));
-        }
-	    
-	    while (resultSet.next()) {
-	        List row = new ArrayList<>();
+		String userId = RequestUtil.getUser(req);
+		String connId = req.queryParams("connId");
+		DbInfo dbInfo = (DbInfo) BeanUtils.cloneBean(dbDao.getDb(connId, userId));
+		dbInfo.setPassword(null);
+		return gson.toJson(dbInfo);
+	};
 
-	        for (int i = 1; i <= metaData.getColumnCount(); i++) {
-	            row.add(resultSet.getObject(i));
-	        }
+	private Route postInfoUpdate = (req, res) -> {
 
-	        data.add(row);
-	    }
-	    
-	    Map resultMap = new HashMap();
-	    resultMap.put("columns", columns);
-	    resultMap.put("data", data);
+		String userId = RequestUtil.getUser(req);
+		DbInfo dbInfoUpdate = RequestUtil.extract(req, DbInfo.class);
+		return dbDao.update(dbInfoUpdate, userId);
+	};
 
-	    return mapper.writeValueAsString(resultMap);
-	}
+	private Route deleteInfo = (req, res) -> {
+
+		String userId = RequestUtil.getUser(req);
+		DbInfo dbInfoUpdate = RequestUtil.extract(req, DbInfo.class);
+		return dbDao.delete(dbInfoUpdate, userId);
+	};
+
+	private Route getAllDb = (req, res) -> {
+
+		String userId = RequestUtil.getUser(req);
+		return gson.toJson(dbDao.getAll(userId));
+	};
+
+	private Route getTableView = (req, res) -> {
+
+		String userId = RequestUtil.getUser(req);
+		Map map = new HashMap<>();
+		String connId = req.queryParams("connId");
+		try {
+			map.put("tables", dbDao.connect(connId, userId).getDbMetadata());
+			return renderPage(req, map, "db/table_view.html");
+		} catch (SQLException ex) {
+			LOGGER.error(ex.getMessage(), ex);
+			map.put("exception", ex);
+			return renderPage(req, map, "db/error.html");
+		}
+	};
+
+	private Route getQuery = (req, res) -> {
+
+		String userId = RequestUtil.getUser(req);
+		String sql = req.queryParams("q");
+		String connId = req.queryParams("connId");
+		return dbDao.connect(connId, userId).executeQuery(sql);
+	};
+
+	private Route getColumns = (req, res) -> {
+
+		String userId = RequestUtil.getUser(req);
+		String table = req.queryParams("table");
+		String connId = req.queryParams("connId");
+		return dbDao.connect(connId, userId).getColumns(table);
+	};
 }

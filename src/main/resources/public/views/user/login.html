@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Hello</title>
+
+<link rel="stylesheet" media="all" href="/assets/css/db.css" />
+#parse( "/public/layouts/html_head.html" )
+
+</head>
+<body>
+
+	#parse( "/public/layouts/content_header.html" )
+
+	<div class="container jumbotron">
+
+		<form id="login-form" class="form-signin">
+			<div id="login-error-div" class="alert alert-danger collapse"><strong>Oops!</strong>
+				<span id="login-error-msg">Login failed.</span>	
+			</div>
+			<h2 class="form-signin-heading">Please sign in</h2>
+			<div class="input-group">
+				<span class="input-group-addon"><i
+					class="glyphicon glyphicon-user"></i></span> <input type="text"
+					id="user-box" class="form-control" name="username" placeholder="UTXXXX" required
+					autofocus>
+			</div>
+
+			<div class="input-group">
+				<span class="input-group-addon"><i
+					class="glyphicon glyphicon-lock"></i></span> <input type="password"
+					id="password-box" class="form-control" name="password" placeholder="Password"
+					required>
+			</div>
+
+			<hr class="featurette-divider" />
+			<button id="login-btn" class="btn btn-lg btn-primary btn-block"
+				type="submit">Sign in</button>
+			
+
+		</form>
+
+	</div>
+	<!-- /container -->
+
+
+	<!-- /container -->
+
+
+	<!-- Bootstrap core JavaScript
+    ================================================== -->
+	<!-- Placed at the end of the document so the pages load faster -->
+	#parse( "/public/layouts/script_imports.html" )
+	<script src="/assets/js/login.js"></script>
+</body>
+</html>
