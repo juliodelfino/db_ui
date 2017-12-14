@@ -17,10 +17,12 @@ Rails framework is so easy to use, you can build a running website in less than 
 - jQuery
 
 ## Setup
-- Download the jar file.
-- Download the necessary JDBC driver jar files and place it in /libs folder.
-- Run the jar file.
-- Use the default root account to manage the users. Password is 'sparkling'.
+- Download db-ui.tar.gz file.
+- Extract using this command: gtar -xvzf db-ui.tar.gz
+- Download the JDBC driver jar files you need and place it in /lib folder. Some of them may have already been there.
+- Update the config/application.properties. Change the data_dir to point to a writeable directory.
+- Run the application via run-app.sh
+- Use the default root account to manage the users. Password is 'welcome'.
 - Enjoy!
 
 
