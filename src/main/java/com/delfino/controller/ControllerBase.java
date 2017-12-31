@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.velocity.exception.VelocityException;
+
 import com.delfino.util.AppProperties;
 import com.delfino.util.Constants;
 
@@ -21,8 +23,13 @@ public abstract class ControllerBase {
         		attr -> model.put(attr, req.attribute(attr)));
         req.session().attributes().stream().forEach(
         		attr -> model.put(attr, req.session().attribute(attr)));
+        try {
         return new VelocityTemplateEngine().render(
         		new ModelAndView(model, templatePath));
+        } catch (VelocityException ex) {
+        	req.attribute("exception", ex);
+        	throw ex;
+        }
     }
 
 	protected String renderPage(Request req, String pageName) throws IOException {

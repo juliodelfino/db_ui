@@ -1,4 +1,4 @@
-package com.delfino.util;
+package com.delfino.db;
 
 import java.io.File;
 import java.io.FileReader;
@@ -9,6 +9,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
+import org.apache.commons.io.monitor.FileAlterationMonitor;
+import org.apache.commons.io.monitor.FileAlterationObserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,15 +27,17 @@ public class JsonDb<T> {
 
 	private static JsonDb instance;
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+    private static final String DATA_FILE = "data.json";
 	private String dataFile;
 	private T dataCache;
 	
 	private Class<T> jsonDataModel;
 	
 	public JsonDb(String datadir, Class<T> jsonDataModel) {
-		this.dataFile = datadir + "/data.json";
+		this.dataFile = datadir + "/" + DATA_FILE;
 		this.jsonDataModel = jsonDataModel;
 		dataCache = loadJson(dataFile, jsonDataModel);
+		setupDirectoryListener(datadir);
 	}
 
 	public static <T> JsonDb<T> getInstance(String datadir, Class<T> jsonDataModel) {
@@ -41,30 +46,28 @@ public class JsonDb<T> {
 		}
 		return instance;
 	}
-	
-//	public <T> T get(String key, Class<T> type) {
-//		JsonElement jsonElement = GSON.toJsonTree(getDataCache().get(key));
-//		T pojo = GSON.fromJson(jsonElement, type);
-//		return pojo;
-//	}
-//
-//	public <K,V> Map<K,V> getMap(String key, Class<K> dataKeyType, Class<V> dataValueType) {
-//
-//		JsonElement jsonElement = GSON.toJsonTree(getDataCache().get(key));
-//		Map pojo = GSON.fromJson(jsonElement, Map.class);
-//		pojo = (Map)pojo.entrySet().stream().collect(Collectors.toMap(
-//				k -> k, 
-//				v -> {
-//			JsonElement tmpJson = GSON.toJsonTree(v);
-//			return GSON.fromJson(tmpJson, dataValueType);
-//		}));
-//		return pojo;
-//	}
-	
-//	public void set(String key, Object value) {
-//		getDataCache().put(key, value);
-//		saveJson(getDataCache(), dataFile);
-//	}
+    
+    private void setupDirectoryListener(String datadir) {
+		FileAlterationMonitor fileMonitor = new FileAlterationMonitor();
+		FileAlterationObserver observer = new FileAlterationObserver(datadir);
+		observer.addListener(new FileAlterationListenerAdaptor(){
+
+			@Override
+			public void onFileChange(File arg0) {
+				if (!arg0.getName().endsWith(DATA_FILE)) {
+					return;
+				}
+				dataCache = loadJson(dataFile, jsonDataModel);
+				LOGGER.info(arg0 + " has been updated externally.");
+			}
+		});
+		fileMonitor.addObserver(observer);
+		try {
+			fileMonitor.start();
+		} catch (Exception e) {
+			LOGGER.error("Directory listener setup failed", e);
+		}
+	}
 
 	public T get() {
 		if (dataCache == null) {

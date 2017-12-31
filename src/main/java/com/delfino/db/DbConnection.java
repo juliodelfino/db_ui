@@ -1,7 +1,8 @@
-package com.delfino.model;
+package com.delfino.db;
 
 import com.delfino.adaptor.ExceptionAdaptor;
 import com.delfino.adaptor.ResultSetAdaptor;
+import com.delfino.model.DbInfo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import java.sql.Connection;

@@ -26,20 +26,13 @@ public class DbController extends ControllerBase {
 	private Gson gson = new GsonBuilder().setPrettyPrinting().create();
 	private ExceptionAdaptor exAdaptor = new ExceptionAdaptor();
 
-	public DbController() throws ClassNotFoundException {
-
-		// Class.forName("com.mysql.jdbc.Driver");
-		// Class.forName("org.apache.phoenix.jdbc.PhoenixDriver");
-
-	}
-
-	private Route getIndex = (req, res) -> {
+	public Route getIndex = (req, res) -> {
 		return renderContent(req, "db/index.html");
 	};
 
-	private Route postConnectDb = (req, res) -> {
+	public Route postConnectDb = (req, res) -> {
 
-		String userId = RequestUtil.getUser(req);
+		String userId = RequestUtil.getUsername(req);
 		DbInfo dbInfo = RequestUtil.extract(req, DbInfo.class);
 		try {
 			dbDao.connect(dbInfo);
@@ -51,38 +44,38 @@ public class DbController extends ControllerBase {
 		}
 	};
 
-	private Route getInfo = (req, res) -> {
+	public Route getInfo = (req, res) -> {
 
-		String userId = RequestUtil.getUser(req);
+		String userId = RequestUtil.getUsername(req);
 		String connId = req.queryParams("connId");
 		DbInfo dbInfo = (DbInfo) BeanUtils.cloneBean(dbDao.getDb(connId, userId));
 		dbInfo.setPassword(null);
 		return gson.toJson(dbInfo);
 	};
 
-	private Route postInfoUpdate = (req, res) -> {
+	public Route postInfoUpdate = (req, res) -> {
 
-		String userId = RequestUtil.getUser(req);
+		String userId = RequestUtil.getUsername(req);
 		DbInfo dbInfoUpdate = RequestUtil.extract(req, DbInfo.class);
 		return dbDao.update(dbInfoUpdate, userId);
 	};
 
-	private Route deleteInfo = (req, res) -> {
+	public Route deleteInfo = (req, res) -> {
 
-		String userId = RequestUtil.getUser(req);
+		String userId = RequestUtil.getUsername(req);
 		DbInfo dbInfoUpdate = RequestUtil.extract(req, DbInfo.class);
 		return dbDao.delete(dbInfoUpdate, userId);
 	};
 
-	private Route getAllDb = (req, res) -> {
+	public Route getAllDb = (req, res) -> {
 
-		String userId = RequestUtil.getUser(req);
+		String userId = RequestUtil.getUsername(req);
 		return gson.toJson(dbDao.getAll(userId));
 	};
 
-	private Route getTableView = (req, res) -> {
+	public Route getTableView = (req, res) -> {
 
-		String userId = RequestUtil.getUser(req);
+		String userId = RequestUtil.getUsername(req);
 		Map map = new HashMap<>();
 		String connId = req.queryParams("connId");
 		try {
@@ -95,17 +88,17 @@ public class DbController extends ControllerBase {
 		}
 	};
 
-	private Route getQuery = (req, res) -> {
+	public Route getQuery = (req, res) -> {
 
-		String userId = RequestUtil.getUser(req);
+		String userId = RequestUtil.getUsername(req);
 		String sql = req.queryParams("q");
 		String connId = req.queryParams("connId");
 		return dbDao.connect(connId, userId).executeQuery(sql);
 	};
 
-	private Route getColumns = (req, res) -> {
+	public Route getColumns = (req, res) -> {
 
-		String userId = RequestUtil.getUser(req);
+		String userId = RequestUtil.getUsername(req);
 		String table = req.queryParams("table");
 		String connId = req.queryParams("connId");
 		return dbDao.connect(connId, userId).getColumns(table);

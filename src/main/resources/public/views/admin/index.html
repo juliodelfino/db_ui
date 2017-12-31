@@ -1,0 +1,65 @@
+<hr />
+<h2>Admin</h2>
+
+
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+	<li class="nav-item"><a class="nav-link active" id="dbs-tab-header"
+		data-toggle="tab" href="#dbs-tab" role="tab" aria-controls="new-conn"
+		aria-selected="true">DB Connections</a></li>
+	<li class="nav-item"><a class="nav-link active" id="users-tab-header"
+		data-toggle="tab" href="#users-tab" role="tab" aria-controls="new-conn"
+		aria-selected="true">Users</a></li>
+		
+</ul>
+<div class="tab-content" id="myTabContent">
+	<div class="tab-pane active" id="dbs-tab" role="tabpanel"
+		aria-labelledby="dbs-tab-header">
+
+<br/>
+	<table id='dbs-table'>
+		<thead>
+			<tr>
+				<th>Driver</th>
+				<th>URL</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			#foreach( $db in $dbs )
+			<tr>
+				<td class="col-xs-2">$db.connectionName</td>
+				<td class="col-xs-8">$db.url</td>
+				<td class="col btn-group pull-right">
+				<span
+					class="btn btn-xs btn-default edit-db-btn"> <i
+					class="glyphicon glyphicon-pencil"></i>
+				</span>
+				<span
+					class="btn btn-xs btn-default delete-db-btn"> <i
+					class="glyphicon glyphicon-remove"></i>
+				</span>
+				
+				</td>
+			</tr>
+			#end
+		</tbody>
+	</table>
+	
+	</div>
+	
+	<div class="tab-pane" id="users-tab" role="tabpanel"
+		aria-labelledby="users-tab-header">
+<br/>
+	<table id='users-table'>
+		<thead>
+			<tr>
+				<th>Username</th>
+				<th>Admin</th>
+				<th>Options</th>
+			</tr>
+		</thead>
+	</table>
+	</div>
+</div>
+
+#parse( "/public/views/admin/user_info_dialog.html" )

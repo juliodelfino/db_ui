@@ -15,7 +15,6 @@ import com.google.gson.GsonBuilder;
 
 public class ResultSetAdaptor implements Adaptor<ResultSet, String> {
 
-    private ObjectMapper mapper = new ObjectMapper();
     private Gson gson = new GsonBuilder().create();
 
     public ResultSetAdaptor() {

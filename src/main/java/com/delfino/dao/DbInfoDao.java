@@ -1,40 +1,34 @@
 package com.delfino.dao;
 
-import com.delfino.model.DbConnection;
-import com.delfino.model.DbInfo;
-import com.delfino.model.JsonDbModel;
-import com.delfino.util.AppProperties;
-import com.delfino.util.JsonDb;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.stream.JsonReader;
-
-import spark.utils.StringUtils;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.hadoop.hdfs.server.datanode.dataNodeHome_jsp;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
-import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import com.delfino.db.DbConnection;
+import com.delfino.db.JsonDb;
+import com.delfino.model.DbInfo;
+import com.delfino.model.DbSchema;
+import com.delfino.util.AppProperties;
+
+import spark.utils.StringUtils;
 
 public class DbInfoDao {
 
-	private JsonDb<JsonDbModel> jsonDb = JsonDb.getInstance(AppProperties.get("data_dir"), JsonDbModel.class);
+	private JsonDb<DbSchema> jsonDb = JsonDb.getInstance(AppProperties.get("data_dir"), DbSchema.class);
 	private Map<String, DbConnection> dbConnMap = new HashMap<>();
 	private UserDbDao userDbDao = new UserDbDao();
+
+	public List<DbInfo> getAll() {
+
+		return jsonDb.get().getDatabases().entrySet().stream()
+				.map(Entry::getValue)
+				.collect(Collectors.toList());
+	}
 	
 	public Map<String, DbInfo> getAll(String userId) {
 

@@ -10,30 +10,31 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.delfino.model.JsonDbModel;
+import com.delfino.db.JsonDb;
+import com.delfino.model.DbSchema;
 import com.delfino.model.User;
 import com.delfino.util.AppException;
 import com.delfino.util.AppProperties;
-import com.delfino.util.JsonDb;
+
+import spark.utils.StringUtils;
 
 public class UserDao {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AppProperties.class);
 
-	private JsonDb<JsonDbModel> jsonDb = JsonDb.getInstance(AppProperties.get("data_dir"), JsonDbModel.class);
+	private JsonDb<DbSchema> jsonDb = JsonDb.getInstance(AppProperties.get("data_dir"), DbSchema.class);
 
-	public List<User> getUsers() {
+	public List<User> getAll() {
 
 		List<User> users = jsonDb.get().getUsers();
 		return users != null ? users : new ArrayList();
 	}
 
-	public boolean validate(User user) {
+	public User validate(User user) {
 
 		String hashedPassword = hashText(user.getPassword());
-
-		return getUsers().stream().anyMatch(u -> u.getUsername().equalsIgnoreCase(user.getUsername())
-				&& u.getPassword().equals(hashedPassword));
+		return getAll().stream().filter(u -> u.getUsername().equalsIgnoreCase(user.getUsername())
+				&& u.getPassword().equals(hashedPassword)).findFirst().orElse(null);
 	}
 
 	private static String hashText(String text) {
@@ -48,7 +49,7 @@ public class UserDao {
 	}
 
 	public boolean add(User user) {
-		List<User> users = getUsers();
+		List<User> users = getAll();
 		if (users.stream().anyMatch(u -> 
 			u.getUsername().equalsIgnoreCase(user.getUsername()))) {
 			
@@ -61,11 +62,44 @@ public class UserDao {
 		return jsonDb.save();
 	}
 
-	public boolean update(User user) {
-		User dbUser = getUsers().stream()
+	public boolean add(User user, String[] dbAccess) {
+		if (add(user)) {
+			jsonDb.get().getUserDbMap()
+				.put(user.getUsername(), Arrays.asList(dbAccess));
+			return jsonDb.save();
+		}
+		return false;
+	}
+
+	public boolean updatePassword(User user) {
+		User dbUser = getAll().stream()
 				.filter(u -> u.getUsername().equals(user.getUsername()))
 				.findFirst().get();
 		dbUser.setPassword(hashText(user.getPassword()));
+		return jsonDb.save();
+	}
+
+	public boolean update(User user, String[] dbAccess) {
+		User dbUser = getAll().stream()
+				.filter(u -> u.getUsername().equals(user.getUsername()))
+				.findFirst().get();
+		dbUser.setAdmin(user.isAdmin());
+		if (!StringUtils.isEmpty(user.getPassword())) {
+			dbUser.setPassword(hashText(user.getPassword()));
+		}
+		jsonDb.get().getUserDbMap()
+			.put(user.getUsername(), Arrays.asList(dbAccess));
+		return jsonDb.save();
+	}
+
+	public Object get(String username) {
+		return getAll().stream().filter(user -> user.getUsername().equals(username))
+			.findFirst().get();
+	}
+
+	public boolean delete(String username) {
+		jsonDb.get().getUserDbMap().remove(username);
+		jsonDb.get().getUsers().removeIf(u -> u.getUsername().equals(username));
 		return jsonDb.save();
 	}
 

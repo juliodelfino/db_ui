@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class JsonDbModel {
+public class DbSchema {
 
 	private List<User> users = new ArrayList<>();
 	private Map<String, List> userDbMap = new HashMap<>();
