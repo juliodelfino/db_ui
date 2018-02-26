@@ -30,6 +30,9 @@ public class UserController extends ControllerBase {
 	@AppRoute(skipAuthentication=true)
 	public Route getLogin = (req, res) -> {
 
+		if (RequestUtil.getUser(req) != null) {
+			res.redirect(Constants.PATH_HOME);
+		}
 		return renderPage(req, "user/login.html");
 	};
 
@@ -40,7 +43,11 @@ public class UserController extends ControllerBase {
 		if (authenticated) {
 			req.session().attribute(Constants.SESSION_USER, validatedUser);
 		}
-		return authenticated;
+		Map<String, Object> loginStatus = new HashMap();
+		loginStatus.put("authenticated", authenticated);
+		loginStatus.put("redirectUrl", req.session().attribute(Constants.LOGIN_REDIRECT));
+		req.session().removeAttribute(Constants.LOGIN_REDIRECT);
+		return gson.toJson(loginStatus);
 	};
 
 	public Route getLogout = (req, res) -> {

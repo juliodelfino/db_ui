@@ -5,14 +5,18 @@ import static spark.Spark.delete;
 import static spark.Spark.get;
 import static spark.Spark.initExceptionHandler;
 import static spark.Spark.internalServerError;
+import static spark.Spark.exception;
+import static spark.Spark.notFound;
 import static spark.Spark.port;
 import static spark.Spark.post;
 import static spark.Spark.staticFiles;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,10 +28,13 @@ import com.delfino.controller.ErrorController;
 import com.delfino.controller.UserController;
 import com.delfino.filter.RequestDataFilter;
 import com.delfino.filter.SkipAuthFilter;
+import com.delfino.util.AppException;
 import com.delfino.util.AppProperties;
 import com.delfino.util.Constants;
 
 import spark.Route;
+import spark.Spark;
+import spark.utils.IOUtils;
 
 public class Application {
 
@@ -40,29 +47,47 @@ public class Application {
 			LOGGER.error(e.getMessage(), e);
 			System.exit(100);
 		});
-		internalServerError(new ErrorController().get500);
+		ErrorController errorHandlers = new ErrorController();
+		internalServerError(errorHandlers.internalServerError);
+		notFound(errorHandlers.notFound);
+		exception(AppException.class, (ex, req, res) -> {
+			try {
+				req.attribute("exception", ex);
+				errorHandlers.internalServerError.handle(req, res);
+			} catch (Exception e1) {
+				LOGGER.error(e1.getMessage(), e1);
+			}
+		});
 
 		staticFiles.location(Constants.STATIC_FILES);
 
-		List<RouteInfo> routes = scanRoutes(UserController.class, DbController.class, AdminController.class);
+		List<Class> controllerClasses = Stream.of(AppProperties.get("controllers").split(","))
+			.map(ctrlr ->  {
+				try {
+				    return Class.forName("com.delfino.controller." + ctrlr + "Controller");
+				} catch (Exception ex) {
+					return null;
+				}
+			}).filter(cl -> cl != null).collect(Collectors.toList());
+		List<RouteInfo> routes = scanRoutes(controllerClasses);
 		List<String> skipAuthPaths = routes.stream()
 				.filter(r -> r.appRoute != null && r.appRoute.skipAuthentication())
 				.map(r -> r.path).collect(Collectors.toList());
 		before(new SkipAuthFilter(skipAuthPaths), new RequestDataFilter());
 		
 		registerRoutes(routes);
-
+		get("/favicon.ico", "image/x-icon", 
+				(req, res) -> IOUtils.toString(Spark.class.getResourceAsStream("/public/assets/images/favicon.ico")));
 	}
 
 	private static void registerRoutes(List<RouteInfo> routes) {
 		for (RouteInfo route : routes) {
 
-			String name = route.name;
-			registerRoute(name, route.path, route.route);
+			registerRoute(route.name, route.path, route.route);
 		}
 	}
 
-	private static List<RouteInfo> scanRoutes(Class... controllers) throws ReflectiveOperationException {
+	private static List<RouteInfo> scanRoutes(List<Class> controllers) throws ReflectiveOperationException {
 
 		List<RouteInfo> routes = new ArrayList<>();
 		for (Class controllerClass : controllers) {

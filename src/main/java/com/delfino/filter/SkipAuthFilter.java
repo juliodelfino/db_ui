@@ -7,6 +7,7 @@ import com.delfino.util.Constants;
 
 import spark.Filter;
 import spark.Redirect.Status;
+import spark.utils.StringUtils;
 import spark.Request;
 import spark.Response;
 import spark.Spark;
@@ -34,7 +35,9 @@ public class SkipAuthFilter implements Filter {
 				Spark.halt(401);
 			}
 			else {
-	            req.session().attribute("loginRedirect", req.pathInfo());
+	            req.session().attribute(Constants.LOGIN_REDIRECT, req.pathInfo() + 
+	            		(StringUtils.isEmpty(req.queryString()) ? "" : 
+	            			("?" + req.queryString())));
 				res.redirect(Constants.PATH_LOGIN);
 			}
 		}

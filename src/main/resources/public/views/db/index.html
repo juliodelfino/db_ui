@@ -1,14 +1,46 @@
+<div class="row">
+	<h2>
+		<img src="/assets/images/db/home-icon.png" width="32px"
+			style="margin-bottom: 7px" /> Home
+	</h2>
 
-<ul class="nav nav-tabs" id="myTab" role="tablist">
-	<li class="nav-item"><a class="nav-link active" id="new-conn-tab"
-		data-toggle="tab" href="#new-conn" role="tab" aria-controls="new-conn"
-		aria-selected="true"> New Connection...</a></li>
-</ul>
-<div class="tab-content" id="myTabContent">
-	<div class="tab-pane active" id="new-conn" role="tabpanel"
-		aria-labelledby="new-conn-tab">#parse( "/public/views/db/add_connection.html" )</div>
+	<nav aria-label="breadcrumb">
+		<ol class="breadcrumb">
+			<li class="breadcrumb-item active" aria-current="page">Home</li>
+		</ol>
+	</nav>
+	<div class="col-lg-12 menu-bar">
+		<a href="/db/newdbconn" class="btn btn-sm btn-info">NEW DB CONNECTION</a>
+	</div>
+
+
+	<div class="col-lg-12" style="border-bottom: 1px solid #ccc; margin-bottom: 10px">
+		<h4 style="font-style: italic; color: #bbb">DATABASES ($dbList.size())</h4>
+	</div>
+	#foreach( $db in $dbList )
+	#set( $dbPhoto = $ViewUtil.getDbPhoto($db) )
+	<div class="col-xs-4">
+		<div class="db-info-box row">
+			<div class="cell">
+				<a href="/db/dbinfo?id=$db.connId" class="db-info-header">
+					$db.connectionName</a>
+			</div>
+			<div class="cell db-info-content">
+
+				<div class="col-xs-3">
+					<a href="/db/dbinfo?id=$db.connId">
+						<img src="$dbPhoto" />
+					</a>
+				</div>
+				<div class="col-xs-9">
+					<div><span class="text-muted">Status:</span> $db.status</div>
+					<div><span class="text-muted">Table count:</span> $db.tableCount</div>
+					<a href="#" class="btn btn-default btn-xs conn-info-btn" data-id="$db.connId">Connection Info</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	#end
 </div>
 
-#parse( "/public/layouts/dialog_box.html" ) 
 #parse( "/public/views/db/conn_info_dialog.html" )
-

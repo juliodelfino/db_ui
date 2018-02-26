@@ -12,4 +12,9 @@ public class Constants {
 	public static final String PATH_LOGIN = "/user/login";
 
 	public static final String SESSION_USER = "SESSION_USER";
+
+	public static final String PATH_HOME = "/db";
+
+	public static final String LOGIN_REDIRECT = "loginRedirect";
+	
 }

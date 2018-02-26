@@ -3,7 +3,9 @@
 <head>
 <title>${application_name}</title>
 
-    <link rel="stylesheet" media="all" href="/assets/css/${moduleName}.css" />
+    #foreach( $cssFile in $css_files)
+    	<link rel="stylesheet" media="all" href="/assets/css/${cssFile}" />
+    #end
     #parse( "/public/layouts/html_head.html" )
 
 </head>
@@ -25,7 +27,9 @@
 	<!-- Placed at the end of the document so the pages load faster -->
 
     #parse( "/public/layouts/script_imports.html" )
-    <script src="/assets/js/${moduleName}.js"></script>
+    #foreach( $jsFile in $js_files)
+    	<script src="/assets/js/${jsFile}"></script>
+    #end
 	<script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
 </body>
 </html>

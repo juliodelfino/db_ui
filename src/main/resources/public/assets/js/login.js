@@ -17,14 +17,15 @@ function login(user) {
 
     $.post("/user/login", user).done( function(result){
 
-    	var success = JSON.parse(result);
-    	if (!success) {
+    	var status = JSON.parse(result);
+    	if (!status.authenticated) {
     		$('#login-error-div').show();    
     		setTimeout(function() {
     			$("#login-error-div").slideUp(500); 
     	    }, 5000);
     	} else {
-        	window.location.replace('/db');
+        	window.location.replace(status.redirectUrl == undefined ? 
+        			'/db' : status.redirectUrl);
     	}
     });
 }

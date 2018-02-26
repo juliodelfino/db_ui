@@ -59,6 +59,8 @@ public class DbInfoDao {
 	}
 
 	public boolean delete(DbInfo dbInfo, String userId) {
+		DbConnection dbConn = dbConnMap.get(dbInfo.getConnId());
+		dbConn.close();
 		jsonDb.get().getUserDbMap().get(userId).remove(dbInfo.getConnId());
 		jsonDb.get().getDatabases().remove(dbInfo.getConnId());
 		return jsonDb.save();

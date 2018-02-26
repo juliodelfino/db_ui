@@ -1,5 +1,12 @@
 package com.delfino.model;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 public class DbInfo {
 
     private String driver;
@@ -8,6 +15,9 @@ public class DbInfo {
     private String password;
     private String connectionName;
     private String connId;
+
+	private transient String status = "Disconnected";
+    private transient Map<String, TableInfo> tableMap = new HashMap();
 
     public String getDriver() {
         return driver;
@@ -55,5 +65,32 @@ public class DbInfo {
 
 	public void setConnId(String connId) {
 		this.connId = connId;
+	}
+	
+	
+
+    
+    public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public int getTableCount() {
+		return tableMap.size();
+	}
+
+	public Map getTables() {
+		return tableMap;
+	}
+
+	public void setTables(Map<String, TableInfo> meta) {
+		this.tableMap = meta;
+	}
+
+	public TableInfo getTable(String tableName) {
+		return tableMap.get(tableName);
 	}
 }

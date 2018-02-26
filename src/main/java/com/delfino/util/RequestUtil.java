@@ -45,4 +45,10 @@ public class RequestUtil {
 		User user = getUser(req);
 		return user != null ? user.getUsername().toUpperCase() : null;
 	}
+
+	public static String getDbDriver(String url) {
+
+		int startIdx = url.indexOf(":") + 1;
+		return url.substring(startIdx, url.indexOf(":", startIdx));
+	}
 }

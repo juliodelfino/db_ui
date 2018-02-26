@@ -7,11 +7,10 @@ $(document).ready(function() {
 
 	$.getScript('/assets/js/conn_info_dialog.js');
 	initDatabases();
-
     $("#db-connect-form").submit(function(e){
         e.preventDefault();
         $('#conn-loading-icon img').show();
-        $.post("/db/connectdb", $(this).serialize(), function(result){
+        $.post("/dbold/connectdb", $(this).serialize(), function(result){
 
             $('#conn-loading-icon img').hide();
         	result = JSON.parse(result);
@@ -29,7 +28,7 @@ $(document).ready(function() {
 
 function initDatabases() {
 
-  	$.get("/db/alldb", function(result){
+  	$.get("/dbold/alldb", function(result){
         databases = JSON.parse(result);
         $.each(databases, function(i, val) {
         	 addTab(val);
@@ -58,7 +57,7 @@ function loadSchemaView(tabPanel, forceLoad) {
 
     if ($(tabPanel).html().length == 0 || forceLoad) {
         $(tabPanel).html(connLoaderHtml);
-      	$.get("/db/tableview", {connId: $(tabPanel).data("connId")}, function(result){
+      	$.get("/dbold/tableview", {connId: $(tabPanel).data("connId")}, function(result){
             $(tabPanel).html(result);
             initTableActions(tabPanel);
       	});
@@ -98,7 +97,7 @@ function initTableActions(tabPanel) {
 	
 	$(tabPanel + ' .conn-info-btn').click(function(){
 
-	  	$.get("/db/info", {connId: $(tabPanel).data("connId")}, function(result){
+	  	$.get("/dbold/info", {connId: $(tabPanel).data("connId")}, function(result){
 
 	  		result = JSON.parse(result);
 	  		$('#conn-info-dialog input[name=connectionName]').val(result.connectionName);
@@ -129,7 +128,7 @@ function getColumns(tableName, tabPanel) {
 		connId: $(tabPanel).data("connId"),
 		table: tableName
 	};
-  	$.get("/db/columns", params, function(result){
+  	$.get("/dbold/columns", params, function(result){
   		result = JSON.parse(result);
   		updateDynamicTable(result, tabPanel);
   	});
@@ -143,7 +142,7 @@ function executeQuery(sql, tabPanel) {
 		connId: $(tabPanel).data("connId"),
 		q: sql
 	};
-  	$.get("/db/query", params, function(result){
+  	$.get("/dbold/query", params, function(result){
   		result = JSON.parse(result);
   		if (result.error) {
   			displayError(result, tabPanel);

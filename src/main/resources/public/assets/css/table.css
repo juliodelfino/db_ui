@@ -1,0 +1,19 @@
+
+body {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.breadcrumb {
+	padding: 4px 15px;
+	margin-bottom: 5px;
+}
+
+.menu-bar {
+	margin-bottom: 15px
+}
+
+
+.dynamic-table tbody tr td {
+  white-space:nowrap; overflow:hidden; text-overflow: ellipsis; max-width: 250px
+}

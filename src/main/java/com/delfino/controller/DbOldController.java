@@ -1,5 +1,10 @@
 package com.delfino.controller;
 
+import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.beanutils.BeanUtils;
@@ -10,6 +15,7 @@ import com.delfino.adaptor.ExceptionAdaptor;
 import com.delfino.dao.DbInfoDao;
 import com.delfino.main.Application;
 import com.delfino.model.DbInfo;
+import com.delfino.model.TableInfo;
 import com.delfino.util.AppException;
 import com.delfino.util.RequestUtil;
 import com.delfino.util.ViewUtil;
@@ -17,14 +23,19 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import spark.Route;
+import spark.Spark;
 
-public class DbController extends ControllerBase {
+public class DbOldController extends ControllerBase {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Application.class);
 
 	private DbInfoDao dbDao = new DbInfoDao();
 	private Gson gson = new GsonBuilder().setPrettyPrinting().create();
 	private ExceptionAdaptor exAdaptor = new ExceptionAdaptor();
+
+	public Route getIndex = (req, res) -> {
+		return renderContent(req, "dbold/index.html");
+	};
 
 	public Route postConnectDb = (req, res) -> {
 
@@ -69,38 +80,35 @@ public class DbController extends ControllerBase {
 		String userId = RequestUtil.getUsername(req);
 		return gson.toJson(dbDao.getAll(userId));
 	};
-	
-	//new methods
-	public Route getIndex = (req, res) -> {
+
+	public Route getTableView = (req, res) -> {
+
 		String userId = RequestUtil.getUsername(req);
-		req.attribute("dbList", dbDao.getAll(userId));
-		return renderContent(req, "db/index.html");
+		Map map = new HashMap<>();
+		String connId = req.queryParams("connId");
+		try {
+			map.put("tables", dbDao.connect(connId, userId).getDbMetadata());
+			return renderPage(req, map, "dbold/table_view.html");
+		} catch (SQLException ex) {
+			LOGGER.error(ex.getMessage(), ex);
+			map.put("exception", ex);
+			return renderPage(req, map, "dbold/error.html");
+		}
 	};
 
-	public Route getDbInfo = (req, res) -> {
+	public Route getQuery = (req, res) -> {
+
 		String userId = RequestUtil.getUsername(req);
-		String connId = req.queryParams("id");
-		boolean refresh = req.queryParams("refresh") != null ? 
-				Boolean.parseBoolean(req.queryParams("refresh")) : false;
-		DbInfo dbInfo = dbDao.getDb(connId, userId);
-		if (dbInfo == null) {
-			throw new AppException("No database found with ID=" + connId);
-		}
-		req.attribute("dbInfo", dbInfo);
-		req.attribute("dbPhoto", ViewUtil.getDbPhoto(dbInfo));
-		
-		Map meta = dbInfo.getTables();
-		if (meta.isEmpty() || refresh) {
-			meta = dbDao.connect(connId, userId).getDbMetadata();
-			dbInfo.setTables(meta);
-		}
-		
-		req.attribute("tables", meta);
-		dbInfo.setStatus("Active");
-		return renderContent(req, "db/dbinfo.html");
+		String sql = req.queryParams("q");
+		String connId = req.queryParams("connId");
+		return dbDao.connect(connId, userId).executeQuery(sql);
 	};
 
-	public Route getNewDbConn = (req, res) -> {
-		return renderContent(req, "db/newdbconn.html");
+	public Route getColumns = (req, res) -> {
+
+		String userId = RequestUtil.getUsername(req);
+		String table = req.queryParams("table");
+		String connId = req.queryParams("connId");
+		return dbDao.connect(connId, userId).getColumns(table);
 	};
 }

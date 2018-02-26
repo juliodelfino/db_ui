@@ -1,13 +1,11 @@
 package com.delfino.adaptor;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.delfino.util.Pair;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

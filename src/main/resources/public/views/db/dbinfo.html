@@ -1,0 +1,44 @@
+<div class="row">
+	<h2>
+		<img src="$dbPhoto" width="32px" style="margin-bottom: 7px; border: solid 1px #ddd" />
+		$dbInfo.connectionName
+	</h2>
+	<nav aria-label="breadcrumb">
+		<ol class="breadcrumb">
+			<li class="breadcrumb-item"><a href="/db">Home</a></li>
+			<li class="breadcrumb-item active" aria-current="page">$dbInfo.connectionName</a></li>
+		</ol>
+	</nav>
+	<div class="col-lg-12 menu-bar">
+		<button class="btn btn-sm btn-info" id="refresh-btn">REFRESH</button>
+		<button class="btn btn-sm btn-info conn-info-btn">CONNECTION INFO</button>
+		<button class="btn btn-sm btn-danger" id="delete-dbinfo-btn">DELETE</button>
+	</div>
+	
+	<div class="col-lg-12" style="border-bottom: 1px solid #ccc; margin-bottom: 10px">
+		<h4 style="font-style: italic; color: #bbb">TABLES ($tables.size())</h4>
+	</div>
+	#foreach( $tbl in $tables )
+	<div class="col-xs-4">
+		<div class="db-info-box row">
+			<div class="cell">
+				<a href="/table?id=$dbInfo.connId&table=$tbl.name"
+					class="db-info-header">$tbl.name</a>
+			</div>
+			<div class="cell db-info-content">
+
+				<div class="col-xs-3">
+				<a href="/table?id=$dbInfo.connId&table=$tbl.name">
+					<img src="/assets/images/db/table.png" />
+				</a>
+				</div>
+				<div class="col-xs-9" style="font-size: 16px">
+					<p><span class="text-muted">Row count:</span> $tbl.rowCount</p>
+				</div>
+			</div>
+		</div>
+	</div>
+	#end
+</div>
+
+#parse( "/public/views/db/conn_info_dialog.html" )

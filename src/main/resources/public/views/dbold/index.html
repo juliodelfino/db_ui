@@ -1,0 +1,14 @@
+
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+	<li class="nav-item"><a class="nav-link active" id="new-conn-tab"
+		data-toggle="tab" href="#new-conn" role="tab" aria-controls="new-conn"
+		aria-selected="true"> New Connection...</a></li>
+</ul>
+<div class="tab-content" id="myTabContent">
+	<div class="tab-pane active" id="new-conn" role="tabpanel"
+		aria-labelledby="new-conn-tab">#parse( "/public/views/dbold/add_connection.html" )</div>
+</div>
+
+#parse( "/public/layouts/dialog_box.html" ) 
+#parse( "/public/views/dbold/conn_info_dialog.html" )
+

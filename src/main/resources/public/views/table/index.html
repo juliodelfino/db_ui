@@ -1,0 +1,34 @@
+
+<div class="row">
+	<h2>
+		<img src="/assets/images/db/table.png" width="32px" style="margin-bottom: 7px" />
+		$table.name
+	</h2>
+	<nav aria-label="breadcrumb">
+		<ol class="breadcrumb">
+			<li class="breadcrumb-item"><a href="/db">Home</a></li>
+			<li class="breadcrumb-item"><a href="/db/dbinfo?id=$dbInfo.connId">$dbInfo.connectionName</a></li>
+			<li class="breadcrumb-item active" aria-current="page">$table.name</li>
+		</ol>
+	</nav>
+	<div class="col-lg-12 menu-bar">
+		<button class="btn btn-sm btn-info q-columns-btn">COLUMNS</button>
+		<button class="btn btn-sm btn-info q-rowcount-btn">ROW COUNT</button>
+		<button class="btn btn-sm btn-info q-alldata-btn">ALL DATA</button>
+	</div>
+
+	<div class="col-lg-12 top-buffer">
+		<form class="col-xs-12 input-group exec-sql-form">
+			<input class="qbox form-control" type="text"
+				placeholder="Enter your SQL query here" autocomplete="on" /> <span
+				class="exec-btn input-group-addon btn btn-primary btn-sm"> <i
+				class="glyphicon glyphicon-flash"></i>
+			</span>
+		</form>
+	</div>
+
+
+	<div class="col-lg-12 top-buffer dynamic-table"></div>
+</div>
+
+#parse( "/public/layouts/dialog_box.html" ) 
