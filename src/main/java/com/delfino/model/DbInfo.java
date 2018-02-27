@@ -93,4 +93,10 @@ public class DbInfo {
 	public TableInfo getTable(String tableName) {
 		return tableMap.get(tableName);
 	}
+
+	@Override
+	public String toString() {
+		return "DbInfo [driver=" + driver + ", url=" + url + ", username=" + username + ", password=" + password
+				+ ", connectionName=" + connectionName + ", connId=" + connId + "]";
+	}
 }

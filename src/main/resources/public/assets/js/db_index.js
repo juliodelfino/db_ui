@@ -8,7 +8,7 @@ function initTableActions(tabPanel) {
 
 	$(tabPanel + ' .conn-info-btn').click(function(){
 
-		dbConnId = $(this).data('id');
+		dbConnId = $(this).parent().data('id');
 	  	$.get("/db/info", {connId: dbConnId}, function(result){
 
 	  		result = JSON.parse(result);
@@ -20,6 +20,23 @@ function initTableActions(tabPanel) {
 	  		$('#conn-info-dialog #parent-tabpanel').val(tabPanel);
 			$('#conn-info-dialog').modal('show');
 	  	});
+	});
+	
+	$('.delete-dbinfo-btn').click(function(){
+
+		var confirmDelete = confirm("Deleting this database cannot be undone. Click OK to continue.");
+		if (confirmDelete) {
+
+			dbConnId = $(this).parent().data('id');
+			alert("dbid = " + dbConnId);
+			$.ajax({
+			    url: '/db/info?connId=' + dbConnId,
+			    type: 'DELETE',
+			    success: function(result) {
+					window.location.href = '/db'
+			    }
+			});
+		}
 	});
 	
 	$(tabPanel + ' .refresh-dbconn-btn').click(function(){

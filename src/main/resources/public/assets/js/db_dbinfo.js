@@ -17,11 +17,6 @@ $(document).ready(function() {
 	$('#delete-dbinfo-btn').click(function(){
 		var confirmDelete = confirm("Deleting this database cannot be undone. Click OK to continue.");
 		if (confirmDelete) {
-			
-			$('#conn-info-dialog .conn-loading-icon').show();
-
-			var dbInfoParams = $('#conn-info-form').serialize();
-			var dbInfo = objectifyForm($('#conn-info-form').serializeArray());
 			$.ajax({
 			    url: '/db/info?connId=' + dbConnId,
 			    type: 'DELETE',

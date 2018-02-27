@@ -104,7 +104,7 @@ function updateDynamicTable(result, tabPanel) {
 	});
 
 	$(tabPanel + ' .dynamic-table').html(
-			'<table><thead><tr>' + tableHeaders + '</tr></thead></table>');
+			'<table class="hover"><thead><tr>' + tableHeaders + '</tr></thead></table>');
 
 	table = $(tabPanel + ' .dynamic-table table').DataTable({
 		destroy: true,

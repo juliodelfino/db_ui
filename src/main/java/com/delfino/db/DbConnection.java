@@ -30,7 +30,6 @@ public class DbConnection {
     private ExceptionAdaptor exAdaptor = new ExceptionAdaptor();
     private DbInfo dbInfo;
     Connection conn = null;
-    Statement stmt;
 
     public DbConnection(DbInfo dbInfo) throws SQLException {
         this.dbInfo = dbInfo;
@@ -51,7 +50,7 @@ public class DbConnection {
         ResultSet rs = null;
         String result = "";
         try {
-            stmt = getConnection().createStatement();
+            Statement stmt = getConnection().createStatement();
             rs = stmt.executeQuery(sql);
             result = adaptor.convert(rs);
         } catch(Exception ex) {
@@ -69,31 +68,67 @@ public class DbConnection {
 
 	public Map getDbMetadata() throws SQLException {
         DatabaseMetaData md = getConnection().getMetaData();
-        Map<String, TableInfo> tables = new LinkedHashMap();
+        Map<String, TableInfo> tableMap = new LinkedHashMap();
         ResultSet rs = md.getTables(null, null, "%", null);
-        List<String> names = extractValuesFromColumn(rs, 3);
+        List<TableInfo> tables = toTableInfos(rs).stream()
+        		.filter(t -> "TABLE".equals(t.getTableType()))
+        		.collect(Collectors.toList());
         
-        names.stream().forEach(tableName -> tables.put(tableName, new TableInfo(tableName)));
+        tables.stream().forEach(t -> tableMap.put(t.getName(), t));
         
-        String sql = tables.keySet().stream()
-        		.map(t -> String.format(" SELECT '%s', COUNT(*) FROM %s ", t, t))
-        		.collect(Collectors.joining(" UNION ALL "));
-        stmt = getConnection().createStatement();
-        rs = stmt.executeQuery(sql);
-        while (rs.next()) {
-        	String tableName = rs.getString(1);
-        	tables.get(tableName).setRowCount(rs.getInt(2));
-        } 
-        rs.close();
-        return tables;
+        try {
+        	queryAllRowCounts(tableMap);
+        } catch (SQLException sqlEx) {
+        	LOGGER.error(sqlEx.getMessage(), sqlEx);
+        	queryRowCountOneByOne(tableMap);
+        }
+        return tableMap;
     }
 
-	private List extractValuesFromColumn(ResultSet rs, int columnIndex) throws SQLException {
-		List<Comparable> values = new ArrayList();
+	private void queryRowCountOneByOne(Map<String, TableInfo> tableMap) {
+        
+		tableMap.values().stream().forEach(t -> {
+			
+	        String sql = String.format(" SELECT COUNT(*) FROM \"%s\" ", t.getName());
+	        Statement stmt;
+			try {
+				stmt = getConnection().createStatement();
+		        ResultSet rs = stmt.executeQuery(sql);
+		        rs.next();
+		        t.setRowCount((int)rs.getLong(1));
+		        rs.close();
+			} catch (SQLException e) {
+				LOGGER.error("Error during query: " + sql, e);
+			}
+		});
+	}
+
+	private void queryAllRowCounts(Map<String, TableInfo> tableMap) throws SQLException {
+		
+        String sql = tableMap.keySet().stream()
+        		.map(t -> String.format(" SELECT '%s', COUNT(*) FROM %s ", t, t))
+        		.collect(Collectors.joining(" UNION ALL "));
+        Statement stmt = getConnection().createStatement();
+        ResultSet rs = stmt.executeQuery(sql);
         while (rs.next()) {
-        	values.add(rs.getString(columnIndex));
+        	String tableName = rs.getString(1);
+        	tableMap.get(tableName).setRowCount(rs.getInt(2));
+        } 
+        rs.close();
+	}
+
+	private List<TableInfo> toTableInfos(ResultSet rs) throws SQLException {
+		List<TableInfo> values = new ArrayList();
+        while (rs.next()) {
+        	TableInfo tbl = new TableInfo(rs.getString("TABLE_NAME"));
+        	tbl.setTableCatalog(rs.getString("TABLE_CAT"));
+        	tbl.setTableSchema(rs.getString("TABLE_SCHEM"));
+        	tbl.setTableType(rs.getString("TABLE_TYPE"));
+        	tbl.setRemarks(rs.getString("REMARKS"));
+        	values.add(tbl);
         }
-        values.sort((x, y) -> x.compareTo(y));
+        rs.close();
+        values.sort((x, y) -> x.getName().compareTo(y.getName()));
         return values;
 	}
 
