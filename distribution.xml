@@ -41,6 +41,15 @@
             <lineEnding>unix</lineEnding>
         </fileSet>
         <fileSet>
+            <directory>src/shl</directory>
+            <outputDirectory>.</outputDirectory>
+            <fileMode>0755</fileMode>
+            <directoryMode>0775</directoryMode>
+            <includes>
+                <include>**/*.bat</include>
+            </includes>
+        </fileSet>
+        <fileSet>
             <directory>.</directory>
             <outputDirectory>log</outputDirectory>
             <excludes>
