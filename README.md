@@ -7,9 +7,6 @@ Take note, this is only a DATABASE VIEWER, and not a DATABASE ADMIN UI!
 ## High speed
 This application boots up in around 1000 milliseconds!
 
-## Ruby on Rails framework concepts
-Rails framework is so easy to use, you can build a running website in less than an hour! If you're familiar with coding in Ruby on Rails, you will easily get to know how this application is being built using their concepts.
-
 ## Technologies used
 - Spark Web
 - Velocity Template
@@ -45,3 +42,24 @@ Rails framework is so easy to use, you can build a running website in less than 
   - Controllers to expose (must correspond to the available ControllerBase classes)
 - HTML, JS and CSS files can also be modified. These are located under config/public.
 - Log configuration file is log4j.xml.
+
+## Development/Extending Functionalities
+
+### Ruby on Rails framework concepts
+First of all, this is a 100% Java project. 
+For your info, Rails framework is so easy to use, you can build a running website in less than an hour! If you're familiar with coding in Ruby on Rails, you will easily get to know how this application is being built using their concepts.
+
+Example: Creating a Database page. Note that the related files/resources are consistently linked with 'db' keyword.
+
+Relevant files:
+  - Route: http://website:3001/db
+  - Maps to Controller: DbController
+    - Maps to Route: getIndex
+    - Dev must map to 'db/index.html'
+  - Maps to JsonDb.getDatabases()
+  - Maps to View: db/index.html
+    - Automatically adds the corresponding db.css and db_index.css, if they exist
+    - Also auto-adds the corresponding db.js and db_index.js, if they exist
+  
+
+
