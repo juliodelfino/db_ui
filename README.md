@@ -18,11 +18,22 @@ Rails framework is so easy to use, you can build a running website in less than 
 - jQuery
 
 ## Setup
+
+### Unix
 - Download db-ui.tar.gz file (8MB).
 - Extract using this command: gtar -xvzf db-ui.tar.gz
 - Download the JDBC driver jar files you need and place it in /lib folder. Some of them may have already been there (actually, only MySQL library is in there).
 - Update the config/application.properties. Change the data_dir to point to a writeable directory.
 - Run the application via run-app.sh
+- Use the default 'root' account to manage the users. Password is 'welcome'.
+- Enjoy!
+
+### Windows
+- Download db-ui.tar.gz file (8MB).
+- Use 7zip to extract this tar.gz file.
+- Download the JDBC driver jar files you need and place it in /lib folder. Some of them may have already been there (actually, only MySQL library is in there).
+- Update the config/application.properties. Change the data_dir to point to a writeable directory.
+- Run the application via run-app.bat
 - Use the default 'root' account to manage the users. Password is 'welcome'.
 - Enjoy!
 
