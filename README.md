@@ -1,6 +1,6 @@
 # Database UI
 
-A high-speed, highly configurable, web-based database viewer using Java's Spark Web,
+The most lightweight, high-speed, highly configurable, web-based database viewer using Java's Spark Web,
 Velocity's HTML templating, and the Ruby on Rails framework concepts.
 
 ## High speed
@@ -19,10 +19,10 @@ Rails framework is so easy to use, you can build a running website in less than 
 ## Setup
 - Download db-ui.tar.gz file.
 - Extract using this command: gtar -xvzf db-ui.tar.gz
-- Download the JDBC driver jar files you need and place it in /lib folder. Some of them may have already been there.
+- Download the JDBC driver jar files you need and place it in /lib folder. Some of them may have already been there (actually, just MySQL library).
 - Update the config/application.properties. Change the data_dir to point to a writeable directory.
 - Run the application via run-app.sh
-- Use the default root account to manage the users. Password is 'welcome'.
+- Use the default 'root' account to manage the users. Password is 'welcome'.
 - Enjoy!
 
 
