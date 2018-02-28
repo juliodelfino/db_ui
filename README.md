@@ -1,7 +1,8 @@
-# Database UI
+# Database UI Viewer
 
 The most lightweight, high-speed, highly configurable, web-based database viewer using Java's Spark Web,
 Velocity's HTML templating, and the Ruby on Rails framework concepts.
+Take note, this is only a DATABASE VIEWER, and not a DATABASE ADMIN UI!
 
 ## High speed
 This application boots up in around 1000 milliseconds!
