@@ -33,7 +33,7 @@ public class UserDao {
 	
 	private User createRootUser() {
 		User root = new User();
-		root.setUsername("ROOT");
+		root.setUsername("root");
 		root.setPassword(hashText("welcome"));
 		root.setAdmin(true);
 		return root;
