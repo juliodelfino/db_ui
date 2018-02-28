@@ -3,11 +3,6 @@ package com.delfino.db;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
 import org.apache.commons.io.monitor.FileAlterationMonitor;
@@ -15,10 +10,8 @@ import org.apache.commons.io.monitor.FileAlterationObserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.delfino.model.DbInfo;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
 import com.google.gson.stream.JsonReader;
 
 public class JsonDb<T> {
@@ -86,14 +79,19 @@ public class JsonDb<T> {
         File f = new File(dataFile);
         if (f.exists()) {
             try (JsonReader reader = new JsonReader(new FileReader(f))) {
-                return GSON.fromJson(reader, jsonDataModel);
+                T dataModel = GSON.fromJson(reader, jsonDataModel);
+                LOGGER.info("JSON DB location: " + f.getAbsolutePath());
+                return dataModel;
             } catch (IOException e) {
-                e.printStackTrace();
+                LOGGER.error("Error reading file " + dataFile, e);
             }
         }
         try {
-			return jsonDataModel.newInstance();
+			T dataModel = jsonDataModel.newInstance();
+            LOGGER.info("JSON DB location: " + f.getAbsolutePath());
+            return dataModel;
 		} catch (InstantiationException | IllegalAccessException e) {
+            LOGGER.error(e.getMessage(), e);
 			return null;
 		}
 	}

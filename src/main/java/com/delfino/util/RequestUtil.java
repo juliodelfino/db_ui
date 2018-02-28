@@ -43,7 +43,7 @@ public class RequestUtil {
 
 	public static String getUsername(Request req) {
 		User user = getUser(req);
-		return user != null ? user.getUsername().toUpperCase() : null;
+		return user != null ? user.getUsername() : null;
 	}
 
 	public static String getDbDriver(String url) {

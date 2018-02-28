@@ -24,6 +24,21 @@ public class UserDao {
 
 	private JsonDb<DbSchema> jsonDb = JsonDb.getInstance(AppProperties.get("data_dir"), DbSchema.class);
 
+	public UserDao() {
+		if (jsonDb.get().getUsers().isEmpty()) {
+			jsonDb.get().getUsers().add(createRootUser());
+			jsonDb.save();
+		}
+	}
+	
+	private User createRootUser() {
+		User root = new User();
+		root.setUsername("ROOT");
+		root.setPassword(hashText("welcome"));
+		root.setAdmin(true);
+		return root;
+	}
+
 	public List<User> getAll() {
 
 		List<User> users = jsonDb.get().getUsers();
