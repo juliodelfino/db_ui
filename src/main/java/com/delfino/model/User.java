@@ -5,6 +5,7 @@ public class User {
 	private String username;
 	private String password;
 	private boolean admin;
+	private String fullName = "";
 	
 	public String getUsername() {
 		return username;
@@ -23,5 +24,11 @@ public class User {
 	}
 	public void setAdmin(boolean isAdmin) {
 		this.admin = isAdmin;
+	}
+	public String getFullName() {
+		return fullName;
+	}
+	public void setFullName(String fullName) {
+		this.fullName = fullName;
 	}
 }

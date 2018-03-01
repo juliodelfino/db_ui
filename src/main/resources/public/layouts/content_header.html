@@ -21,7 +21,9 @@
 			#if ($SESSION_USER) 
 			<ul class="nav navbar-nav navbar-right">
 				<li><a id="logout-btn" href="/user/logout">Log out
-						$SESSION_USER.username.toUpperCase()</a>
+						#if($SESSION_USER.fullName) $SESSION_USER.fullName 
+						#{else} $SESSION_USER.username.toUpperCase()
+						#end</a>
 				</li>
 			</ul>
 			 #end

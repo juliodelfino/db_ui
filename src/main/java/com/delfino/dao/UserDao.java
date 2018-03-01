@@ -99,6 +99,7 @@ public class UserDao {
 				.filter(u -> u.getUsername().equals(user.getUsername()))
 				.findFirst().get();
 		dbUser.setAdmin(user.isAdmin());
+		dbUser.setFullName(user.getFullName());
 		if (!StringUtils.isEmpty(user.getPassword())) {
 			dbUser.setPassword(hashText(user.getPassword()));
 		}

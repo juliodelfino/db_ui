@@ -24,6 +24,7 @@ $(document).ready(function() {
         "autoWidth": false,
 		dom: 'Bfrtip',
 		"columns":[{"data":"username"},
+		           {"data":"fullName"},
 		           {"data":"admin"},
 		           {"data":null, "defaultContent":'<span ' +
 					'class="btn btn-xs btn-default edit-user-btn pull-right"> <i ' +
@@ -77,6 +78,7 @@ function initTableActions() {
 	  		result = JSON.parse(result);
 	  		user = result.user;
 	  		$('#user-info-dialog input[name=username]').val(user.username);
+	  		$('#user-info-dialog input[name=fullName]').val(user.fullName);
 	  		$('#user-info-dialog input[name=admin]').prop('checked', user.admin);
   			$('#db-options input').prop('checked', false);
   			$.each(result.dbList, function(i, val){

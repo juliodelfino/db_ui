@@ -1,45 +1,52 @@
-	<div class="form-group">
-		<label class="control-label col-sm-2" for="username-box">Username</label>
-		<div class="col-sm-10">
-			<input type="text" id="username-box" name="username"
-				class="form-control" placeholder="Username" required autofocus />
-		</div>
-	</div>
 
-	<div class="form-group">
-		<label class="control-label col-sm-2" for="password-box"
-			class="form-label">Password</label>
-		<div class="col-sm-10">
-			<input type="password" id="password-box" name="password"
-				class="form-control" placeholder="Password" />
-		</div>
+<div class="form-group">
+	<label class="control-label col-sm-2" for="username-box">Username</label>
+	<div class="col-sm-10">
+		<input type="text" id="username-box" name="username"
+			class="form-control" placeholder="Username" required autofocus />
 	</div>
+</div>
 
-	<div class="form-group">
-
-		<label class="control-label col-sm-2" for="admin-box">Admin</label>
-		<div class="col-sm-10">
-			<input type="checkbox" id="admin-box" name="admin" value="true"
-				required />
-		</div>
+<div class="form-group">
+	<label class="control-label col-sm-2" for="password-box"
+		class="form-label">Password</label>
+	<div class="col-sm-10">
+		<input type="password" id="password-box" name="password"
+			class="form-control" placeholder="Password" />
 	</div>
-	
-	<hr />
-		<div class="form-group">
+</div>
 
-		<label class="control-label col-sm-2" for="user-db-box">DB Access</label>
-			<div class="pre-scrollable" style="max-height: 150px">
-			<ul class="columns col-sm-10" style="list-style: none" id="db-options">
-				#foreach( $db in $dbs )
-                   <li>
-                   		<span style="">
-                       <a href="#" class="small" tabIndex="-1">
-                       <input type="checkbox" id="db-$db.connId" value="$db.connId" />
-                       &nbsp;<label for="db-$db.connId">$db.connectionName</label> </a>
-                   		</span>
-                   </li>
-                #end
-		
-             </ul>
-             </div>
+<div class="form-group">
+	<label class="control-label col-sm-2" for="username-box">Full name</label>
+	<div class="col-sm-10">
+		<input type="text" id="fullname-box" name="fullName"
+			class="form-control" placeholder="Full name" required autofocus />
 	</div>
+</div>
+
+<div class="form-group">
+
+	<label class="control-label col-sm-2" for="admin-box">Admin</label>
+	<div class="col-sm-10">
+		<input type="checkbox" id="admin-box" name="admin" value="true"
+			required />
+	</div>
+</div>
+
+<hr />
+<div class="form-group">
+
+	<label class="control-label col-sm-2" for="user-db-box">DB
+		Access</label>
+	<div class="pre-scrollable" style="max-height: 150px">
+		<ul class="columns col-sm-10" style="list-style: none" id="db-options">
+			#foreach( $db in $dbs )
+			<li><span style=""> <a href="#" class="small"
+					tabIndex="-1"> <input type="checkbox" id="db-$db.connId"
+						value="$db.connId" /> &nbsp;<label for="db-$db.connId">$db.connectionName</label>
+				</a>
+			</span></li> #end
+
+		</ul>
+	</div>
+</div>
