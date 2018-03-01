@@ -47,10 +47,9 @@ This application boots up in around 1000 milliseconds!
 
 ### Ruby on Rails framework concepts
 First of all, this is a 100% Java project. 
-For your info, Rails framework is so easy to use, you can build a running website in less than an hour! If you're familiar with coding in Ruby on Rails, you will easily get to know how this application is being built using their concepts.
+But I really find Rails framework so easy to use, I can build a running website in less than an hour! If you're familiar with coding in Ruby on Rails, you will easily get to know how this application is being built using their concepts.
 
 Example: Creating a Database page. Note that the related files/resources are consistently linked with 'db' keyword.
-
 Relevant files:
   - Route: http://website:3001/db
   - Maps to Controller: DbController
