@@ -8,19 +8,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.delfino.model.Column;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
-public class ResultSetAdaptor implements Adaptor<ResultSet, String> {
-
-    private Gson gson = new GsonBuilder().create();
+public class ResultSetAdaptor implements Adaptor<ResultSet, Map> {
 
     public ResultSetAdaptor() {
     }
     
-    public String convert(ResultSet resultSet) throws SQLException, JsonProcessingException {
+    public Map convert(ResultSet resultSet) throws SQLException, JsonProcessingException {
 
         List<Column> columns = new ArrayList<Column>();
         List data = new ArrayList<>();
@@ -42,9 +38,10 @@ public class ResultSetAdaptor implements Adaptor<ResultSet, String> {
         }
 
         Map resultMap = new HashMap();
+        //structure is based on expected JSON model of jQuery's dataTables
         resultMap.put("columns", columns);
         resultMap.put("data", data);
 
-        return gson.toJson(resultMap);
+        return resultMap;
     }
 }

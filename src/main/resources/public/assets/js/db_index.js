@@ -1,6 +1,7 @@
 
 $(document).ready(function() {
 
+	$.getScript('/assets/js/conn_info_dialog.js');
 	initTableActions('div');
 });
 
@@ -21,6 +22,7 @@ function initTableActions(tabPanel) {
 			$('#conn-info-dialog').modal('show');
 	  	});
 	});
+	
 	
 	$('.delete-dbinfo-btn').click(function(){
 

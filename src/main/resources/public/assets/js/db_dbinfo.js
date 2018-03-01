@@ -7,6 +7,7 @@ var dbConnId = null;
 
 $(document).ready(function() {
 
+	$.getScript('/assets/js/conn_info_dialog.js');
 	dbConnId = getUrlVars()["id"];
 	initTableActions('div');
 

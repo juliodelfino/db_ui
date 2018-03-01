@@ -52,6 +52,8 @@ public class DbInfoDao {
 	public boolean update(DbInfo dbInfoUpdate, String userId) {
 
 		DbInfo dbInfo = getDb(dbInfoUpdate.getConnId(), userId);
+		dbInfoUpdate.setUrl(dbInfo.getUrl());
+		dbInfoUpdate.setDriver(dbInfo.getDriver());
 		dbInfoUpdate.setUsername(dbInfo.getUsername());
 		dbInfoUpdate.setPassword(dbInfo.getPassword());
 		jsonDb.get().getDatabases().put(dbInfoUpdate.getConnId(), dbInfoUpdate);

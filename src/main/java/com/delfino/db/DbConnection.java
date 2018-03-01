@@ -3,9 +3,12 @@ package com.delfino.db;
 import com.delfino.adaptor.ExceptionAdaptor;
 import com.delfino.adaptor.ResultSetAdaptor;
 import com.delfino.main.Application;
+import com.delfino.model.Column;
 import com.delfino.model.DbInfo;
 import com.delfino.model.TableInfo;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -14,6 +17,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -28,6 +32,7 @@ public class DbConnection {
     private static final Logger LOGGER = LoggerFactory.getLogger(DbConnection.class);
     private ResultSetAdaptor adaptor = new ResultSetAdaptor();
     private ExceptionAdaptor exAdaptor = new ExceptionAdaptor();
+    private Gson gson = new GsonBuilder().create();
     private DbInfo dbInfo;
     Connection conn = null;
 
@@ -52,7 +57,7 @@ public class DbConnection {
         try {
             Statement stmt = getConnection().createStatement();
             rs = stmt.executeQuery(sql);
-            result = adaptor.convert(rs);
+            result = gson.toJson(adaptor.convert(rs));
         } catch(Exception ex) {
             result = exAdaptor.convert(ex);
         }
@@ -136,10 +141,37 @@ public class DbConnection {
         DatabaseMetaData md = getConnection().getMetaData();
         ResultSet rs = md.getColumns(null, null, table, "%");
         try {
-			return adaptor.convert(rs);
+			Map map = adaptor.convert(rs);
+			map = filterByColumns(map, 
+				Arrays.asList("COLUMN_NAME", "TYPE_NAME", "COLUMN_SIZE", "IS_NULLABLE"));
+			return gson.toJson(map);
 		} catch (JsonProcessingException e) {
 			return exAdaptor.convert(e);
 		}
+	}
+
+	private Map filterByColumns(Map map, List<String> filterCols) {
+		Map newMap = new HashMap();
+		List newCols = new ArrayList();
+		List newData = new ArrayList();
+		List<Column> cols = (List) map.get("columns");
+		List<List> data = (List) map.get("data");
+		List<Integer> colIndices = new ArrayList();
+		for (int i=0; i<cols.size(); i++) {
+			Column col = cols.get(i);
+			if (filterCols.contains(col.title)) {
+				newCols.add(col);
+				colIndices.add(i);
+			}
+		}
+		for (List row : data) {
+			newData.add(colIndices.stream().map(i -> row.get(i))
+				.collect(Collectors.toList()));
+		}
+		
+		newMap.put("columns", newCols);
+		newMap.put("data", newData);
+		return newMap;
 	}
 
 	public void close() {
