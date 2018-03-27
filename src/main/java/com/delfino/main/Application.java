@@ -50,10 +50,10 @@ public class Application {
 		ErrorController errorHandlers = new ErrorController();
 		internalServerError(errorHandlers.internalServerError);
 		notFound(errorHandlers.notFound);
-		exception(AppException.class, (ex, req, res) -> {
+		exception(Exception.class, (ex, req, res) -> {
 			try {
 				req.attribute("exception", ex);
-				errorHandlers.internalServerError.handle(req, res);
+				res.body(errorHandlers.internalServerError.handle(req, res).toString());
 			} catch (Exception e1) {
 				LOGGER.error(e1.getMessage(), e1);
 			}

@@ -31,6 +31,7 @@ public class TableController extends ControllerBase {
 	};
 
 	public Route getIndex = (req, res) -> {
+
 		String userId = RequestUtil.getUsername(req);
 		String connId = req.queryParams("id");
 		String tableName = req.queryParams("table");
