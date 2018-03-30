@@ -10,7 +10,7 @@ $(document).ready(function() {
 
 	dbConnId = getUrlVars()["id"];
 	initTableActions('div');
-
+	$('#modal-title').html('Row details');
 });
 
 function getUrlVars()
@@ -120,6 +120,22 @@ function updateDynamicTable(result, tabPanel) {
 			$('#myModal .modal-body').html($(this).html());
 			$('#myModal').modal('show');
 		}
+	});
+	
+	$(tabPanel + ' .dynamic-table tbody tr').dblclick(function(){
+
+		var rowData = table.row( this ).data();
+		var rowCols = table.settings().init().columns;
+		var div = $("<div>", {id: "somevalue", "class": "form-horizontal"});
+		for (i = 0; i < rowData.length; i++) { 
+			var readonly = rowCols[i].primaryKey ? "readonly='readonly'" : "";
+			div.append("<div class='form-group'><label class='control-label col-xs-3'>"
+				+ rowCols[i].title + "</label><div class='col-xs-9'><input type='text' " 
+				+ " class='form-control' " + readonly + " value='" 
+				+ rowData[i] + "' /></div></div>");
+		}
+		$('#myModal .modal-body').html(div);
+		$('#myModal').modal('show');
 	});
 }
 

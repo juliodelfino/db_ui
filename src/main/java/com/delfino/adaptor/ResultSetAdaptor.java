@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringEscapeUtils;
+
 import com.delfino.model.Column;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -24,14 +26,19 @@ public class ResultSetAdaptor implements Adaptor<ResultSet, Map> {
         ResultSetMetaData metaData = resultSet.getMetaData();
         for (int i = 1; i <= metaData.getColumnCount(); i++) {
             String columnName = metaData.getColumnName(i);
-            columns.add(new Column(columnName));
+            Column col = new Column(columnName);
+            col.setPrimaryKey(metaData.isAutoIncrement(i) && metaData.isNullable(i) == 0);
+            columns.add(col);
         }
 
         while (resultSet.next()) {
             List row = new ArrayList<>();
 
             for (int i = 1; i <= metaData.getColumnCount(); i++) {
-                row.add(resultSet.getObject(i));
+            	Object value = resultSet.getObject(i);
+            	value = value instanceof String ? 
+            		StringEscapeUtils.escapeHtml((String)value) : value;
+                row.add(value);
             }
 
             data.add(row);

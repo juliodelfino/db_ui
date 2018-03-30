@@ -143,7 +143,8 @@ public class DbConnection {
         try {
 			Map map = adaptor.convert(rs);
 			map = filterByColumns(map, 
-				Arrays.asList("COLUMN_NAME", "TYPE_NAME", "COLUMN_SIZE", "IS_NULLABLE"));
+				Arrays.asList("COLUMN_NAME", "TYPE_NAME", "COLUMN_SIZE", 
+						"IS_NULLABLE", "ORDINAL_POSITION", "IS_AUTOINCREMENT"));
 			return gson.toJson(map);
 		} catch (JsonProcessingException e) {
 			return exAdaptor.convert(e);
