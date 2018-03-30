@@ -10,7 +10,7 @@ $(document).ready(function() {
 
 	dbConnId = getUrlVars()["id"];
 	initTableActions('div');
-	$('#modal-title').html('Row details');
+	$('#modal-title').html($('#db-table-name').text() + ' - Row Details');
 });
 
 function getUrlVars()

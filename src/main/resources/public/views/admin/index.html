@@ -21,6 +21,7 @@
 			<tr>
 				<th>Driver</th>
 				<th>URL</th>
+				<th>Users</th>
 				<th></th>
 			</tr>
 		</thead>
@@ -28,7 +29,8 @@
 			#foreach( $db in $dbs )
 			<tr>
 				<td class="col-xs-2">$db.connectionName</td>
-				<td class="col-xs-8">$db.url</td>
+				<td class="col-xs-6">$db.url</td>
+				<td class="col-xs-2">$db_users.get($db.connId)</td>
 				<td class="col btn-group pull-right">
 				<span
 					class="btn btn-xs btn-default edit-db-btn"> <i

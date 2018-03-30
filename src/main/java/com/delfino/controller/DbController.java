@@ -1,5 +1,7 @@
 package com.delfino.controller;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.beanutils.BeanUtils;
@@ -73,7 +75,9 @@ public class DbController extends ControllerBase {
 	//new methods
 	public Route getIndex = (req, res) -> {
 		String userId = RequestUtil.getUsername(req);
-		req.attribute("dbList", dbDao.getAll(userId));
+		List<DbInfo> userDbs = new ArrayList(dbDao.getAll(userId).values());
+		userDbs.sort((c1, c2) -> c1.getConnectionName().compareTo(c2.getConnectionName()));
+		req.attribute("dbList", userDbs);
 		return renderContent(req, "db/index.html");
 	};
 

@@ -52,6 +52,7 @@ public class Application {
 		notFound(errorHandlers.notFound);
 		exception(Exception.class, (ex, req, res) -> {
 			try {
+				LOGGER.error(ex.getMessage(), ex);
 				req.attribute("exception", ex);
 				res.body(errorHandlers.internalServerError.handle(req, res).toString());
 			} catch (Exception e1) {

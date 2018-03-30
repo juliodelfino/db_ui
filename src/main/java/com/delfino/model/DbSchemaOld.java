@@ -1,19 +1,20 @@
 package com.delfino.model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class DbSchema {
+public class DbSchemaOld {
 
-	private Map<String, User> users = new HashMap<>();
+	private List<User> users = new ArrayList<>();
 	private Map<String, List> userDbMap = new HashMap<>();
 	private Map<String, DbInfo> databases = new HashMap<>();
 
-	public Map<String, User> getUsers() {
+	public List<User> getUsers() {
 		return users;
 	}
-	public void setUsers(Map<String, User> users) {
+	public void setUsers(List<User> users) {
 		this.users = users;
 	}
 	public Map<String, List> getUserDbMap() {

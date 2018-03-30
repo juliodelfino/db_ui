@@ -6,6 +6,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,12 +22,14 @@ import spark.utils.StringUtils;
 public class UserDao {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AppProperties.class);
-
+	private UserDbDao userDbDao = new UserDbDao();
+	
 	private JsonDb<DbSchema> jsonDb = JsonDb.getInstance(AppProperties.get("data_dir"), DbSchema.class);
 
 	public UserDao() {
 		if (jsonDb.get().getUsers().isEmpty()) {
-			jsonDb.get().getUsers().add(createRootUser());
+			User root = createRootUser();
+			jsonDb.get().getUsers().put(root.getUsername(), root);
 			jsonDb.save();
 		}
 	}
@@ -41,8 +44,14 @@ public class UserDao {
 
 	public List<User> getAll() {
 
-		List<User> users = jsonDb.get().getUsers();
-		return users != null ? users : new ArrayList();
+		return new ArrayList(jsonDb.get().getUsers().values());
+	}
+
+	public List<User> getDbUsers(String connId) {
+		
+		return userDbDao.getDbUserList(connId).stream()
+			.map(id -> jsonDb.get().getUsers().get(id))
+			.collect(Collectors.toList());
 	}
 
 	public User validate(User user) {
@@ -115,7 +124,7 @@ public class UserDao {
 
 	public boolean delete(String username) {
 		jsonDb.get().getUserDbMap().remove(username);
-		jsonDb.get().getUsers().removeIf(u -> u.getUsername().equals(username));
+		jsonDb.get().getUsers().remove(username);
 		return jsonDb.save();
 	}
 

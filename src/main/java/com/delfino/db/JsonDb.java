@@ -75,7 +75,7 @@ public class JsonDb<T> {
 
 	//utility methods
 
-	private static <T> T loadJson(String dataFile, Class<T> jsonDataModel) {
+	public static <T> T loadJson(String dataFile, Class<T> jsonDataModel) {
         File f = new File(dataFile);
         if (f.exists()) {
             try (JsonReader reader = new JsonReader(new FileReader(f))) {
@@ -96,7 +96,7 @@ public class JsonDb<T> {
 		}
 	}
 
-	private static <T> boolean saveJson(T dataCache, String dataFile) {
+	public static <T> boolean saveJson(T dataCache, String dataFile) {
         try {
             FileUtils.write(new File(dataFile), GSON.toJson(dataCache));
             return true;

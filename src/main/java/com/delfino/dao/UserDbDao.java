@@ -2,6 +2,8 @@ package com.delfino.dao;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import com.delfino.model.DbSchema;
 import com.delfino.util.AppProperties;
@@ -20,8 +22,24 @@ public class UserDbDao {
 		jsonDb.save();
 	}
 
+	/**
+	 * Gets a list of database connIds from the specified userId.
+	 * @param userId
+	 * @return
+	 */
 	public List<String> getUserDbList(String userId) {
 		List<String> dbList = jsonDb.get().getUserDbMap().get(userId);
 		return dbList == null ? new ArrayList() : dbList;
+	}
+	
+	/**
+	 * Gets a list of user IDs from the specified database connId.
+	 * @param connId
+	 * @return
+	 */
+	public List<String> getDbUserList(String connId) {
+		return jsonDb.get().getUserDbMap().entrySet().stream()
+				.filter(e -> e.getValue().contains(connId)).map(Entry::getKey)
+				.collect(Collectors.toList());
 	}
 }
