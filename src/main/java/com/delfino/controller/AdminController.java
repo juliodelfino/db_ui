@@ -16,7 +16,6 @@ public class AdminController extends ControllerBase {
 	private UserDao userDao = new UserDao();
 	private DbInfoDao dbInfoDao = new DbInfoDao();
 	
-	@AppRoute(skipAuthentication = true)
 	public Route getIndex = (req, res) -> {
 		List<DbInfo> dbList = dbInfoDao.getAll();
 		req.attribute("dbs", dbList);

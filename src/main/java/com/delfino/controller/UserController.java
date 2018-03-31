@@ -1,8 +1,7 @@
 package com.delfino.controller;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.delfino.adaptor.ExceptionAdaptor;
@@ -112,6 +111,6 @@ public class UserController extends ControllerBase {
 	
 	public Route getList = (req, res) -> {
 		
-		return listAdaptor.convert(userDao.getAll());
+		return listAdaptor.convert(new ArrayList(userDao.getAll()));
 	};
 }

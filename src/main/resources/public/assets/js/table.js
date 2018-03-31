@@ -129,10 +129,11 @@ function updateDynamicTable(result, tabPanel) {
 		var div = $("<div>", {id: "somevalue", "class": "form-horizontal"});
 		for (i = 0; i < rowData.length; i++) { 
 			var readonly = rowCols[i].primaryKey ? "readonly='readonly'" : "";
+			var cellData = rowData[i] == null ? "" : rowData[i];
 			div.append("<div class='form-group'><label class='control-label col-xs-3'>"
 				+ rowCols[i].title + "</label><div class='col-xs-9'><input type='text' " 
 				+ " class='form-control' " + readonly + " value='" 
-				+ rowData[i] + "' /></div></div>");
+				+ cellData + "' /></div></div>");
 		}
 		$('#myModal .modal-body').html(div);
 		$('#myModal').modal('show');

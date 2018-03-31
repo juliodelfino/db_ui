@@ -5,6 +5,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,9 +43,9 @@ public class UserDao {
 		return root;
 	}
 
-	public List<User> getAll() {
+	public Collection<User> getAll() {
 
-		return new ArrayList(jsonDb.get().getUsers().values());
+		return jsonDb.get().getUsers().values();
 	}
 
 	public List<User> getDbUsers(String connId) {
@@ -73,7 +74,7 @@ public class UserDao {
 	}
 
 	public boolean add(User user) {
-		List<User> users = getAll();
+		Collection<User> users = getAll();
 		if (users.stream().anyMatch(u -> 
 			u.getUsername().equalsIgnoreCase(user.getUsername()))) {
 			
@@ -82,7 +83,7 @@ public class UserDao {
 			return false;
 		}
 		user.setPassword(hashText(user.getPassword()));
-		users.add(user);
+		jsonDb.get().getUsers().put(user.getUsername(), user);
 		return jsonDb.save();
 	}
 
