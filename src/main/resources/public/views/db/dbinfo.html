@@ -34,7 +34,7 @@
 				<h4 style="font-style: italic; color: #bbb">TABLES ($tables.size())</h4>
 			</div>
 			#foreach( $tbl in $tables )
-			<div class="col-xs-4">
+			<div class="col-md-4 col-sm-6 col-xs-12">
 				<div class="db-info-box row">
 					<div class="cell">
 						<a href="/table?id=$dbInfo.connId&table=$tbl.name"
@@ -42,12 +42,12 @@
 					</div>
 					<div class="cell db-info-content">
 		
-						<div class="col-xs-3">
+						<div class="col-xs-4">
 						<a href="/table?id=$dbInfo.connId&table=$tbl.name">
 							<img src="/assets/images/db/table.png" />
 						</a>
 						</div>
-						<div class="col-xs-9">
+						<div class="col-xs-8">
 							<div><span class="text-muted">Catalog:</span> $!tbl.tableCatalog</div>
 							<div><span class="text-muted">Schema:</span> $!db.tableSchema</div>
 							<p><span class="text-muted">Row count:</span> $tbl.rowCount</p>
