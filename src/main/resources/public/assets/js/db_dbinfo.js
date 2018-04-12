@@ -10,6 +10,12 @@ $(document).ready(function() {
 	$.getScript('/assets/js/conn_info_dialog.js');
 	dbConnId = getUrlVars()["id"];
 	initTableActions('div');
+	
+	$('#dbtree').treeview({
+		data: dbtree_data,
+		enableLinks: true,
+		selectedBackColor: '#5bc0de'
+	});
 
 	$('#refresh-btn').click(function(){
 		window.location.href = "/db/dbinfo?id=" + dbConnId + "&refresh=true";

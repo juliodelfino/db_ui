@@ -13,6 +13,7 @@ import com.delfino.db.DbConnection;
 import com.delfino.db.JsonDb;
 import com.delfino.model.DbInfo;
 import com.delfino.model.DbSchema;
+import com.delfino.model.TreeNode;
 import com.delfino.util.AppProperties;
 
 import spark.utils.StringUtils;
@@ -87,5 +88,17 @@ public class DbInfoDao {
 	public DbConnection connect(DbInfo dbInfo) throws SQLException {
 
 		return new DbConnection(dbInfo);
+	}
+
+	public List getDbTree(String userId) {
+		return getAll(userId).values()
+			.stream().map(db -> { 
+				TreeNode node = new TreeNode(db.getConnId(), db.getConnectionName(), null);
+				node.setNodes(db.getTables().values()
+					.stream().map(t -> new TreeNode(db.getConnId() + t.getName(), t.getName(), node))
+					.collect(Collectors.toList()));
+				return node;
+			}).sorted((n1, n2) -> n1.getText().compareTo(n2.getText()))
+			.collect(Collectors.toList());
 	}
 }

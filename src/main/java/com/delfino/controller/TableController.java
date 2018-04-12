@@ -1,18 +1,22 @@
 package com.delfino.controller;
 
-import java.util.Arrays;
-import java.util.Map;
+import java.util.List;
 
 import com.delfino.dao.DbInfoDao;
 import com.delfino.model.DbInfo;
 import com.delfino.model.TableInfo;
+import com.delfino.model.TreeNode;
 import com.delfino.util.AppException;
 import com.delfino.util.RequestUtil;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import spark.Route;
 
 public class TableController extends ControllerBase {
 
 	private DbInfoDao dbDao = new DbInfoDao();
+	private Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
 	public Route getQuery = (req, res) -> {
 
@@ -49,6 +53,14 @@ public class TableController extends ControllerBase {
 			}
 		}
 		req.attribute("table", tblInfo);
+		
+		List<TreeNode> list = dbDao.getDbTree(userId);
+		TreeNode selectedDb = list.stream().filter(n -> n.getId().equals(connId)).findFirst().get();    
+		TreeNode selectedNode = selectedDb.getNodes().stream().filter(n -> n.getText().equals(tableName)).findFirst().get();
+		selectedDb.setState("expanded", true);
+		selectedDb.setState("selected", true);
+		selectedNode.setState("selected", true);
+		req.attribute("DB_TREE_DATA", gson.toJson(list));
 		return renderContent(req, "table/index.html");
 	};
 }

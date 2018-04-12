@@ -12,6 +12,7 @@ import com.delfino.adaptor.ExceptionAdaptor;
 import com.delfino.dao.DbInfoDao;
 import com.delfino.main.Application;
 import com.delfino.model.DbInfo;
+import com.delfino.model.TreeNode;
 import com.delfino.util.AppException;
 import com.delfino.util.RequestUtil;
 import com.delfino.util.ViewUtil;
@@ -25,7 +26,7 @@ public class DbController extends ControllerBase {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Application.class);
 
 	private DbInfoDao dbDao = new DbInfoDao();
-	private Gson gson = new GsonBuilder().setPrettyPrinting().create();
+	private Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 	private ExceptionAdaptor exAdaptor = new ExceptionAdaptor();
 
 	public Route postConnectDb = (req, res) -> {
@@ -78,6 +79,7 @@ public class DbController extends ControllerBase {
 		List<DbInfo> userDbs = new ArrayList(dbDao.getAll(userId).values());
 		userDbs.sort((c1, c2) -> c1.getConnectionName().compareTo(c2.getConnectionName()));
 		req.attribute("dbList", userDbs);
+		req.attribute("DB_TREE_DATA", gson.toJson(dbDao.getDbTree(userId)));
 		return renderContent(req, "db/index.html");
 	};
 
@@ -100,6 +102,11 @@ public class DbController extends ControllerBase {
 		}
 		
 		req.attribute("tables", meta);
+		List<TreeNode> list = dbDao.getDbTree(userId);
+		TreeNode selected = list.stream().filter(n -> n.getId().equals(connId)).findFirst().get();    
+		selected.setState("expanded", true);
+		selected.setState("selected", true);
+		req.attribute("DB_TREE_DATA", gson.toJson(list));
 		dbInfo.setStatus("Active");
 		return renderContent(req, "db/dbinfo.html");
 	};

@@ -2,10 +2,24 @@
 	margin-top: 5px;
 }
 
-tbody tr:nth-child(even):hover td{
+.dataTable tbody tr:nth-child(even):hover td{
     background-color: #b8eaf9;
 }
 
-tbody tr:nth-child(odd):hover td {
+.dataTable tbody tr:nth-child(odd):hover td {
     background-color: #b8eaf9;
+}
+
+
+#dbtree {
+	overflow: auto;
+}
+
+#dbtree .list-group {
+	width: 300px
+}
+
+.breadcrumb {
+	margin-bottom: 5px !important;
+	padding: 0;
 }

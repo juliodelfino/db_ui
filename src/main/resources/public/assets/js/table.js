@@ -11,6 +11,14 @@ $(document).ready(function() {
 	dbConnId = getUrlVars()["id"];
 	initTableActions('div');
 	$('#modal-title').html($('#db-table-name').text() + ' - Row Details');
+	
+	$('#dbtree').treeview({
+		data: dbtree_data,
+		enableLinks: true,
+		selectedBackColor: '#5bc0de'
+	});
+	
+	$('.q-alldata-btn').trigger('click');
 });
 
 function getUrlVars()
@@ -41,7 +49,7 @@ function initTableActions(tabPanel) {
 	});
 	
 	$(tabPanel + ' .q-alldata-btn').click(function(){
-		var sql = 'SELECT * FROM ' + tableName;
+		var sql = 'SELECT * FROM ' + tableName + ' LIMIT 30';
 		$(tabPanel + ' .qbox').val(sql);
 		$(tabPanel + ' .exec-sql-form').trigger('submit');
 	});

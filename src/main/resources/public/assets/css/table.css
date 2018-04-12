@@ -17,3 +17,7 @@ body {
 .dynamic-table tbody tr td {
   white-space:nowrap; overflow:hidden; text-overflow: ellipsis; max-width: 250px
 }
+
+.dataTables_wrapper {
+	overflow: auto;
+}
