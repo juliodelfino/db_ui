@@ -10,7 +10,6 @@
     background-color: #b8eaf9;
 }
 
-
 #dbtree {
 	overflow: auto;
 }
@@ -22,4 +21,8 @@
 .breadcrumb {
 	margin-bottom: 5px !important;
 	padding: 0;
+}
+
+.list-group-item {
+	padding: 5px 8px !important;
 }

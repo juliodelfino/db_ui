@@ -19,12 +19,11 @@ function initTableActions(tabPanel) {
 	  	$.get("/db/info", {connId: dbConnId}, function(result){
 
 	  		result = JSON.parse(result);
-	  		$('#conn-info-dialog input[name=connectionName]').val(result.connectionName);
-	  		$('#conn-info-dialog input[name=driver]').val(result.driver);
-	  		$('#conn-info-dialog input[name=url]').val(result.url);
-	  		$('#conn-info-dialog input[name=username]').val(result.username);
-	  		$('#conn-info-dialog input[name=connId]').val(result.connId);
-	  		$('#conn-info-dialog #parent-tabpanel').val(tabPanel);
+	  	    $.each(result, function(prop, value){
+	  	        $("#conn-info-dialog input[name='" + prop + "']").val(value);
+	  	     });
+	  	    
+	  		$('#conn-info-dialog .parent-tabpanel').val(tabPanel);
 			$('#conn-info-dialog').modal('show');
 	  	});
 	});

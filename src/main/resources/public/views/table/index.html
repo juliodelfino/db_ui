@@ -14,7 +14,7 @@
 				<ol class="breadcrumb">
 					<li class="breadcrumb-item"><a href="/db">Home</a></li>
 					<li class="breadcrumb-item"><a href="/db/dbinfo?id=$dbInfo.connId">$dbInfo.connectionName</a></li>
-					<li class="breadcrumb-item active" aria-current="page">$table.name</li>
+					<li class="breadcrumb-item active" id="db-table-name" aria-current="page">$table.name</li>
 				</ol>
 			</nav>
 			<div class="col-12 menu-bar">
@@ -47,6 +47,7 @@
 
 <script>
 	var dbtree_data = $DB_TREE_DATA;
+	dbtree_data.push({"text": "New DB Connection...", "href": "/db/newdbconn"});
 </script>
 
 

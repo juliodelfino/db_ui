@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,8 +37,13 @@ public class ResultSetAdaptor implements Adaptor<ResultSet, Map> {
 
             for (int i = 1; i <= metaData.getColumnCount(); i++) {
             	Object value = resultSet.getObject(i);
-            	value = value instanceof String ? 
-            		StringEscapeUtils.escapeHtml((String)value) : value;
+            	if (value instanceof byte[]) {
+            		value = Base64.getEncoder().encodeToString((byte[])value);
+            		columns.get(i-1).setBlob(true);
+            	}
+            	else if (value instanceof String) {
+            		value = StringEscapeUtils.escapeHtml((String)value);
+            	}
                 row.add(value);
             }
 

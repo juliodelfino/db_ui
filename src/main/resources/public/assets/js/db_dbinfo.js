@@ -60,7 +60,7 @@ function initTableActions(tabPanel) {
 	  		$('#conn-info-dialog input[name=url]').val(result.url);
 	  		$('#conn-info-dialog input[name=username]').val(result.username);
 	  		$('#conn-info-dialog input[name=connId]').val(result.connId);
-	  		$('#conn-info-dialog #parent-tabpanel').val(tabPanel);
+	  		$('#conn-info-dialog .parent-tabpanel').val(tabPanel);
 			$('#conn-info-dialog').modal('show');
 	  	});
 	});
