@@ -1,11 +1,9 @@
 package com.delfino.controller;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import com.delfino.adaptor.ExceptionAdaptor;
-import com.delfino.adaptor.ListAdaptor;
 import com.delfino.annotation.AppRoute;
 import com.delfino.dao.DbInfoDao;
 import com.delfino.dao.UserDao;
@@ -22,7 +20,6 @@ public class UserController extends ControllerBase {
 
 	private UserDao userDao = new UserDao();
 	private ExceptionAdaptor exAdaptor = new ExceptionAdaptor();
-	private ListAdaptor listAdaptor = new ListAdaptor();
 	private Gson gson = new GsonBuilder().setPrettyPrinting().create();
 	private DbInfoDao dbDao = new DbInfoDao();
 
@@ -107,10 +104,5 @@ public class UserController extends ControllerBase {
 		User user = RequestUtil.extract(req, User.class);
 		String[] dbAccess = req.queryParams("dbaccess").split(" ");
 		return userDao.add(user, dbAccess);
-	};
-	
-	public Route getList = (req, res) -> {
-		
-		return listAdaptor.convert(new ArrayList(userDao.getAll()));
 	};
 }

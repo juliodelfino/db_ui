@@ -13,5 +13,6 @@ public @interface AppRoute {
 
 	boolean skipAuthentication() default false;
 	HttpMethod httpMethod() default HttpMethod.get;
+	boolean requireAdmin() default false;
 
 }

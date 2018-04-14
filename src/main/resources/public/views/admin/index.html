@@ -25,26 +25,6 @@
 				<th></th>
 			</tr>
 		</thead>
-		<tbody>
-			#foreach( $db in $dbs )
-			<tr>
-				<td class="col-xs-2">$db.connectionName</td>
-				<td class="col-xs-6">$db.url</td>
-				<td class="col-xs-2">$db_users.get($db.connId)</td>
-				<td class="col btn-group pull-right">
-				<span
-					class="btn btn-xs btn-default edit-db-btn"> <i
-					class="glyphicon glyphicon-pencil"></i>
-				</span>
-				<span
-					class="btn btn-xs btn-default delete-db-btn"> <i
-					class="glyphicon glyphicon-remove"></i>
-				</span>
-				
-				</td>
-			</tr>
-			#end
-		</tbody>
 	</table>
 	
 	</div>
@@ -64,5 +44,7 @@
 	</table>
 	</div>
 </div>
+
+#parse( "/public/views/admin/db_info_dialog.html" )
 
 #parse( "/public/views/admin/user_info_dialog.html" )

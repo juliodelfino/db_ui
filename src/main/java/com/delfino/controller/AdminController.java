@@ -1,21 +1,34 @@
 package com.delfino.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.beanutils.BeanUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.delfino.adaptor.ListAdaptor;
 import com.delfino.annotation.AppRoute;
 import com.delfino.dao.DbInfoDao;
 import com.delfino.dao.UserDao;
+import com.delfino.dao.UserDbDao;
 import com.delfino.model.DbInfo;
+import com.delfino.model.DbWithUsers;
 import com.delfino.model.User;
 
 import spark.Route;
 
 public class AdminController extends ControllerBase {
-
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(AdminController.class);
+    
 	private UserDao userDao = new UserDao();
 	private DbInfoDao dbInfoDao = new DbInfoDao();
+	private UserDbDao userDbDao = new UserDbDao();
+	private ListAdaptor listAdaptor = new ListAdaptor();
 	
+	@AppRoute(requireAdmin=true)
 	public Route getIndex = (req, res) -> {
 		List<DbInfo> dbList = dbInfoDao.getAll();
 		req.attribute("dbs", dbList);
@@ -26,5 +39,28 @@ public class AdminController extends ControllerBase {
 					.collect(Collectors.toList())
 			)));
 		return renderContent(req, "admin/index.html");
+	};
+
+	@AppRoute(requireAdmin=true)
+	public Route getUserlist = (req, res) -> {
+		
+		return listAdaptor.convert(new ArrayList(userDao.getAll()));
+	};
+
+	@AppRoute(requireAdmin=true)
+	public Route getDblist = (req, res) -> {
+		
+		List dbs = dbInfoDao.getAll().stream().map(db -> {
+				DbWithUsers dbu = new DbWithUsers();
+				try {
+					BeanUtils.copyProperties(dbu, db);
+				} catch(ReflectiveOperationException ex) {
+					LOGGER.error(ex.getMessage(), ex);
+				}
+				dbu.setUsers(userDbDao.getDbUserList(db.getConnId()));
+				return dbu;
+			})
+			.collect(Collectors.toList());
+		return listAdaptor.convert(dbs);
 	};
 }

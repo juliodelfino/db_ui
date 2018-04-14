@@ -13,6 +13,7 @@ import static spark.Spark.staticFiles;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.net.NoRouteToHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,6 +28,7 @@ import com.delfino.controller.DbController;
 import com.delfino.controller.ErrorController;
 import com.delfino.controller.UserController;
 import com.delfino.filter.RequestDataFilter;
+import com.delfino.filter.RequireAdminFilter;
 import com.delfino.filter.SkipAuthFilter;
 import com.delfino.util.AppException;
 import com.delfino.util.AppProperties;
@@ -50,6 +52,14 @@ public class Application {
 		ErrorController errorHandlers = new ErrorController();
 		internalServerError(errorHandlers.internalServerError);
 		notFound(errorHandlers.notFound);
+		exception(NoRouteToHostException.class, (ex, req, res) -> {
+			try {
+				LOGGER.error(ex.getMessage(), ex);
+				res.body(errorHandlers.notFound.handle(req, res).toString());
+			} catch (Exception e1) {
+				LOGGER.error(e1.getMessage(), e1);
+			}
+		});
 		exception(Exception.class, (ex, req, res) -> {
 			try {
 				LOGGER.error(ex.getMessage(), ex);
@@ -74,7 +84,11 @@ public class Application {
 		List<String> skipAuthPaths = routes.stream()
 				.filter(r -> r.appRoute != null && r.appRoute.skipAuthentication())
 				.map(r -> r.path).collect(Collectors.toList());
-		before(new SkipAuthFilter(skipAuthPaths), new RequestDataFilter());
+		List<String> adminPaths = routes.stream()
+				.filter(r -> r.appRoute != null && r.appRoute.requireAdmin())
+				.map(r -> r.path).collect(Collectors.toList());
+		before(new SkipAuthFilter(skipAuthPaths), new RequireAdminFilter(adminPaths),
+				new RequestDataFilter());
 		
 		registerRoutes(routes);
 		get("/favicon.ico", "image/x-icon", 
