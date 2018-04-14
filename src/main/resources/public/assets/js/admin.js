@@ -10,6 +10,7 @@ $(document).ready(function() {
         ajax: '/admin/dblist',
         rowId: 'connId',
         initComplete: initDbTableActions,
+        "autoWidth": false,
 		dom: 'Bfrtip',
 		"columns":[{"data":"connectionName"},
 		           {"data":"url"},

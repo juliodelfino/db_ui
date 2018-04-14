@@ -1,0 +1,45 @@
+<form class="form-horizontal row">
+	<div class="form-group">
+		<label class="control-label col-sm-2" for="app-name-box">Application Name</label>
+		<div class="col-sm-10">
+			<input type="text" id="app-name-box" name="appName"
+				class="form-control" placeholder="Application Name" required autofocus 
+				value="${application_name}" />
+		</div>
+	</div>
+
+
+	<div class="form-group">
+
+		<label class="control-label col-sm-2" for="app-data-box">Application Data</label>
+		<div class="col-sm-10">
+			<input type="text" id="app-data-box" name="appData" class="form-control"
+				placeholder="Application Data" value="${data_dir_absolute}"  />
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label class="control-label col-sm-2" for="app-port-box">Port</label>
+		<div class="col-sm-10">
+			<input type="text" id="app-port-box" name="appPort"
+				class="form-control" placeholder="Port" value="${port}" />
+		</div>
+	</div>
+	
+	<hr />
+
+	<div class="form-group">
+		<label class="control-label col-sm-2" for="jdbc-drivers-box">Supported JDBC Drivers</label>
+		<div class="col-sm-10">
+		
+			<ul>
+				#foreach( $driver in $jdbc_drivers )
+					<li>$driver</li>
+				#end
+			</ul>
+			<div class="alert alert-warning">
+				You can download your needed JDBC driver jars, place them in the lib folder, 
+			and restart this application.</div>
+		</div>
+	</div>
+</form>	

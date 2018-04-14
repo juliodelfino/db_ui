@@ -11,14 +11,18 @@ import static spark.Spark.port;
 import static spark.Spark.post;
 import static spark.Spark.staticFiles;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.NoRouteToHostException;
+import java.sql.Driver;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,6 +97,14 @@ public class Application {
 		registerRoutes(routes);
 		get("/favicon.ico", "image/x-icon", 
 				(req, res) -> IOUtils.toString(Spark.class.getResourceAsStream("/public/assets/images/favicon.ico")));
+	
+		String dataDir = new File(AppProperties.get("data_dir")).getAbsolutePath();
+		AppProperties.getInstance().put("data_dir_absolute", dataDir);
+		
+		String packageRoot = Application.class.getPackage().getName().replace(".main", "");
+		Reflections reflections = new Reflections();
+		Set<Class<? extends Driver>> drivers = reflections.getSubTypesOf(Driver.class);
+		AppProperties.getInstance().put("jdbc_drivers", drivers);
 	}
 
 	private static void registerRoutes(List<RouteInfo> routes) {
