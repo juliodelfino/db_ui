@@ -6,8 +6,13 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import javax.naming.Context;
+import javax.naming.directory.DirContext;
+import javax.naming.directory.InitialDirContext;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +22,10 @@ import com.delfino.model.DbSchema;
 import com.delfino.model.User;
 import com.delfino.util.AppException;
 import com.delfino.util.AppProperties;
+import com.delfino.util.RequestUtil;
+import com.unboundid.ldap.sdk.LDAPConnection;
+import com.unboundid.ldap.sdk.LDAPException;
+import com.unboundid.ldap.sdk.SimpleBindRequest;
 
 import spark.utils.StringUtils;
 
@@ -60,6 +69,50 @@ public class UserDao {
 		String hashedPassword = hashText(user.getPassword());
 		return getAll().stream().filter(u -> u.getUsername().equalsIgnoreCase(user.getUsername())
 				&& u.getPassword().equals(hashedPassword)).findFirst().orElse(null);
+	}
+	
+	public User validateViaLdap(User user) {
+		
+		try {
+			LDAPConnection ldapConn = new LDAPConnection("com.example.local", 389, "Administrator@com.example.local", "admin");
+			SimpleBindRequest adminBindRequest = new SimpleBindRequest(user.getUsername(), user.getPassword());
+			ldapConn.bind(adminBindRequest);
+		} catch (LDAPException e) {
+	    	LOGGER.warn("Login via LDAP failed for user " + user, e);
+			return null;
+		}
+		user.setPassword(hashText(user.getPassword()));
+		return user;
+	}
+	
+	public User validateViaLdap_2(User user) {
+		try
+	    {
+	        // Set up the environment for creating the initial context
+	        Hashtable<String, String> env = new Hashtable<String, String>();
+	        env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
+	        env.put(Context.PROVIDER_URL, AppProperties.get("ldap_server"));
+	        // 
+	        env.put(Context.SECURITY_AUTHENTICATION, "simple");
+	        env.put(Context.SECURITY_PRINCIPAL, user.getUsername()); //we have 2 \\ because it's a escape char
+	        env.put(Context.SECURITY_CREDENTIALS, user.getPassword());
+
+	        // Create the initial context
+
+	        DirContext ctx = new InitialDirContext(env);
+	        boolean result = ctx != null;
+
+	        if(result) {
+	            ctx.close();
+	            user.setPassword(hashText(user.getPassword()));
+	            return user;
+	        }
+	    }
+	    catch (Exception e)
+	    {      
+	    	LOGGER.warn("Login via LDAP failed for user " + user, e);
+	    }
+		return null;
 	}
 
 	private static String hashText(String text) {
