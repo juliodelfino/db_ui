@@ -2,42 +2,58 @@
 <div class="row">
 
 	<div class="row">
-		<table><tr>
-		<td>
-			<img src="/assets/images/db/table.png" 
-				style="width: 120px; margin: 0 10px" />
-		</td>
-		<td width="100%">
-			<h2>$table.name</h2>
+		<table>
+			<tr>
+				<td><img src="/assets/images/db/table.png"
+					style="width: 120px; margin: 0 10px" /></td>
+				<td width="100%">
+					<h2>$table.name</h2>
 
-			<nav aria-label="breadcrumb">
-				<ol class="breadcrumb">
-					<li class="breadcrumb-item"><a href="/db">Home</a></li>
-					<li class="breadcrumb-item"><a href="/db/dbinfo?id=$dbInfo.connId">$dbInfo.connectionName</a></li>
-					<li class="breadcrumb-item active" id="db-table-name" aria-current="page">$table.name</li>
-				</ol>
-			</nav>
-			<div class="col-12 menu-bar">
-				<button class="btn btn-sm btn-info q-columns-btn">COLUMNS</button>
-				<button class="btn btn-sm btn-info q-rowcount-btn">ROW COUNT</button>
-				<button class="btn btn-sm btn-info q-alldata-btn">ALL DATA</button>
-			</div>
-		</td>
-		</tr></table>
+					<nav aria-label="breadcrumb">
+						<ol class="breadcrumb">
+							<li class="breadcrumb-item"><a href="/db">Home</a></li>
+							<li class="breadcrumb-item"><a
+								href="/db/dbinfo?id=$dbInfo.connId">$dbInfo.connectionName</a></li>
+							<li class="breadcrumb-item active" id="db-table-name"
+								aria-current="page">$table.name</li>
+						</ol>
+					</nav>
+					<div class="col-12 menu-bar">
+						<button class="btn btn-sm btn-info q-columns-btn">COLUMNS</button>
+						<button class="btn btn-sm btn-info q-rowcount-btn">ROW
+							COUNT</button>
+						<button class="btn btn-sm btn-info q-alldata-btn">ALL
+							DATA</button>
+					</div>
+				</td>
+			</tr>
+		</table>
 	</div>
-	
+
 	<div class="row">
-	
+
 		<div id="dbtree" class="treeview col-sm-2 hidden-xs"></div>
 
 		<div class="col-sm-10 col-xs-12">
 			<div class="col-lg-12 top-buffer">
-				<form class="col-xs-12 input-group exec-sql-form">
+				<form class="col-xs-12 input-group exec-sql-form dropdown">
 					<input class="qbox form-control" type="text"
 						placeholder="Enter your SQL query here" autocomplete="on" /> <span
-						class="exec-btn input-group-addon btn btn-primary btn-sm"> <i
-						class="glyphicon glyphicon-flash"></i>
+						class="exec-btn input-group-addon btn btn-primary">
+						<i class="glyphicon glyphicon-flash"></i>
 					</span>
+					<div class="input-group-btn">
+						<button type="button" class="btn btn-default dropdown-toggle"
+							data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							<span class="caret"></span>
+						</button>
+						<ul class="dropdown-menu dropdown-menu-right">
+							<li><a href="#">Expand text field</a></li>
+							<li role="separator" class="divider"></li>
+							<li><a href="#">Show query history</a></li>
+						</ul>
+					</div>
+
 				</form>
 			</div>
 			<div class="col-lg-12 top-buffer dynamic-table hover"></div>
@@ -47,8 +63,11 @@
 
 <script>
 	var dbtree_data = $DB_TREE_DATA;
-	dbtree_data.push({"text": "New DB Connection...", "href": "/db/newdbconn"});
+	dbtree_data.push({
+		"text" : "New DB Connection...",
+		"href" : "/db/newdbconn"
+	});
 </script>
 
 
-#parse( "/public/layouts/dialog_box.html" ) 
+#parse( "/public/layouts/dialog_box.html" )

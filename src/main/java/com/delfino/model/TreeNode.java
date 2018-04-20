@@ -25,6 +25,7 @@ public class TreeNode {
 		state.put("expanded", false);
 		if (parent == null) {
 			setHref("/db/dbinfo?id=" + id);
+			setIcon("glyphicon glyphicon-briefcase");
 		} else {
 			setHref("/table?id=" + parent.id + "&table=" + text);
 			setIcon("glyphicon glyphicon-th-list");

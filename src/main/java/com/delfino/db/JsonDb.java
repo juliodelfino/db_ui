@@ -98,7 +98,7 @@ public class JsonDb<T> {
 
 	public static <T> boolean saveJson(T dataCache, String dataFile) {
         try {
-            FileUtils.write(new File(dataFile), GSON.toJson(dataCache));
+            FileUtils.write(new File(dataFile), GSON.toJson(dataCache), "UTF-8");
             return true;
         } catch (IOException e) {
             LOGGER.error(e.getMessage(), e);

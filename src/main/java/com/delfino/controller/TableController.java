@@ -3,6 +3,7 @@ package com.delfino.controller;
 import java.util.List;
 
 import com.delfino.dao.DbInfoDao;
+import com.delfino.dao.UserDao;
 import com.delfino.model.DbInfo;
 import com.delfino.model.TableInfo;
 import com.delfino.model.TreeNode;
@@ -16,6 +17,7 @@ import spark.Route;
 public class TableController extends ControllerBase {
 
 	private DbInfoDao dbDao = new DbInfoDao();
+	private UserDao userDao = new UserDao();
 	private Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
 	public Route getQuery = (req, res) -> {
@@ -23,6 +25,7 @@ public class TableController extends ControllerBase {
 		String userId = RequestUtil.getUsername(req);
 		String sql = req.queryParams("q");
 		String connId = req.queryParams("connId");
+		userDao.saveQuery(sql);
 		return dbDao.connect(connId, userId).executeQuery(sql);
 	};
 

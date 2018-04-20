@@ -12,10 +12,15 @@
 
 #dbtree {
 	overflow: auto;
+	height: 100vh;
 }
 
 #dbtree .list-group {
 	width: 300px
+}
+
+.expand-icon {
+	font-size: 8px;
 }
 
 .breadcrumb {

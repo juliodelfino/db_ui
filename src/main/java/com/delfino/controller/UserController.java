@@ -41,8 +41,12 @@ public class UserController extends ControllerBase {
 		}
 		Map<String, Object> loginStatus = new HashMap();
 		loginStatus.put("authenticated", authenticated);
-		loginStatus.put("redirectUrl", req.session().attribute(Constants.LOGIN_REDIRECT));
+		String redirectUrl = req.session().attribute(Constants.LOGIN_REDIRECT);
 		req.session().removeAttribute(Constants.LOGIN_REDIRECT);
+		if (redirectUrl.equals("/")) {
+			redirectUrl = Constants.PATH_HOME;
+		}
+		loginStatus.put("redirectUrl", redirectUrl);
 		return gson.toJson(loginStatus);
 	};
 

@@ -182,4 +182,8 @@ public class UserDao {
 		return jsonDb.save();
 	}
 
+	public void saveQuery(String sql) {
+		//TODO
+	}
+
 }
