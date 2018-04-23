@@ -12,6 +12,25 @@
 			<div class="modal-body">
 					#parse( "/public/layouts/db_conn_form.html" )
 
+					<hr />
+					
+					<div class="form-group">
+					
+						<label class="control-label col-sm-2" for="user-db-box">Users with
+							Access</label>
+						<div class="pre-scrollable" style="max-height: 150px">
+							<ul class="columns col-sm-10" style="list-style: none" id="user-options">
+								#foreach( $user in $users )
+								<li><span style=""> <a href="#" class="small"
+										tabIndex="-1"> <input type="checkbox" id="user-$user.username"
+											value="$user.username" /> &nbsp;<label for="user-$user.username">$user.username</label>
+									</a>
+								</span></li> #end
+					
+							</ul>
+						</div>
+					</div>
+					
 					<input type="hidden" class="parent-tabpanel" />
 					<div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10">

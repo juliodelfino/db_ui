@@ -32,12 +32,14 @@ public class AdminController extends ControllerBase {
 	public Route getIndex = (req, res) -> {
 		List<DbInfo> dbList = dbInfoDao.getAll();
 		req.attribute("dbs", dbList);
-		req.attribute("db_users", dbList.stream().collect(
-			Collectors.toMap(db -> db.getConnId(), 
-				db -> userDao.getDbUsers(db.getConnId())
-					.stream().map(User::getUsername)
-					.collect(Collectors.toList())
-			)));
+
+		req.attribute("users", userDao.getAll());
+//		req.attribute("db_users", dbList.stream().collect(
+//			Collectors.toMap(db -> db.getConnId(), 
+//				db -> userDao.getDbUsers(db.getConnId())
+//					.stream().map(User::getUsername)
+//					.collect(Collectors.toList())
+//			)));
 		return renderContent(req, "admin/index.html");
 	};
 

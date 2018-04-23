@@ -31,21 +31,3 @@
 		<input type="checkbox" id="admin-box" name="admin" value="true" />
 	</div>
 </div>
-
-<hr />
-<div class="form-group">
-
-	<label class="control-label col-sm-2" for="user-db-box">DB
-		Access</label>
-	<div class="pre-scrollable" style="max-height: 150px">
-		<ul class="columns col-sm-10" style="list-style: none" id="db-options">
-			#foreach( $db in $dbs )
-			<li><span style=""> <a href="#" class="small"
-					tabIndex="-1"> <input type="checkbox" id="db-$db.connId"
-						value="$db.connId" /> &nbsp;<label for="db-$db.connId">$db.connectionName</label>
-				</a>
-			</span></li> #end
-
-		</ul>
-	</div>
-</div>

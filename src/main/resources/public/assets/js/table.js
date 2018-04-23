@@ -20,6 +20,14 @@ $(document).ready(function() {
 	});
 	
 	$('.q-alldata-btn').trigger('click');
+	
+	$('.qbox').keydown(function (e) {
+
+		  if (e.ctrlKey && e.keyCode == 13) {
+		    // Ctrl-Enter pressed
+				$('.exec-sql-form').trigger('submit');
+		  }
+		});
 });
 
 function getUrlVars()
