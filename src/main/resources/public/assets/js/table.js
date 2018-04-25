@@ -28,6 +28,8 @@ $(document).ready(function() {
 				$('.exec-sql-form').trigger('submit');
 		  }
 		});
+	
+	$( ".exec-btn" ).tooltip();
 });
 
 function getUrlVars()

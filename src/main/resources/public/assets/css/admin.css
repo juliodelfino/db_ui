@@ -3,3 +3,7 @@
         -webkit-column-count:2; /* Safari and Chrome */
         column-count:2;
     }
+    
+    .dataTable tbody tr td {
+  white-space:nowrap; overflow:hidden; text-overflow: ellipsis; max-width: 250px
+}

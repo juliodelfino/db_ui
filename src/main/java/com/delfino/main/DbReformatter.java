@@ -2,6 +2,9 @@ package com.delfino.main;
 
 import java.io.File;
 import java.time.Instant;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.delfino.db.JsonDb;
@@ -18,7 +21,8 @@ public class DbReformatter {
 		DbSchemaOld dbOld = JsonDb.loadJson(dataFile, DbSchemaOld.class);
 		DbSchema dbNew = new DbSchema();
 		dbNew.setDatabases(dbOld.getDatabases());
-		dbNew.setUserDbMap(dbOld.getUserDbMap());
+		dbNew.setUserDbMap(dbOld.getUserDbMap().entrySet().stream()
+				.collect(Collectors.toMap(k -> k.getKey(), v -> new HashSet(v.getValue()))));
 		dbNew.setUsers(dbOld.getUsers().stream()
 				.collect(Collectors.toMap(e -> e.getUsername(), e -> e)));
 		JsonDb.saveJson(dbNew, newDataFile);

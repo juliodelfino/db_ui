@@ -6,6 +6,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -143,7 +144,7 @@ public class UserDao {
 	public boolean add(User user, String[] dbAccess) {
 		if (add(user)) {
 			jsonDb.get().getUserDbMap()
-				.put(user.getUsername(), Arrays.asList(dbAccess));
+				.put(user.getUsername(), new HashSet(Arrays.asList(dbAccess)));
 			return jsonDb.save();
 		}
 		return false;
@@ -167,7 +168,7 @@ public class UserDao {
 			dbUser.setPassword(hashText(user.getPassword()));
 		}
 		jsonDb.get().getUserDbMap()
-			.put(user.getUsername(), Arrays.asList(dbAccess));
+			.put(user.getUsername(), new HashSet(Arrays.asList(dbAccess)));
 		return jsonDb.save();
 	}
 
@@ -182,7 +183,7 @@ public class UserDao {
 		return jsonDb.save();
 	}
 
-	public void saveQuery(String sql) {
+	public void saveQuery(String sql, String userId) {
 		//TODO
 	}
 

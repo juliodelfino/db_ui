@@ -30,10 +30,14 @@ public class AdminController extends ControllerBase {
 	
 	@AppRoute(requireAdmin=true)
 	public Route getIndex = (req, res) -> {
-		List<DbInfo> dbList = dbInfoDao.getAll();
+		List<DbInfo> dbList = dbInfoDao.getAll().stream()
+			.sorted((d1, d2) -> d1.getConnectionName().compareTo(d2.getConnectionName()))
+			.collect(Collectors.toList());
 		req.attribute("dbs", dbList);
 
-		req.attribute("users", userDao.getAll());
+		req.attribute("users", userDao.getAll().stream()
+			.sorted((u1, u2) -> u1.getFullName().compareTo(u2.getFullName()))
+			.collect(Collectors.toList()));
 //		req.attribute("db_users", dbList.stream().collect(
 //			Collectors.toMap(db -> db.getConnId(), 
 //				db -> userDao.getDbUsers(db.getConnId())

@@ -25,7 +25,7 @@ public class TableController extends ControllerBase {
 		String userId = RequestUtil.getUsername(req);
 		String sql = req.queryParams("q");
 		String connId = req.queryParams("connId");
-		userDao.saveQuery(sql);
+		userDao.saveQuery(sql, userId);
 		return dbDao.connect(connId, userId).executeQuery(sql);
 	};
 

@@ -95,6 +95,8 @@ public class Application {
 				new RequestDataFilter());
 		
 		registerRoutes(routes);
+		registerRoute("get", "/", (req, res) -> { 
+			res.redirect("/db"); return null; });
 		get("/favicon.ico", "image/x-icon", 
 				(req, res) -> IOUtils.toString(Spark.class.getResourceAsStream("/public/assets/images/favicon.ico")));
 	

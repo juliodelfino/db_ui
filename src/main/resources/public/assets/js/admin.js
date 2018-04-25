@@ -12,7 +12,7 @@ $(document).ready(function() {
         initComplete: initDbTableActions,
         "autoWidth": false,
 		dom: 'Bfrtip',
-		"columns":[{"data":"connectionName"},
+		"columns": [{"data":"connectionName"},
 		           {"data":"url"},
 		           {"data":"users"},
 		           {"data":null, "defaultContent":'<span ' +
@@ -140,7 +140,12 @@ function showDbInfoDialog(dbInfo) {
     $.each(dbInfo, function(prop, value){
         $("#db-info-dialog input[name='" + prop + "']").val(value);
      });
-
+    
+	$('#db-options input').prop('checked', false);
+	$.each(dbInfo.users, function(i, val){
+		$('#user-options #user-' + val).prop('checked', true);
+	});
+	
 	$('#db-info-dialog .modal-title').html('Update database connection');
 	$('#db-info-dialog').modal('show');
 	
@@ -177,13 +182,13 @@ function onDbSubmit(e){
 		return false;
 	}
 	var dbInfoParams = $('#db-info-form').serialize();
-//	var dbOpts = [];
-//	$('#db-options input:checked').each(function(){
-//		dbOpts.push($(this).val());
-//	});
-//	var params = dbInfoParams + "&dbaccess=" + dbOpts.join("+");
+	var userOpts = [];
+	$('#user-options input:checked').each(function(){
+		userOpts.push($(this).val());
+	});
+	var params = dbInfoParams + "&users=" + userOpts.join("+");
 	var dbUrl = newDbMode ? "/db/connectdb" : "/db/infoupdate";
-	$.post(dbUrl, dbInfoParams, function(result){
+	$.post(dbUrl, params, function(result){
 		result = JSON.parse(result);
 		if (result.error) {
   			$("#db-info-dialog .alert-message").html(result.message);

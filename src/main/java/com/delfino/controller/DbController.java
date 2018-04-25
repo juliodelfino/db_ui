@@ -19,7 +19,9 @@ import com.delfino.util.ViewUtil;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import spark.Request;
 import spark.Route;
+import spark.utils.StringUtils;
 
 public class DbController extends ControllerBase {
 
@@ -37,6 +39,7 @@ public class DbController extends ControllerBase {
 			dbDao.connect(dbInfo);
 			dbInfo.setDriver(RequestUtil.getDbDriver(dbInfo.getUrl()));
 			dbDao.add(dbInfo, userId);
+			tryUpdateUserAccess(req, dbInfo);
 			return gson.toJson(dbInfo);
 		} catch (Exception ex) {
 			LOGGER.error(ex.getMessage(), ex);
@@ -57,7 +60,11 @@ public class DbController extends ControllerBase {
 
 		String userId = RequestUtil.getUsername(req);
 		DbInfo dbInfoUpdate = RequestUtil.extract(req, DbInfo.class);
-		return dbDao.update(dbInfoUpdate, userId);
+		boolean success = dbDao.update(dbInfoUpdate, userId);
+		if (success) {
+			tryUpdateUserAccess(req, dbInfoUpdate);
+		}
+		return success;
 	};
 
 	public Route deleteInfo = (req, res) -> {
@@ -114,4 +121,12 @@ public class DbController extends ControllerBase {
 	public Route getNewDbConn = (req, res) -> {
 		return renderContent(req, "db/newdbconn.html");
 	};
+
+	private void tryUpdateUserAccess(Request req, DbInfo dbInfo) {
+
+		String users = req.queryParams("users");
+		if (StringUtils.isNotEmpty(users) && RequestUtil.getUser(req).isAdmin()) {
+			dbDao.updateUserAccess(dbInfo.getConnId(), users.split(" "));
+		}
+	}
 }

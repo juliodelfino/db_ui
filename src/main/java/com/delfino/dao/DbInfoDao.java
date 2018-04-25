@@ -3,11 +3,14 @@ package com.delfino.dao;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.delfino.db.DbConnection;
 import com.delfino.db.JsonDb;
@@ -33,7 +36,7 @@ public class DbInfoDao {
 	
 	public Map<String, DbInfo> getAll(String userId) {
 
-		List<String> userDbs = userDbDao.getUserDbList(userId);
+		Set<String> userDbs = userDbDao.getUserDbList(userId);
 		Map<String, DbInfo> dbMap = jsonDb.get().getDatabases().entrySet().stream()
 				.filter(e -> userDbs.contains(e.getKey()))
 				.collect(Collectors.toMap(Entry::getKey, Entry::getValue));
@@ -100,5 +103,20 @@ public class DbInfoDao {
 				return node;
 			}).sorted((n1, n2) -> n1.getText().compareTo(n2.getText()))
 			.collect(Collectors.toList());
+	}
+
+	public void updateUserAccess(String connId, String[] users) {
+		
+		Map<String, Set> userDbMap = jsonDb.get().getUserDbMap();
+		userDbMap.entrySet().forEach(e -> e.getValue().remove(connId));
+		Stream.of(users).forEach(user -> {
+			Set dbs = userDbMap.get(user);
+			if (dbs == null) {
+				dbs = new HashSet();
+			}
+			dbs.add(connId);
+			userDbMap.put(user, dbs);
+		});
+		jsonDb.save();
 	}
 }

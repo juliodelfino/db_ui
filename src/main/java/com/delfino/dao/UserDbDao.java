@@ -1,20 +1,21 @@
 package com.delfino.dao;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.delfino.db.JsonDb;
 import com.delfino.model.DbSchema;
 import com.delfino.util.AppProperties;
-import com.delfino.db.JsonDb;
 
 public class UserDbDao {
 
 	private JsonDb<DbSchema> jsonDb = JsonDb.getInstance(AppProperties.get("data_dir"), DbSchema.class);
 
 	public void addUserDb(String userId, String connectionName) {
-		List<String> dbList = getUserDbList(userId);		
+		Set<String> dbList = getUserDbList(userId);		
 		if (dbList.isEmpty()) {
 			jsonDb.get().getUserDbMap().put(userId, dbList);
 		}
@@ -27,9 +28,9 @@ public class UserDbDao {
 	 * @param userId
 	 * @return
 	 */
-	public List<String> getUserDbList(String userId) {
-		List<String> dbList = jsonDb.get().getUserDbMap().get(userId);
-		return dbList == null ? new ArrayList() : dbList;
+	public Set<String> getUserDbList(String userId) {
+		Set<String> dbList = jsonDb.get().getUserDbMap().get(userId);
+		return dbList == null ? new HashSet() : dbList;
 	}
 	
 	/**

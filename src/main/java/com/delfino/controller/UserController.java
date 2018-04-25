@@ -3,6 +3,8 @@ package com.delfino.controller;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.delfino.adaptor.ExceptionAdaptor;
 import com.delfino.annotation.AppRoute;
 import com.delfino.dao.DbInfoDao;
@@ -28,6 +30,7 @@ public class UserController extends ControllerBase {
 
 		if (RequestUtil.getUser(req) != null) {
 			res.redirect(Constants.PATH_HOME);
+			return null;
 		}
 		return renderPage(req, "user/login.html");
 	};
@@ -43,9 +46,6 @@ public class UserController extends ControllerBase {
 		loginStatus.put("authenticated", authenticated);
 		String redirectUrl = req.session().attribute(Constants.LOGIN_REDIRECT);
 		req.session().removeAttribute(Constants.LOGIN_REDIRECT);
-		if (redirectUrl.equals("/")) {
-			redirectUrl = Constants.PATH_HOME;
-		}
 		loginStatus.put("redirectUrl", redirectUrl);
 		return gson.toJson(loginStatus);
 	};
