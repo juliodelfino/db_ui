@@ -19,7 +19,7 @@ This application boots up in around 1000 milliseconds!
 ## Setup
 
 ### Unix
-- Download db-ui.tar.gz file (8MB).
+- Download db-ui.tar.gz file (less than 20MB).
 - Extract using this command: gtar -xvzf db-ui.tar.gz
 - Download the JDBC driver jar files you need and place it in /lib folder. Some of them may have already been there (actually, only MySQL library is in there).
 - Update the config/application.properties. Change the data_dir to point to a writeable directory.
