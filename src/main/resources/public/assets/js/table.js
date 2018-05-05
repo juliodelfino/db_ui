@@ -23,13 +23,21 @@ $(document).ready(function() {
 	
 	$('.qbox').keydown(function (e) {
 
-		  if (e.ctrlKey && e.keyCode == 13) {
+		  if (e.ctrlKey) {
+			  if (e.keyCode == 13) {
 		    // Ctrl-Enter pressed
-				$('.exec-sql-form').trigger('submit');
+				 $('.exec-sql-form').trigger('submit'); 
+			  } else if (e.keyCode == 8 || e.keyCode == 88) {
+				 $('#exec-sel-btn').trigger('click'); 
+			  }
+			  
 		  }
 		});
 	
 	$( ".exec-btn" ).tooltip();
+	$( "#exec-sel-btn" ).tooltip();
+	
+	initQueryHistoryDialog();
 });
 
 function getUrlVars()
@@ -47,7 +55,7 @@ function getUrlVars()
 
 function initTableActions(tabPanel) {
 
-	var tableName = getUrlVars()["table"];
+	var tableName = $('#db-table-name').text();
 	$(tabPanel + ' .q-columns-btn').click(function(){
 		$(tabPanel + ' .qbox').val('');
 		getColumns(tableName, tabPanel);
@@ -65,12 +73,14 @@ function initTableActions(tabPanel) {
 		$(tabPanel + ' .exec-sql-form').trigger('submit');
 	});
 
-	$(tabPanel + ' .exec-btn').click(function(){
-		$(tabPanel + ' .exec-sql-form').trigger('submit');
+	
+	$('#exec-sel-btn').click(function(e){
+		executeQuery(getSelectedText('qbox'), tabPanel);
 	});
 	
 	$(tabPanel + ' .exec-sql-form').submit(function(e){
         e.preventDefault();
+        console.log('submitting');
 		executeQuery($(tabPanel + ' .qbox').val(), tabPanel);
 	});
 	
@@ -109,7 +119,10 @@ function executeQuery(sql, tabPanel) {
   		result = JSON.parse(result);
   		if (result.error) {
   			displayError(result, tabPanel);
-  		} else {
+  		} else if (!result.data) {
+  			displayInfo(result, tabPanel);
+  		}
+  		else {
   	  		updateDynamicTable(result, tabPanel);
   		}
   	});
@@ -171,10 +184,86 @@ function updateDynamicTable(result, tabPanel) {
 	});
 }
 
+function initQueryHistoryDialog() {
+	$("#query-history-btn").click(function(){
+		$.get('/table/queryhistory', function(result) {
+	    	var rowData = JSON.parse(result);
+
+			$('#query-history-dialog .modal-body').html("");
+
+			for (i = 0; i < rowData.length; i++) {
+				
+				$('#query-history-dialog .modal-body').append(
+					"<a href='#' class='list-group-item'>"
+					+ "<span class='timestamp' style='display: none'>"
+					+ rowData[i].timestamp + "</span>&nbsp;<span class='log'>"
+					+rowData[i].log + "</span><button type='button btn-xs' class='delete-log close'>x</button></a>");
+			}
+	    	
+	    });
+		$('#query-history-dialog').modal('show');
+	});
+	
+	$("#query-history-dialog .modal-body").on('click', '.delete-log', function(e){
+		e.preventDefault();
+		
+		var parent = $(this).closest('a');
+		var timestamp = parent.find('.timestamp').text();
+		$.ajax({
+		    url: '/table/queryhistory?t=' + timestamp,
+		    type: 'DELETE',
+		    success: function(result) {
+		    	if (JSON.parse(result)) {
+			    	parent.remove();
+		    	} else {
+		    		alert("Error removing the item. Please refresh this page.");
+		    	}
+		    }
+		});
+	});	
+	
+	$("#query-history-dialog .modal-body").on('dblclick', '.list-group-item', function(){
+		var log = $(this).find('.log').text();
+		$('.qbox').val(function(i, text) {
+		    return text + log + "; ";
+		});
+		$('#query-history-dialog').modal('hide');
+	});
+	
+	$('#query-history-dialog #show-time-checkbox').change(function() {
+		if (this.checked) {
+			$('.timestamp').show();
+		} else {
+			$('.timestamp').hide();
+		}
+	});
+	
+	$('#query-history-dialog #select-btn').click(function(e) {
+		e.preventDefault();
+		var items = document.getElementsByClassName("list-group-item active");
+		if (items.length > 0) {
+			$(items[0]).trigger('dblclick');
+		}
+		$('#query-history-dialog').modal('hide');
+	});
+	
+	$("#query-history-dialog .modal-body").on('click', 'a', function(e){
+		e.preventDefault();
+	   $("#query-history-dialog .list-group a").removeClass("active");
+	   $(this).closest('a').addClass("active");
+	});	
+}
+
 function displayError(result, tabPanel) {
 
 	$(tabPanel + ' .dynamic-table').html(
 			'<div class="col-lg-12 alert alert-danger">' + result.message + '</div>');
+}
+
+function displayInfo(result, tabPanel) {
+
+	$(tabPanel + ' .dynamic-table').html(
+			'<div class="col-lg-12 alert alert-info">' + result.message + '</div>');
 }
 
 function downloadData(colId, isBinary) {
@@ -210,4 +299,18 @@ function decodeEntities(encodedString) {
     var decodedText = textArea.value;
     textArea.remove();
     return decodedText;
+}
+
+//source: https://stackoverflow.com/questions/717224/how-to-get-selected-text-in-textarea?noredirect=1&lq=1
+function getSelectedText(textAreaId) // javascript
+{
+    // obtain the object reference for the <textarea>
+    var txtarea = document.getElementById(textAreaId);
+    // obtain the index of the first selected character
+    var start = txtarea.selectionStart;
+    // obtain the index of the last selected character
+    var finish = txtarea.selectionEnd;
+    // obtain the selected text
+    return start == finish ? txtarea.value : txtarea.value.substring(start, finish);
+    // do something with the selected content
 }

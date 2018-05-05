@@ -32,3 +32,15 @@
 .list-group-item {
 	padding: 5px 8px !important;
 }
+
+#primary-photo {
+	width: 120px; 
+	margin: 0 10px
+}
+
+@media screen and (max-width: 767px) {
+	#primary-photo {
+		width: 80px;
+		margin: 0 10px
+	}
+}

@@ -14,16 +14,19 @@ import java.util.stream.Stream;
 
 import com.delfino.db.DbConnection;
 import com.delfino.db.JsonDb;
+import com.delfino.db.JsonDbFactory;
 import com.delfino.model.DbInfo;
 import com.delfino.model.DbSchema;
 import com.delfino.model.TreeNode;
 import com.delfino.util.AppProperties;
+import com.delfino.util.Constants;
 
 import spark.utils.StringUtils;
 
 public class DbInfoDao {
 
-	private JsonDb<DbSchema> jsonDb = JsonDb.getInstance(AppProperties.get("data_dir"), DbSchema.class);
+	private JsonDb<DbSchema> jsonDb = 
+		JsonDbFactory.getInstance(Constants.DATA_JSON, DbSchema.class);
 	private Map<String, DbConnection> dbConnMap = new HashMap<>();
 	private UserDbDao userDbDao = new UserDbDao();
 

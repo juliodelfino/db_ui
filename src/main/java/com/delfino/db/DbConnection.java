@@ -1,15 +1,5 @@
 package com.delfino.db;
 
-import com.delfino.adaptor.ExceptionAdaptor;
-import com.delfino.adaptor.ResultSetAdaptor;
-import com.delfino.main.Application;
-import com.delfino.model.Column;
-import com.delfino.model.DbInfo;
-import com.delfino.model.TableInfo;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
@@ -27,12 +17,19 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.delfino.adaptor.ResultSetAdaptor;
+import com.delfino.model.Column;
+import com.delfino.model.DbInfo;
+import com.delfino.model.TableInfo;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 public class DbConnection {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DbConnection.class);
     private ResultSetAdaptor adaptor = new ResultSetAdaptor();
-    private ExceptionAdaptor exAdaptor = new ExceptionAdaptor();
-    private Gson gson = new GsonBuilder().create();
+    private static final Logger LOGGER = LoggerFactory.getLogger(DbConnection.class);
+    private Gson gson = new GsonBuilder()
+    		.setDateFormat("yyyy-MM-dd HH:mm:ss").create();
     private DbInfo dbInfo;
     Connection conn = null;
 
@@ -45,12 +42,12 @@ public class DbConnection {
     private Connection getConnection() throws SQLException {
     	if (conn == null || conn.isClosed()) {
     		conn = DriverManager
-    	            .getConnection(dbInfo.getUrl(),dbInfo.getUsername(), dbInfo.getPassword());
+    	        .getConnection(dbInfo.getUrl(),dbInfo.getUsername(), dbInfo.getPassword());
     	}
     	return conn;
     }
 
-    public String executeQuery(String sql) throws SQLException  {
+    public String executeQuery(String sql) throws Exception  {
 
         ResultSet rs = null;
         String result = "";
@@ -58,18 +55,23 @@ public class DbConnection {
             Statement stmt = getConnection().createStatement();
             rs = stmt.executeQuery(sql);
             result = gson.toJson(adaptor.convert(rs));
-        } catch(Exception ex) {
-            result = exAdaptor.convert(ex);
         }
-
         finally {
         	if (rs != null) {
         		rs.close();
         	}
         }
-
         return result;
     }
+
+	public int executeUpdate(String sql) throws SQLException {
+		
+        int rs = 0;
+        Statement stmt = getConnection().createStatement();
+        rs = stmt.executeUpdate(sql);
+        stmt.close();
+        return rs;
+	}
 
 	public Map getDbMetadata() throws SQLException {
         DatabaseMetaData md = getConnection().getMetaData();
@@ -137,7 +139,7 @@ public class DbConnection {
         return values;
 	}
 
-	public String getColumns(String table) throws SQLException {
+	public String getColumns(String table) throws Exception {
         DatabaseMetaData md = getConnection().getMetaData();
         ResultSet rs = md.getColumns(null, null, table, "%");
         try {
@@ -146,8 +148,10 @@ public class DbConnection {
 				Arrays.asList("COLUMN_NAME", "TYPE_NAME", "COLUMN_SIZE", 
 						"IS_NULLABLE", "ORDINAL_POSITION", "IS_AUTOINCREMENT"));
 			return gson.toJson(map);
-		} catch (JsonProcessingException e) {
-			return exAdaptor.convert(e);
+		} finally {
+			if (rs != null) {
+				rs.close();
+			}
 		}
 	}
 

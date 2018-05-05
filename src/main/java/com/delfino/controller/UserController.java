@@ -78,7 +78,7 @@ public class UserController extends ControllerBase {
 		return userDao.updatePassword(user);
 	};
 
-	@AppRoute(skipAuthentication=true)
+//	@AppRoute(skipAuthentication=true)
 	public Route getInfo = (req, res) -> {
 
 		String username = req.queryParams("username");
@@ -88,7 +88,7 @@ public class UserController extends ControllerBase {
 		return gson.toJson(map);
 	};
 
-	@AppRoute(skipAuthentication=true)
+//	@AppRoute(skipAuthentication=true)
 	public Route postInfo = (req, res) -> {
 
 		User user = RequestUtil.extract(req, User.class);
@@ -102,7 +102,7 @@ public class UserController extends ControllerBase {
 		return userDao.delete(username);
 	};
 
-	@AppRoute(skipAuthentication=true)
+//	@AppRoute(skipAuthentication=true)
 	public Route postNew = (req, res) -> {
 
 		User user = RequestUtil.extract(req, User.class);

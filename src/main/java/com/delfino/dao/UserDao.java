@@ -3,7 +3,10 @@ package com.delfino.dao;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
+import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -15,15 +18,21 @@ import javax.naming.Context;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.delfino.db.JsonDb;
+import com.delfino.db.JsonDbFactory;
 import com.delfino.model.DbSchema;
+import com.delfino.model.SqlLog;
 import com.delfino.model.User;
+import com.delfino.model.UserCacheSchema;
 import com.delfino.util.AppException;
 import com.delfino.util.AppProperties;
+import com.delfino.util.Constants;
 import com.delfino.util.RequestUtil;
+import com.google.gson.JsonElement;
 import com.unboundid.ldap.sdk.LDAPConnection;
 import com.unboundid.ldap.sdk.LDAPException;
 import com.unboundid.ldap.sdk.SimpleBindRequest;
@@ -35,8 +44,9 @@ public class UserDao {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AppProperties.class);
 	private UserDbDao userDbDao = new UserDbDao();
 	
-	private JsonDb<DbSchema> jsonDb = JsonDb.getInstance(AppProperties.get("data_dir"), DbSchema.class);
-
+	private JsonDb<DbSchema> jsonDb = JsonDbFactory.getInstance(Constants.DATA_JSON, DbSchema.class);
+	private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+	
 	public UserDao() {
 		if (jsonDb.get().getUsers().isEmpty()) {
 			User root = createRootUser();
@@ -184,7 +194,44 @@ public class UserDao {
 	}
 
 	public void saveQuery(String sql, String userId) {
-		//TODO
+		JsonDb<UserCacheSchema> userCache = 
+			JsonDbFactory.getInstance("cache_" + userId, UserCacheSchema.class);
+		userCache.get().addQueryLog(sql);
+		userCache.save();
+	}
+
+	public List getQueryHistory(String userId) {
+		JsonDb<UserCacheSchema> userCache = 
+				JsonDbFactory.getInstance("cache_" + userId, UserCacheSchema.class);
+		return userCache.get().getQueryLogs();
+	}
+
+	public boolean deleteQueryLog(String userId, String timestamp) {
+
+		boolean result = false;
+		JsonDb<UserCacheSchema> userCache = 
+				JsonDbFactory.getInstance("cache_" + userId, UserCacheSchema.class);
+		if (timestamp.equalsIgnoreCase("all")) {
+			userCache.get().getQueryLogs().clear();
+			result = true;
+		} else {
+			timestamp = StringEscapeUtils.escapeHtml(timestamp);
+			LocalDateTime localDate = LocalDateTime.parse(timestamp, formatter);
+			Date tmpDate = Date.from(localDate.atZone(ZoneId.systemDefault()).toInstant());
+			
+			SqlLog tmpLog = userCache.get().getQueryLogs().stream().filter(log -> 
+			    log.getTimestamp().toString().equals(tmpDate.toString()))
+				.findFirst().orElse(null);
+			if (tmpLog != null) {
+				userCache.get().getQueryLogs().remove(tmpLog);
+				result = true;
+			}
+			
+		}
+		if (result) {
+			result = userCache.save();
+		}
+		return result;
 	}
 
 }

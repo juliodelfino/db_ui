@@ -4,8 +4,7 @@
 	<div class="row">
 		<table>
 			<tr>
-				<td><img src="/assets/images/db/table.png"
-					style="width: 120px; margin: 0 10px" /></td>
+				<td><img id="primary-photo" src="/assets/images/db/table.png" /></td>
 				<td width="100%">
 					<h2>$table.name</h2>
 
@@ -37,13 +36,13 @@
 		<div id="mainpane" class="col-sm-10 col-xs-12">
 			<div class="col-lg-12 top-buffer">
 				<form class="col-xs-12 input-group exec-sql-form dropdown">
-					<textarea class="qbox form-control" style="resize: vertical; min-height: 58px"
+					<textarea id="qbox" class="qbox form-control" style="resize: vertical; min-height: 58px"
 						placeholder="Enter your SQL query here" autocomplete="on">
 						</textarea> 
 					<div class="input-group-btn" style="vertical-align: top;">
 						<button
 							class="exec-btn btn btn-primary glyphicon glyphicon-flash" 
-							title="Press Ctrl+Enter keys to execute your SQL script.">
+							title="[Ctrl+Enter] Execute all">
 						</button><br/>
 						<button class="btn btn-default dropdown-toggle"
 							style=" padding: 1px 15px"
@@ -51,9 +50,9 @@
 							<span class="caret"></span>
 						</button>
 						<ul class="dropdown-menu dropdown-menu-right">
-							<li><a href="#">Execute selected text</a></li>
+							<li id="exec-sel-btn" title="[Ctrl+X] Execute selected text"><a href="#">Execute selected text</a></li>
 							<li role="separator" class="divider"></li>
-							<li><a href="#">Show query history</a></li>
+							<li id="query-history-btn"><a href="#">Show query history</a></li>
 						</ul>
 					</div>
 
@@ -74,3 +73,5 @@
 
 
 #parse( "/public/layouts/dialog_box.html" )
+
+#parse( "/public/views/table/query_history_dialog.html" )

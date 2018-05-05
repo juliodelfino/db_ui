@@ -18,48 +18,18 @@ public class JsonDb<T> {
 	
     private static final Logger LOGGER = LoggerFactory.getLogger(JsonDb.class);
 
-	private static JsonDb instance;
-    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-    private static final String DATA_FILE = "data.json";
+    private static final Gson GSON = new GsonBuilder()
+    		.setDateFormat("yyyy-MM-dd HH:mm:ss")
+    		.setPrettyPrinting().create();
 	private String dataFile;
 	private T dataCache;
 	
 	private Class<T> jsonDataModel;
 	
-	public JsonDb(String datadir, Class<T> jsonDataModel) {
-		this.dataFile = datadir + "/" + DATA_FILE;
+	public JsonDb(String fullDataFile, Class<T> jsonDataModel) {
+		this.dataFile = fullDataFile;
 		this.jsonDataModel = jsonDataModel;
-		dataCache = loadJson(dataFile, jsonDataModel);
-		setupDirectoryListener(datadir);
-	}
-
-	public static <T> JsonDb<T> getInstance(String datadir, Class<T> jsonDataModel) {
-		if (instance == null) {
-			instance = new JsonDb<T>(datadir, jsonDataModel);
-		}
-		return instance;
-	}
-    
-    private void setupDirectoryListener(String datadir) {
-		FileAlterationMonitor fileMonitor = new FileAlterationMonitor();
-		FileAlterationObserver observer = new FileAlterationObserver(datadir);
-		observer.addListener(new FileAlterationListenerAdaptor(){
-
-			@Override
-			public void onFileChange(File arg0) {
-				if (!arg0.getName().endsWith(DATA_FILE)) {
-					return;
-				}
-				dataCache = loadJson(dataFile, jsonDataModel);
-				LOGGER.info(arg0 + " has been updated externally.");
-			}
-		});
-		fileMonitor.addObserver(observer);
-		try {
-			fileMonitor.start();
-		} catch (Exception e) {
-			LOGGER.error("Directory listener setup failed", e);
-		}
+		dataCache = loadJson(fullDataFile, jsonDataModel);
 	}
 
 	public T get() {
@@ -97,6 +67,7 @@ public class JsonDb<T> {
 	}
 
 	public static <T> boolean saveJson(T dataCache, String dataFile) {
+		
         try {
             FileUtils.write(new File(dataFile), GSON.toJson(dataCache), "UTF-8");
             return true;
@@ -104,6 +75,11 @@ public class JsonDb<T> {
             LOGGER.error(e.getMessage(), e);
         }
         return false;
+	}
+
+	public T reload() {
+		dataCache = null;
+		return get();
 	}
 	
 }
