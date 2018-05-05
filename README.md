@@ -4,6 +4,8 @@ The most lightweight, high-speed, highly configurable, web-based database client
 Velocity's HTML templating, and the Ruby on Rails framework concepts. It supports virtually all types of databases, including MySQL, PostgreSQL, Microsoft SQL, Phoenix, and Ignite Cache, among others (as long as you can provide the necessary JDBC driver jar files to /lib folder).
 Take note, this is only a DATABASE VIEWER, and not a DATABASE ADMIN UI!
 
+![Home Page](https://github.com/juliodelfino/db_ui/raw/master/wiki/db-info-page.png)
+
 ## High speed
 This application boots up in around 1000 milliseconds!
 
