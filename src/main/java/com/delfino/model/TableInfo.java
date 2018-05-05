@@ -1,5 +1,7 @@
 package com.delfino.model;
 
+import java.util.Set;
+
 public class TableInfo {
 
 	private String name;
@@ -8,6 +10,7 @@ public class TableInfo {
 	private String tableType;
 	private String tableSchema;
 	private String remarks;
+	private Set<String> primaryKeys;
 	
 	public TableInfo(String name) {
 		this.name = name;
@@ -66,5 +69,13 @@ public class TableInfo {
 	public String toString() {
 		return "TableInfo [name=" + name + ", rowCount=" + rowCount + ", tableCatalog=" + tableCatalog
 				+ ", tableType=" + tableType + ", tableSchema=" + tableSchema + ", remarks=" + remarks + "]";
+	}
+
+	public Set getPrimaryKeys() {
+		return primaryKeys;
+	}
+	
+	public void setPrimaryKeys(Set primaryKeys) {
+		this.primaryKeys = primaryKeys;
 	}
 }

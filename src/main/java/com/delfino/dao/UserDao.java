@@ -195,14 +195,14 @@ public class UserDao {
 
 	public void saveQuery(String sql, String userId) {
 		JsonDb<UserCacheSchema> userCache = 
-			JsonDbFactory.getInstance("cache_" + userId, UserCacheSchema.class);
+			JsonDbFactory.getInstance("usercache_" + userId, UserCacheSchema.class);
 		userCache.get().addQueryLog(sql);
 		userCache.save();
 	}
 
 	public List getQueryHistory(String userId) {
 		JsonDb<UserCacheSchema> userCache = 
-				JsonDbFactory.getInstance("cache_" + userId, UserCacheSchema.class);
+				JsonDbFactory.getInstance("usercache_" + userId, UserCacheSchema.class);
 		return userCache.get().getQueryLogs();
 	}
 
@@ -210,7 +210,7 @@ public class UserDao {
 
 		boolean result = false;
 		JsonDb<UserCacheSchema> userCache = 
-				JsonDbFactory.getInstance("cache_" + userId, UserCacheSchema.class);
+				JsonDbFactory.getInstance("usercache_" + userId, UserCacheSchema.class);
 		if (timestamp.equalsIgnoreCase("all")) {
 			userCache.get().getQueryLogs().clear();
 			result = true;

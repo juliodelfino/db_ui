@@ -9,9 +9,11 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -21,6 +23,7 @@ import com.delfino.adaptor.ResultSetAdaptor;
 import com.delfino.model.Column;
 import com.delfino.model.DbInfo;
 import com.delfino.model.TableInfo;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -54,7 +57,8 @@ public class DbConnection {
         try {
             Statement stmt = getConnection().createStatement();
             rs = stmt.executeQuery(sql);
-            result = gson.toJson(adaptor.convert(rs));
+            Map resultMap = adaptor.convert(rs, dbInfo);
+            result = gson.toJson(resultMap);
         }
         finally {
         	if (rs != null) {
@@ -81,7 +85,21 @@ public class DbConnection {
         		.filter(t -> "TABLE".equals(t.getTableType()))
         		.collect(Collectors.toList());
         
-        tables.stream().forEach(t -> tableMap.put(t.getName(), t));
+        for (TableInfo t : tables) {
+        	try {
+				t.setPrimaryKeys(getPrimaryKeys(t.getName()));
+			} catch (JsonProcessingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        	tableMap.put(t.getName(), t);
+        }
+        tables.stream().forEach(t -> {
+        	tableMap.put(t.getName(), t);
+        });
         
         try {
         	queryAllRowCounts(tableMap);
@@ -139,7 +157,7 @@ public class DbConnection {
         return values;
 	}
 
-	public String getColumns(String table) throws Exception {
+	public String getColumns(String table) throws SQLException, JsonProcessingException {
         DatabaseMetaData md = getConnection().getMetaData();
         ResultSet rs = md.getColumns(null, null, table, "%");
         try {
@@ -148,6 +166,21 @@ public class DbConnection {
 				Arrays.asList("COLUMN_NAME", "TYPE_NAME", "COLUMN_SIZE", 
 						"IS_NULLABLE", "ORDINAL_POSITION", "IS_AUTOINCREMENT"));
 			return gson.toJson(map);
+		} finally {
+			if (rs != null) {
+				rs.close();
+			}
+		}
+	}
+	
+	public Set getPrimaryKeys(String table) throws SQLException, JsonProcessingException   {
+        DatabaseMetaData md = getConnection().getMetaData();
+        ResultSet rs = md.getPrimaryKeys(null, null, table);
+        try {
+			Map map = adaptor.convert(rs);
+			List<List> keys = (List) filterByColumns(map, Arrays.asList("COLUMN_NAME")).get("data");
+			return !keys.isEmpty() ? new HashSet((List)keys.stream()
+					.flatMap(List::stream).collect(Collectors.toList())) : new HashSet();
 		} finally {
 			if (rs != null) {
 				rs.close();

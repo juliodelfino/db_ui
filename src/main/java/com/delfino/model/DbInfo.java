@@ -1,8 +1,5 @@
 package com.delfino.model;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class DbInfo {
 
     private String driver;
@@ -13,7 +10,7 @@ public class DbInfo {
     private String connId;
 
 	private transient String status = "Disconnected";
-    private transient Map<String, TableInfo> tableMap = new HashMap();
+    private transient DbCacheSchema cache = new DbCacheSchema();
 
     public String getDriver() {
         return driver;
@@ -62,9 +59,6 @@ public class DbInfo {
 	public void setConnId(String connId) {
 		this.connId = connId;
 	}
-	
-	
-
     
     public String getStatus() {
 		return status;
@@ -74,25 +68,25 @@ public class DbInfo {
 		this.status = status;
 	}
 
-	public int getTableCount() {
-		return tableMap.size();
+	public DbCacheSchema getCache() {
+		return cache;
 	}
 
-	public Map<String, TableInfo> getTables() {
-		return tableMap;
-	}
-
-	public void setTables(Map<String, TableInfo> meta) {
-		this.tableMap = meta;
-	}
-
-	public TableInfo getTable(String tableName) {
-		return tableMap.get(tableName);
+	public void setCache(DbCacheSchema dbCacheSchema) {
+		this.cache = dbCacheSchema;
 	}
 
 	@Override
 	public String toString() {
 		return "DbInfo [driver=" + driver + ", url=" + url + ", username=" + username + ", password=" + password
-				+ ", connectionName=" + connectionName + ", connId=" + connId + "]";
+			+ ", connectionName=" + connectionName + ", connId=" + connId + "]";
+	}
+
+	public TableInfo getTable(String tableName) {
+		return cache.getTables().get(tableName);
+	}
+	
+	public int getTableCount() {
+		return cache.getTables().size();
 	}
 }

@@ -12,14 +12,17 @@ import java.util.Map;
 import org.apache.commons.lang.StringEscapeUtils;
 
 import com.delfino.model.Column;
+import com.delfino.model.DbCacheSchema;
+import com.delfino.model.DbInfo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 public class ResultSetAdaptor implements Adaptor<ResultSet, Map> {
-
-    public ResultSetAdaptor() {
-    }
+	
+	public Map convert(ResultSet rs) throws JsonProcessingException, SQLException {
+		return convert(rs, null);
+	}
     
-    public Map convert(ResultSet resultSet) throws SQLException, JsonProcessingException {
+    public Map convert(ResultSet resultSet, DbInfo dbInfo) throws SQLException, JsonProcessingException {
 
         List<Column> columns = new ArrayList<Column>();
         List data = new ArrayList<>();
@@ -28,7 +31,11 @@ public class ResultSetAdaptor implements Adaptor<ResultSet, Map> {
         for (int i = 1; i <= metaData.getColumnCount(); i++) {
             String columnName = metaData.getColumnName(i);
             Column col = new Column(columnName);
-            col.setPrimaryKey(metaData.isAutoIncrement(i) && metaData.isNullable(i) == 0);
+            if (dbInfo != null) {
+	            String tableName = metaData.getTableName(i);
+	            col.setPrimaryKey(
+	            	dbInfo.getTable(tableName).getPrimaryKeys().contains(columnName));
+            }
             columns.add(col);
         }
 

@@ -87,6 +87,18 @@ $(document).ready(function() {
 	
 	$('#db-submit-btn').click(onDbSubmit);
 	$('#user-submit-btn').click(onUserSubmit);
+	
+	$("#user-options input[type=checkbox]").each(function () {
+	    $(this).change(function(){
+	    	$('#user-count').text($("#user-options input[type=checkbox]:checked").size());
+	    });
+	});
+	
+	$("#db-options input[type=checkbox]").each(function () {
+	    $(this).change(function(){
+	    	$('#db-count').text($("#db-options input[type=checkbox]:checked").size());
+	    });
+	});
 });
 
 function initDbTableActions() {	
@@ -141,7 +153,8 @@ function showDbInfoDialog(dbInfo) {
         $("#db-info-dialog input[name='" + prop + "']").val(value);
      });
     
-	$('#db-options input').prop('checked', false);
+	$('#user-options input').prop('checked', false);
+	$('#user-count').text(dbInfo.users.length);
 	$.each(dbInfo.users, function(i, val){
 		$('#user-options #user-' + val).prop('checked', true);
 	});
@@ -164,6 +177,7 @@ function showUserInfoDialog() {
   		$('#user-info-dialog input[name=fullName]').val(user.fullName);
   		$('#user-info-dialog input[name=admin]').prop('checked', user.admin);
   		$('#db-options input').prop('checked', false);
+  		$('#db-count').text(result.dbList.length);
   		$.each(result.dbList, function(i, val){
   			$('#db-options #db-' + val).prop('checked', true);
   		});

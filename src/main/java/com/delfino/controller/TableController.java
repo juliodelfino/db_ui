@@ -34,6 +34,7 @@ public class TableController extends ControllerBase {
 		String connId = req.queryParams("connId");
 		DbConnection dbConn = dbDao.connect(connId, userId);
 		String result = "";
+		sqlQuery = sqlQuery.replaceAll("\n", "");
 		for (String sql : sqlQuery.split(";")) {
 			sql = sql.trim();
 			if (sql.matches("(SELECT|select).*")) {
@@ -84,11 +85,7 @@ public class TableController extends ControllerBase {
 		req.attribute("dbInfo", dbInfo);
 		TableInfo tblInfo = dbInfo.getTable(tableName);
 		if (tblInfo == null) {
-			dbInfo.setTables(dbDao.connect(connId, userId).getDbMetadata());
-			tblInfo = dbInfo.getTable(tableName);
-			if (tblInfo == null) {
-				throw new AppException("No table found with name=" + tableName);
-			}
+			throw new AppException("No table found with name=" + tableName);
 		}
 		req.attribute("table", tblInfo);
 		

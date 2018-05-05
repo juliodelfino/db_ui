@@ -15,9 +15,11 @@ import java.util.stream.Stream;
 import com.delfino.db.DbConnection;
 import com.delfino.db.JsonDb;
 import com.delfino.db.JsonDbFactory;
+import com.delfino.model.DbCacheSchema;
 import com.delfino.model.DbInfo;
 import com.delfino.model.DbSchema;
 import com.delfino.model.TreeNode;
+import com.delfino.model.UserCacheSchema;
 import com.delfino.util.AppProperties;
 import com.delfino.util.Constants;
 
@@ -56,7 +58,7 @@ public class DbInfoDao {
 		return jsonDb.save();
 	}
 
-	public boolean update(DbInfo dbInfoUpdate, String userId) {
+	public boolean update(DbInfo dbInfoUpdate, String userId) throws SQLException {
 
 		DbInfo dbInfo = getDb(dbInfoUpdate.getConnId(), userId);
 		dbInfoUpdate.setUrl(dbInfo.getUrl());
@@ -77,8 +79,35 @@ public class DbInfoDao {
 		return jsonDb.save();
 	}
 
-	public DbInfo getDb(String connId, String userId) {
-		return getAll(userId).get(connId);
+
+	public DbInfo getDb(String connId, String userId) throws SQLException {
+
+		return getDb(connId, userId, false);
+	}
+
+	public DbInfo getDb(String connId, String userId, boolean refresh) throws SQLException {
+		DbInfo dbInfo = getAll(userId).get(connId);
+		if (dbInfo != null) {
+			JsonDb<DbCacheSchema> dbCache = 
+				JsonDbFactory.getInstance("dbcache_" + dbInfo.getConnId(), DbCacheSchema.class);
+			dbInfo.setCache(dbCache.get());
+			if (refresh || dbCache.get().getTables().isEmpty()) {
+				updateCache(dbInfo);
+			}
+		}
+		return dbInfo;
+	}
+	
+	public boolean updateCache(DbInfo dbInfo) throws SQLException {
+		
+		JsonDb<DbCacheSchema> dbCache = 
+			JsonDbFactory.getInstance("dbcache_" + dbInfo.getConnId(), DbCacheSchema.class);
+		dbInfo.setCache(dbCache.get());
+		Map meta = connect(dbInfo).getDbMetadata();
+		dbCache.get().setTables(meta);
+		boolean result = dbCache.save();
+		dbInfo.setCache(dbCache.get());
+		return result;
 	}
 
 	public DbConnection connect(String connId, String userId) throws SQLException {
@@ -100,7 +129,7 @@ public class DbInfoDao {
 		return getAll(userId).values()
 			.stream().map(db -> { 
 				TreeNode node = new TreeNode(db.getConnId(), db.getConnectionName(), null);
-				node.setNodes(db.getTables().values()
+				node.setNodes(db.getCache().getTables().values()
 					.stream().map(t -> new TreeNode(db.getConnId() + t.getName(), t.getName(), node))
 					.collect(Collectors.toList()));
 				return node;

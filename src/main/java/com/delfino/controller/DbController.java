@@ -95,20 +95,14 @@ public class DbController extends ControllerBase {
 		String connId = req.queryParams("id");
 		boolean refresh = req.queryParams("refresh") != null ? 
 				Boolean.parseBoolean(req.queryParams("refresh")) : false;
-		DbInfo dbInfo = dbDao.getDb(connId, userId);
+		DbInfo dbInfo = dbDao.getDb(connId, userId, refresh);
 		if (dbInfo == null) {
 			throw new AppException("No database found with ID=" + connId);
 		}
 		req.attribute("dbInfo", dbInfo);
 		req.attribute("dbPhoto", ViewUtil.getDbPhoto(dbInfo));
 		
-		Map meta = dbInfo.getTables();
-		if (meta.isEmpty() || refresh) {
-			meta = dbDao.connect(connId, userId).getDbMetadata();
-			dbInfo.setTables(meta);
-		}
-		
-		req.attribute("tables", meta);
+		req.attribute("tables", dbInfo.getCache().getTables());
 		List<TreeNode> list = dbDao.getDbTree(userId);
 		TreeNode selected = list.stream().filter(n -> n.getId().equals(connId)).findFirst().get();    
 		selected.setState("expanded", true);
