@@ -35,7 +35,6 @@ function initTableActions(tabPanel) {
 		if (confirmDelete) {
 
 			dbConnId = $(this).parent().data('id');
-			alert("dbid = " + dbConnId);
 			$.ajax({
 			    url: '/db/info?connId=' + dbConnId,
 			    type: 'DELETE',

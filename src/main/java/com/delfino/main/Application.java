@@ -2,17 +2,16 @@ package com.delfino.main;
 
 import static spark.Spark.before;
 import static spark.Spark.delete;
+import static spark.Spark.exception;
 import static spark.Spark.get;
 import static spark.Spark.initExceptionHandler;
 import static spark.Spark.internalServerError;
-import static spark.Spark.exception;
 import static spark.Spark.notFound;
 import static spark.Spark.port;
 import static spark.Spark.post;
 import static spark.Spark.staticFiles;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.NoRouteToHostException;
 import java.sql.Driver;
@@ -27,14 +26,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.delfino.annotation.AppRoute;
-import com.delfino.controller.AdminController;
-import com.delfino.controller.DbController;
 import com.delfino.controller.ErrorController;
-import com.delfino.controller.UserController;
 import com.delfino.filter.RequestDataFilter;
 import com.delfino.filter.RequireAdminFilter;
 import com.delfino.filter.SkipAuthFilter;
-import com.delfino.util.AppException;
 import com.delfino.util.AppProperties;
 import com.delfino.util.Constants;
 
@@ -103,7 +98,6 @@ public class Application {
 		String dataDir = new File(AppProperties.get("data_dir")).getAbsolutePath();
 		AppProperties.getInstance().put("data_dir_absolute", dataDir);
 		
-		String packageRoot = Application.class.getPackage().getName().replace(".main", "");
 		Reflections reflections = new Reflections();
 		Set<Class<? extends Driver>> drivers = reflections.getSubTypesOf(Driver.class);
 		AppProperties.getInstance().put("jdbc_drivers", drivers);
