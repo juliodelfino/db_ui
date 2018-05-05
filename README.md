@@ -4,7 +4,7 @@ The most lightweight, high-speed, highly configurable, web-based database client
 Velocity's HTML templating, and the Ruby on Rails framework concepts. It supports virtually all types of databases, including MySQL, PostgreSQL, Microsoft SQL, Phoenix, and Ignite Cache, among others (as long as you can provide the necessary JDBC driver jar files to /lib folder).
 Take note, this is only a DATABASE VIEWER, and not a DATABASE ADMIN UI!
 
-![Home Page](https://github.com/juliodelfino/db_ui/raw/master/wiki/db-info-page.png)
+![Home Page](https://raw.githubusercontent.com/juliodelfino/db_ui/master/wiki/db-info-page.png)
 
 ## High speed
 This application boots up in around 1000 milliseconds!
@@ -28,7 +28,7 @@ This application boots up in around 1000 milliseconds!
 - Enjoy!
 
 ### Windows
-- Download db-ui.tar.gz file (8MB).
+- Download db-ui.tar.gz file (less than 20MB).
 - Use 7zip to extract this tar.gz file.
 - Download the JDBC driver jar files you need and place it in /lib folder. Some of them may have already been there (actually, only MySQL library is in there).
 - Update the config/application.properties. Change the data_dir to point to a writeable directory.
