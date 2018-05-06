@@ -55,7 +55,7 @@ public class TableController extends ControllerBase {
 					return exAdaptor.convert(ex);
 				}
 			} else {
-				return exAdaptor.convert(new SQLException("Unable to execute: " + sql));
+				return exAdaptor.convert(new SQLException("Unknown starting keyword: " + sql));
 			}
 		}
 		return result;
