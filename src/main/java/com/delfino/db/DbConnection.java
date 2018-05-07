@@ -1,5 +1,6 @@
 package com.delfino.db;
 
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
@@ -24,6 +25,7 @@ import com.delfino.model.Column;
 import com.delfino.model.DbInfo;
 import com.delfino.model.TableInfo;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -220,5 +222,42 @@ public class DbConnection {
 		} catch (SQLException e) {
 			LOGGER.error(e.getMessage(), e);
 		}
+	}
+
+	public Object getData(String sql) throws SQLException, JsonProcessingException, ReflectiveOperationException {
+
+        ResultSet rs = null;
+        String result = "";
+        try {
+        	DatabaseMetaData md = getConnection().getMetaData();
+        	Method m = md.getClass().getMethod(sql);
+        	if (m != null) {
+        		Object tmp = m.invoke(md);
+        		if (tmp instanceof ResultSet) {
+            		result = gson.toJson(adaptor.convert((ResultSet) tmp));
+        		} else {
+            		result = gson.toJson(ImmutableMap.of(
+            				"columns", Arrays.asList(new Column("yo")),
+        					"data", Arrays.asList(Arrays.asList(tmp + ""))));
+        		}
+        	}
+        	else if (sql.startsWith("TYPEINFO")) {
+        		result = gson.toJson(adaptor.convert(md.getTypeInfo()));
+        	} else if (sql.startsWith("SCHEMAS")) {
+        		result = gson.toJson(adaptor.convert(md.getSchemas()));
+        	} else if (sql.startsWith("CATALOGS")) {
+        		result = gson.toJson(adaptor.convert(md.getCatalogs()));
+        	} else if (sql.startsWith("CLIENTINFO")) {
+        		result = gson.toJson(adaptor.convert(md.getClientInfoProperties()));
+        	} else {
+        		throw new SQLException("unknown command: " + sql);
+        	}
+        }
+        finally {
+        	if (rs != null) {
+        		rs.close();
+        	}
+        }
+        return result;
 	}
 }
