@@ -16,6 +16,8 @@ import com.delfino.model.DbCacheSchema;
 import com.delfino.model.DbInfo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import spark.utils.StringUtils;
+
 public class ResultSetAdaptor implements Adaptor<ResultSet, Map> {
 	
 	public Map convert(ResultSet rs) throws JsonProcessingException, SQLException {
@@ -31,7 +33,7 @@ public class ResultSetAdaptor implements Adaptor<ResultSet, Map> {
         for (int i = 1; i <= metaData.getColumnCount(); i++) {
             String columnName = metaData.getColumnName(i);
             Column col = new Column(columnName);
-            if (dbInfo != null) {
+            if (dbInfo != null && StringUtils.isNotEmpty(metaData.getTableName(i))) {
 	            String tableName = metaData.getTableName(i);
 	            col.setPrimaryKey(
 	            	dbInfo.getTable(tableName).getPrimaryKeys().contains(columnName));

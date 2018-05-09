@@ -1,6 +1,5 @@
 package com.delfino.controller;
 
-import java.sql.SQLException;
 import java.util.List;
 
 import com.delfino.adaptor.ExceptionAdaptor;
