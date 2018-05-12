@@ -19,7 +19,7 @@ public class ListAdaptor implements Adaptor<Collection, String> {
 	private Gson gson = new GsonBuilder().create();
 
 	@Override
-	public String convert(Collection input) throws Exception {
+	public String convert(Collection input) {
 
 		List<Column> columns = new ArrayList<Column>();
 
