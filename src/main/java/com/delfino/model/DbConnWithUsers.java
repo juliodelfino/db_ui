@@ -2,7 +2,7 @@ package com.delfino.model;
 
 import java.util.List;
 
-public class DbWithUsers extends DbInfo {
+public class DbConnWithUsers extends DbConnInfo {
 
 	private List<String> users;
 

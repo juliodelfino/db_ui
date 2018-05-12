@@ -5,11 +5,13 @@ var tableLoaderHtml = '<div><img class="center-block" src="/assets/images/loader
 //TO DELETE - END
 
 var dbConnId = null;
+var catalogName = null;
 var rowData = null;
 
 $(document).ready(function() {
 
 	dbConnId = getUrlVars()["id"];
+	catalogName = getUrlVars()["catalog"];
 	initTableActions('div');
 	$('#modal-title').html($('#db-table-name').text() + ' - Row Details');
 	
@@ -27,10 +29,10 @@ $(document).ready(function() {
 			  if (e.keyCode == 13) {
 		    // Ctrl-Enter pressed
 				 $('.exec-sql-form').trigger('submit'); 
-			  } else if (e.keyCode == 8 || e.keyCode == 88) {
+			  }
+			  else if (e.keyCode == 69) {
 				 $('#exec-sel-btn').trigger('click'); 
 			  }
-			  
 		  }
 		});
 	
@@ -113,6 +115,7 @@ function executeQuery(sql, tabPanel) {
 	$(tabPanel + ' .dynamic-table').html(tableLoaderHtml);
 	var params = {
 		connId: dbConnId,
+		catalog: catalogName,
 		q: sql
 	};
   	$.get("/table/query", params, function(result){

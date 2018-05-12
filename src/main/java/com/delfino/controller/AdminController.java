@@ -13,8 +13,8 @@ import com.delfino.annotation.AppRoute;
 import com.delfino.dao.DbInfoDao;
 import com.delfino.dao.UserDao;
 import com.delfino.dao.UserDbDao;
-import com.delfino.model.DbInfo;
-import com.delfino.model.DbWithUsers;
+import com.delfino.model.DbConnInfo;
+import com.delfino.model.DbConnWithUsers;
 import com.delfino.model.User;
 
 import spark.Route;
@@ -30,7 +30,7 @@ public class AdminController extends ControllerBase {
 	
 	@AppRoute(requireAdmin=true)
 	public Route getIndex = (req, res) -> {
-		List<DbInfo> dbList = dbInfoDao.getAll().stream()
+		List<DbConnInfo> dbList = dbInfoDao.getAll().stream()
 			.sorted((d1, d2) -> d1.getConnectionName().compareTo(d2.getConnectionName()))
 			.collect(Collectors.toList());
 		req.attribute("dbs", dbList);
@@ -57,7 +57,7 @@ public class AdminController extends ControllerBase {
 	public Route getDblist = (req, res) -> {
 		
 		List dbs = dbInfoDao.getAll().stream().map(db -> {
-				DbWithUsers dbu = new DbWithUsers();
+				DbConnWithUsers dbu = new DbConnWithUsers();
 				try {
 					BeanUtils.copyProperties(dbu, db);
 				} catch(ReflectiveOperationException ex) {

@@ -19,4 +19,7 @@ public interface Constants {
 	
 	String DATA_JSON = "data.json";
 	
+	static enum TreeNodeType {
+		DBCONN, CATALOG, TABLE
+	};
 }

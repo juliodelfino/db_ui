@@ -8,13 +8,13 @@ import java.util.stream.Collectors;
 
 import com.delfino.db.JsonDb;
 import com.delfino.db.JsonDbFactory;
-import com.delfino.model.DbSchema;
+import com.delfino.model.DbConnSchema;
 import com.delfino.util.AppProperties;
 import com.delfino.util.Constants;
 
 public class UserDbDao {
 
-	private JsonDb<DbSchema> jsonDb = JsonDbFactory.getInstance(Constants.DATA_JSON, DbSchema.class);
+	private JsonDb<DbConnSchema> jsonDb = JsonDbFactory.getInstance(Constants.DATA_JSON, DbConnSchema.class);
 
 	public void addUserDb(String userId, String connectionName) {
 		Set<String> dbList = getUserDbList(userId);		

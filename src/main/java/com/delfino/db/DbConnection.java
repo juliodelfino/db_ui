@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -20,9 +21,12 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.delfino.adaptor.CatalogInfoListAdaptor;
 import com.delfino.adaptor.ResultSetAdaptor;
+import com.delfino.adaptor.TableInfoListAdaptor;
+import com.delfino.model.CatalogInfo;
 import com.delfino.model.Column;
-import com.delfino.model.DbInfo;
+import com.delfino.model.DbConnInfo;
 import com.delfino.model.TableInfo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.ImmutableMap;
@@ -32,19 +36,21 @@ import com.google.gson.GsonBuilder;
 public class DbConnection {
 
     private ResultSetAdaptor adaptor = new ResultSetAdaptor();
+    private CatalogInfoListAdaptor catInfoAdaptor = new CatalogInfoListAdaptor();
+    private TableInfoListAdaptor tblInfoAdaptor = new TableInfoListAdaptor();
     private static final Logger LOGGER = LoggerFactory.getLogger(DbConnection.class);
     private Gson gson = new GsonBuilder()
     		.setDateFormat("yyyy-MM-dd HH:mm:ss").create();
-    private DbInfo dbInfo;
+    private DbConnInfo dbInfo;
     Connection conn = null;
 
-    public DbConnection(DbInfo dbInfo) throws SQLException {
+    public DbConnection(DbConnInfo dbInfo) throws SQLException {
         this.dbInfo = dbInfo;
         //test connection
         getConnection();
     }
     
-    private Connection getConnection() throws SQLException {
+    public Connection getConnection() throws SQLException {
     	if (conn == null || conn.isClosed()) {
     		conn = DriverManager
     	        .getConnection(dbInfo.getUrl(),dbInfo.getUsername(), dbInfo.getPassword());
@@ -52,14 +58,15 @@ public class DbConnection {
     	return conn;
     }
 
-    public String executeQuery(String sql) throws Exception  {
+    public String executeQuery(String sql, String catalogName) throws Exception  {
 
         ResultSet rs = null;
         String result = "";
         try {
+        	getConnection().setCatalog(catalogName);
             Statement stmt = getConnection().createStatement();
             rs = stmt.executeQuery(sql);
-            Map resultMap = adaptor.convert(rs, dbInfo);
+            Map resultMap = adaptor.convert(rs, dbInfo.getCache().getCatalogs().get(catalogName));
             result = gson.toJson(resultMap);
         }
         finally {
@@ -70,32 +77,42 @@ public class DbConnection {
         return result;
     }
 
-	public int executeUpdate(String sql) throws SQLException {
+	public int executeUpdate(String sql, String catalogName) throws SQLException {
 		
         int rs = 0;
+        getConnection().setCatalog(catalogName);
         Statement stmt = getConnection().createStatement();
         rs = stmt.executeUpdate(sql);
         stmt.close();
         return rs;
 	}
 
-	public Map getDbMetadata() throws SQLException {
+	public Map getDbCatalogs() throws SQLException {
         DatabaseMetaData md = getConnection().getMetaData();
+        Map<String, CatalogInfo> tableMap = new LinkedHashMap();
+        ResultSet rs = md.getCatalogs();
+        Collection<CatalogInfo> tables = catInfoAdaptor.convert(rs);
+        rs.close();
+        tables.stream().forEach(t -> {
+        	tableMap.put(t.getName(), t);
+        });
+        return tableMap;
+    }
+
+	public Map<String, TableInfo> getDbTables(String catalogName) throws SQLException {
+		getConnection().setCatalog(catalogName);
+		DatabaseMetaData md = getConnection().getMetaData();
         Map<String, TableInfo> tableMap = new LinkedHashMap();
-        ResultSet rs = md.getTables(null, null, "%", null);
-        List<TableInfo> tables = toTableInfos(rs).stream()
+        ResultSet rs = md.getTables(catalogName, null, "%", null);
+        List<TableInfo> tables = tblInfoAdaptor.convert(rs).stream()
         		.filter(t -> "TABLE".equals(t.getTableType()))
         		.collect(Collectors.toList());
-        
+        rs.close();
         for (TableInfo t : tables) {
         	try {
-				t.setPrimaryKeys(getPrimaryKeys(t.getName()));
+				t.setPrimaryKeys(getPrimaryKeys(catalogName, t.getName()));
 			} catch (JsonProcessingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+	        	LOGGER.error("Error retrieving primary keys of this table: " + t.getName(), e);
 			}
         	tableMap.put(t.getName(), t);
         }
@@ -110,7 +127,7 @@ public class DbConnection {
         	queryRowCountOneByOne(tableMap);
         }
         return tableMap;
-    }
+	}
 
 	private void queryRowCountOneByOne(Map<String, TableInfo> tableMap) {
         
@@ -144,21 +161,6 @@ public class DbConnection {
         rs.close();
 	}
 
-	private List<TableInfo> toTableInfos(ResultSet rs) throws SQLException {
-		List<TableInfo> values = new ArrayList();
-        while (rs.next()) {
-        	TableInfo tbl = new TableInfo(rs.getString("TABLE_NAME"));
-        	tbl.setTableCatalog(rs.getString("TABLE_CAT"));
-        	tbl.setTableSchema(rs.getString("TABLE_SCHEM"));
-        	tbl.setTableType(rs.getString("TABLE_TYPE"));
-        	tbl.setRemarks(rs.getString("REMARKS"));
-        	values.add(tbl);
-        }
-        rs.close();
-        values.sort((x, y) -> x.getName().compareTo(y.getName()));
-        return values;
-	}
-
 	public String getColumns(String table) throws SQLException, JsonProcessingException {
         DatabaseMetaData md = getConnection().getMetaData();
         ResultSet rs = md.getColumns(null, null, table, "%");
@@ -175,9 +177,9 @@ public class DbConnection {
 		}
 	}
 	
-	public Set getPrimaryKeys(String table) throws SQLException, JsonProcessingException   {
+	public Set getPrimaryKeys(String catalog, String table) throws SQLException, JsonProcessingException   {
         DatabaseMetaData md = getConnection().getMetaData();
-        ResultSet rs = md.getPrimaryKeys(null, null, table);
+        ResultSet rs = md.getPrimaryKeys(catalog, null, table);
         try {
 			Map map = adaptor.convert(rs);
 			List<List> keys = (List) filterByColumns(map, Arrays.asList("COLUMN_NAME")).get("data");
@@ -237,7 +239,7 @@ public class DbConnection {
             		result = gson.toJson(adaptor.convert((ResultSet) tmp));
         		} else {
             		result = gson.toJson(ImmutableMap.of(
-            				"columns", Arrays.asList(new Column("yo")),
+            				"columns", Arrays.asList(new Column("col1")),
         					"data", Arrays.asList(Arrays.asList(tmp + ""))));
         		}
         	}

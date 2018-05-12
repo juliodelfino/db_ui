@@ -12,7 +12,9 @@
 						<ol class="breadcrumb">
 							<li class="breadcrumb-item"><a href="/db">Home</a></li>
 							<li class="breadcrumb-item"><a
-								href="/db/dbinfo?id=$dbInfo.connId">$dbInfo.connectionName</a></li>
+								href="/db/dbconninfo?id=$dbInfo.connId">$dbInfo.connectionName</a></li>
+							<li class="breadcrumb-item"><a
+								href="/db/dbinfo?id=$dbInfo.connId&catalog=$catalog">$catalog</a></li>
 							<li class="breadcrumb-item active" id="db-table-name"
 								aria-current="page">$table.name</li>
 						</ol>
@@ -50,7 +52,7 @@
 							<span class="caret"></span>
 						</button>
 						<ul class="dropdown-menu dropdown-menu-right">
-							<li id="exec-sel-btn" title="[Ctrl+X] Execute selected text"><a href="#">Execute selected text</a></li>
+							<li id="exec-sel-btn" title="[Alt+X] Execute selected text"><a href="#">Execute selected text</a></li>
 							<li role="separator" class="divider"></li>
 							<li id="query-history-btn"><a href="#">Show query history</a></li>
 						</ul>

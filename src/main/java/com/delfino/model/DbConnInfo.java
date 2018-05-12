@@ -1,6 +1,6 @@
 package com.delfino.model;
 
-public class DbInfo {
+public class DbConnInfo {
 
     private String driver;
     private String url;
@@ -8,6 +8,7 @@ public class DbInfo {
     private String password;
     private String connectionName;
     private String connId;
+	private String defaultCatalog;
 
 	private transient String status = "Disconnected";
     private transient DbCacheSchema cache = new DbCacheSchema();
@@ -74,19 +75,29 @@ public class DbInfo {
 
 	public void setCache(DbCacheSchema dbCacheSchema) {
 		this.cache = dbCacheSchema;
+	}	
+	
+	public int getCatalogCount() {
+		return cache.getCatalogs().size();
+	}
+
+	/**
+	 * @return the defaultCatalog
+	 */
+	public String getDefaultCatalog() {
+		return defaultCatalog;
+	}
+
+	/**
+	 * @param defaultCatalog the defaultCatalog to set
+	 */
+	public void setDefaultCatalog(String defaultCatalog) {
+		this.defaultCatalog = defaultCatalog;
 	}
 
 	@Override
 	public String toString() {
 		return "DbInfo [driver=" + driver + ", url=" + url + ", username=" + username + ", password=" + password
 			+ ", connectionName=" + connectionName + ", connId=" + connId + "]";
-	}
-
-	public TableInfo getTable(String tableName) {
-		return cache.getTables().get(tableName);
-	}
-	
-	public int getTableCount() {
-		return cache.getTables().size();
 	}
 }

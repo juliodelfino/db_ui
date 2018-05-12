@@ -5,21 +5,19 @@ import java.util.Map;
 
 public class DbCacheSchema {
 	
-	private Map<String, TableInfo> tables = new HashMap<>();
+	private Map<String, CatalogInfo> catalogs = new HashMap<>();
 
 	/**
-	 * @return the tables
+	 * @return the catalogs
 	 */
-	public Map<String, TableInfo> getTables() {
-		return tables;
+	public Map<String, CatalogInfo> getCatalogs() {
+		return catalogs;
 	}
 
 	/**
-	 * @param tables the tables to set
+	 * @param catalogs the catalogs to set
 	 */
-	public void setTables(Map<String, TableInfo> tables) {
-		this.tables = tables;
+	public void setCatalogs(Map<String, CatalogInfo> catalogs) {
+		this.catalogs = catalogs;
 	}
-	
-	
 }

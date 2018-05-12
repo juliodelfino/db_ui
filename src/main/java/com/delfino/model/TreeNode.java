@@ -3,6 +3,7 @@ package com.delfino.model;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import com.delfino.util.Constants.TreeNodeType;
 
 /**
  * Model class for jonmiles/bootstrap-treeview nodes.
@@ -18,17 +19,26 @@ public class TreeNode {
 	List<TreeNode> nodes;
 	Map<String, Boolean> state;
 	
-	public TreeNode(String id, String text, TreeNode parent) {
+	public TreeNode(String connId, String catalogName, String tableName, String text, TreeNodeType type) {
 		setText(text);
-		this.id = id;
 		state = new HashMap();
 		state.put("expanded", false);
-		if (parent == null) {
-			setHref("/db/dbinfo?id=" + id);
+		if (type == TreeNodeType.DBCONN) {
+			this.id = connId;
+			setHref("/db/dbconninfo?id=" + id);
 			setIcon("glyphicon glyphicon-briefcase");
-		} else {
-			setHref("/table?id=" + parent.id + "&table=" + text);
+		} else if (type == TreeNodeType.CATALOG) {
+			this.id = connId + catalogName;
+			setHref("/db/dbinfo?id=" + connId + "&catalog=" + catalogName);
+			setIcon("glyphicon glyphicon-book");
+		}
+		else if (type == TreeNodeType.TABLE) {
+			this.id = connId + catalogName + tableName;
+			setHref("/table?id=" + connId + "&catalog=" + catalogName + "&table=" + tableName);
 			setIcon("glyphicon glyphicon-th-list");
+		}
+		else {
+			throw new IllegalStateException("Invalid TreeNodeType: " + type);
 		}
 	}
 	

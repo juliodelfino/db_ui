@@ -28,26 +28,26 @@
 	
 		<div class="col-sm-10 col-xs-12">
 			<div class="col-lg-12" style="border-bottom: 1px solid #ccc; margin-bottom: 10px">
-				<h4 style="font-style: italic; color: #bbb">DATABASES ($dbList.size())</h4>
+				<h4 style="font-style: italic; color: #bbb">DB CONNECTIONS ($dbList.size())</h4>
 			</div>
 			#foreach( $db in $dbList )
 			#set( $dbPhoto = $ViewUtil.getDbPhoto($db) )
 			<div class="col-md-4 col-sm-6 col-xs-12">
 				<div class="db-info-box row">
 					<div class="cell">
-						<a href="/db/dbinfo?id=$db.connId" class="db-info-header">
+						<a href="/db/dbconninfo?id=$db.connId" class="db-info-header">
 							$db.connectionName</a>
 					</div>
 					<div class="cell db-info-content">
 		
 						<div class="col-xs-4">
-							<a href="/db/dbinfo?id=$db.connId">
+							<a href="/db/dbconninfo?id=$db.connId">
 								<img src="$dbPhoto" />
 							</a>
 						</div>
 						<div class="col-xs-8" data-id="$db.connId">
 							<div><span class="text-muted">Status:</span> $db.status</div>
-							<div><span class="text-muted">Table count:</span> $db.tableCount</div>
+							<div><span class="text-muted">DB count:</span> $db.catalogCount</div>
 							<a href="#" class="btn btn-default btn-xs conn-info-btn">Connection Info</a>
 							#if ($SESSION_USER.admin)
 							<a href="#" class="btn btn-default btn-xs delete-dbinfo-btn">Delete</a>

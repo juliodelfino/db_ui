@@ -15,40 +15,42 @@ import java.util.stream.Stream;
 import com.delfino.db.DbConnection;
 import com.delfino.db.JsonDb;
 import com.delfino.db.JsonDbFactory;
+import com.delfino.model.CatalogInfo;
 import com.delfino.model.DbCacheSchema;
-import com.delfino.model.DbInfo;
-import com.delfino.model.DbSchema;
+import com.delfino.model.DbConnInfo;
+import com.delfino.model.DbConnSchema;
 import com.delfino.model.TreeNode;
 import com.delfino.model.UserCacheSchema;
 import com.delfino.util.AppProperties;
 import com.delfino.util.Constants;
+import com.delfino.util.Constants.TreeNodeType;
 
 import spark.utils.StringUtils;
 
 public class DbInfoDao {
 
-	private JsonDb<DbSchema> jsonDb = 
-		JsonDbFactory.getInstance(Constants.DATA_JSON, DbSchema.class);
+	private JsonDb<DbConnSchema> jsonDb = 
+		JsonDbFactory.getInstance(Constants.DATA_JSON, DbConnSchema.class);
 	private Map<String, DbConnection> dbConnMap = new HashMap<>();
 	private UserDbDao userDbDao = new UserDbDao();
 
-	public List<DbInfo> getAll() {
+	public List<DbConnInfo> getAll() {
 
 		return jsonDb.get().getDatabases().entrySet().stream()
 				.map(Entry::getValue)
 				.collect(Collectors.toList());
 	}
 	
-	public Map<String, DbInfo> getAll(String userId) {
+	public Map<String, DbConnInfo> getAll(String userId) {
 
 		Set<String> userDbs = userDbDao.getUserDbList(userId);
-		Map<String, DbInfo> dbMap = jsonDb.get().getDatabases().entrySet().stream()
+		Map<String, DbConnInfo> dbMap = jsonDb.get().getDatabases().entrySet().stream()
 				.filter(e -> userDbs.contains(e.getKey()))
 				.collect(Collectors.toMap(Entry::getKey, Entry::getValue));
 		return dbMap != null ? dbMap : new HashMap();
 	}
 
-	public boolean add(DbInfo dbInfo, String userId) {
+	public boolean add(DbConnInfo dbInfo, String userId) {
 		if (StringUtils.isEmpty(dbInfo.getConnId())) {
 			dbInfo.setConnId(UUID.randomUUID().toString().substring(0, 8));
 		}
@@ -58,9 +60,9 @@ public class DbInfoDao {
 		return jsonDb.save();
 	}
 
-	public boolean update(DbInfo dbInfoUpdate, String userId) throws SQLException {
+	public boolean update(DbConnInfo dbInfoUpdate, String userId) throws SQLException {
 
-		DbInfo dbInfo = getDb(dbInfoUpdate.getConnId(), userId);
+		DbConnInfo dbInfo = getDb(dbInfoUpdate.getConnId(), userId);
 		dbInfoUpdate.setUrl(dbInfo.getUrl());
 		dbInfoUpdate.setDriver(dbInfo.getDriver());
 		dbInfoUpdate.setUsername(dbInfo.getUsername());
@@ -69,7 +71,7 @@ public class DbInfoDao {
 		return jsonDb.save();
 	}
 
-	public boolean delete(DbInfo dbInfo, String userId) {
+	public boolean delete(DbConnInfo dbInfo, String userId) {
 		DbConnection dbConn = dbConnMap.get(dbInfo.getConnId());
 		if (dbConn != null) {
 			dbConn.close();
@@ -80,34 +82,43 @@ public class DbInfoDao {
 	}
 
 
-	public DbInfo getDb(String connId, String userId) throws SQLException {
+	public DbConnInfo getDb(String connId, String userId) throws SQLException {
 
 		return getDb(connId, userId, false);
 	}
 
-	public DbInfo getDb(String connId, String userId, boolean refresh) throws SQLException {
-		DbInfo dbInfo = getAll(userId).get(connId);
+	public DbConnInfo getDb(String connId, String userId, boolean refresh) throws SQLException {
+		DbConnInfo dbInfo = getAll(userId).get(connId);
 		if (dbInfo != null) {
 			JsonDb<DbCacheSchema> dbCache = 
 				JsonDbFactory.getInstance("dbcache_" + dbInfo.getConnId(), DbCacheSchema.class);
 			dbInfo.setCache(dbCache.get());
-			if (refresh || dbCache.get().getTables().isEmpty()) {
+			if (refresh || dbCache.get().getCatalogs().isEmpty()) {
 				updateCache(dbInfo);
 			}
 		}
 		return dbInfo;
 	}
 	
-	public boolean updateCache(DbInfo dbInfo) throws SQLException {
+	public boolean updateCache(DbConnInfo dbInfo) throws SQLException {
 		
 		JsonDb<DbCacheSchema> dbCache = 
 			JsonDbFactory.getInstance("dbcache_" + dbInfo.getConnId(), DbCacheSchema.class);
 		dbInfo.setCache(dbCache.get());
-		Map meta = connect(dbInfo).getDbMetadata();
-		dbCache.get().setTables(meta);
+		DbConnection dbConn = connect(dbInfo);
+		dbCache.get().setCatalogs(dbConn.getDbCatalogs());
 		boolean result = dbCache.save();
 		dbInfo.setCache(dbCache.get());
 		return result;
+	}
+
+	public boolean updateTableCache(DbConnInfo dbConnInfo, CatalogInfo cat) throws SQLException {
+		
+		JsonDb<DbCacheSchema> dbCache = 
+				JsonDbFactory.getInstance("dbcache_" + dbConnInfo.getConnId(), DbCacheSchema.class);
+		DbConnection dbConn = connect(dbConnInfo);
+		cat.setTables(dbConn.getDbTables(cat.getName()));
+		return dbCache.save();
 	}
 
 	public DbConnection connect(String connId, String userId) throws SQLException {
@@ -120,7 +131,7 @@ public class DbInfoDao {
 		return dbConn;
 	}
 
-	public DbConnection connect(DbInfo dbInfo) throws SQLException {
+	public DbConnection connect(DbConnInfo dbInfo) throws SQLException {
 
 		return new DbConnection(dbInfo);
 	}
@@ -128,13 +139,28 @@ public class DbInfoDao {
 	public List getDbTree(String userId) {
 		return getAll(userId).values()
 			.stream().map(db -> { 
-				TreeNode node = new TreeNode(db.getConnId(), db.getConnectionName(), null);
-				node.setNodes(db.getCache().getTables().values()
-					.stream().map(t -> new TreeNode(db.getConnId() + t.getName(), t.getName(), node))
-					.collect(Collectors.toList()));
+				TreeNode node = new TreeNode(db.getConnId(), null, null, db.getConnectionName(), TreeNodeType.DBCONN);
+				node.setNodes(getCatalogTree(db, node));
 				return node;
 			}).sorted((n1, n2) -> n1.getText().compareTo(n2.getText()))
 			.collect(Collectors.toList());
+	}
+
+	private List<TreeNode> getCatalogTree(DbConnInfo db, TreeNode parent) {
+		return db.getCache().getCatalogs().values()
+		.stream().map(cat -> {
+			
+			TreeNode node = new TreeNode(db.getConnId(), cat.getName(), null, cat.getName(), TreeNodeType.CATALOG);
+			node.setNodes(getTableTree(db, cat, node));
+			return node;
+		})
+		.collect(Collectors.toList());
+	}
+
+	private List<TreeNode> getTableTree(DbConnInfo db, CatalogInfo cat, TreeNode node) {
+		return cat.getTables().values()
+		.stream().map(t -> new TreeNode(db.getConnId(), cat.getName(),  t.getName(), t.getName(), TreeNodeType.TABLE))
+		.collect(Collectors.toList());
 	}
 
 	public void updateUserAccess(String connId, String[] users) {

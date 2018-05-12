@@ -3,22 +3,19 @@
 	<div class="row">
 		<table><tr>
 		<td>
-			<img id="primary-photo" src="/assets/images/db/catalog.png" /></td>
+			<img id="primary-photo" src="$dbPhoto" />
 		</td>
 		<td width="100%">
-			<h2>$catalog</h2>
+			<h2>$dbInfo.connectionName</h2>
 
 			<nav aria-label="breadcrumb">
 				<ol class="breadcrumb">
 					<li class="breadcrumb-item"><a href="/db">Home</a></li>
-					<li class="breadcrumb-item"><a
-						href="/db/dbconninfo?id=$dbInfo.connId">$dbInfo.connectionName</a></li>
-					<li class="breadcrumb-item active" aria-current="page">$catalog</a></li>
+					<li class="breadcrumb-item active" aria-current="page">$dbInfo.connectionName</a></li>
 				</ol>
 			</nav>
 			<div class="col-12 menu-bar">
-				<a class="btn btn-sm btn-info" id="refresh-btn"
-					href="/db/dbinfo?id=$dbInfo.connId&catalog=$catalog&refresh=true">REFRESH</a>
+				<button class="btn btn-sm btn-info" id="refresh-btn">REFRESH</button>
 				<button class="btn btn-sm btn-info conn-info-btn">CONNECTION INFO</button>
 				<button class="btn btn-sm btn-danger" id="delete-dbinfo-btn">DELETE</button>
 			</div>
@@ -33,26 +30,24 @@
 			
 		<div class="treeview col-sm-10 col-xs-12">
 			<div class="col-lg-12" style="border-bottom: 1px solid #ccc; margin-bottom: 10px">
-				<h4 style="font-style: italic; color: #bbb">TABLES ($tables.size())</h4>
+				<h4 style="font-style: italic; color: #bbb">DATABASES ($catalogs.size())</h4>
 			</div>
-			#foreach( $tbl in $tables )
+			#foreach( $cat in $catalogs )
 			<div class="col-md-4 col-sm-6 col-xs-12">
 				<div class="db-info-box row">
 					<div class="cell">
-						<a href="/table?id=$dbInfo.connId&catalog=$catalog&table=$tbl.name"
-							class="db-info-header">$tbl.name</a>
+						<a href="/db/dbinfo?id=$dbInfo.connId&catalog=$cat.name"
+							class="db-info-header">$cat.name</a>
 					</div>
 					<div class="cell db-info-content">
 		
 						<div class="col-xs-4">
-						<a href="/table?id=$dbInfo.connId&catalog=$catalog&table=$tbl.name">
-							<img src="/assets/images/db/table.png" />
+						<a href="/db/dbinfo?id=$dbInfo.connId&catalog=$cat.name">
+							<img src="/assets/images/db/catalog.png" />
 						</a>
 						</div>
 						<div class="col-xs-8">
-							<div><span class="text-muted">Catalog:</span> $!tbl.tableCatalog</div>
-							<div><span class="text-muted">Schema:</span> $!db.tableSchema</div>
-							<p><span class="text-muted">Row count:</span> $tbl.rowCount</p>
+							<p><span class="text-muted">Table count:</span> $cat.tableCount</p>
 						</div>
 					</div>
 				</div>

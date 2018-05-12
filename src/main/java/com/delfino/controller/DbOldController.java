@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 import com.delfino.adaptor.ExceptionAdaptor;
 import com.delfino.dao.DbInfoDao;
 import com.delfino.main.Application;
-import com.delfino.model.DbInfo;
+import com.delfino.model.DbConnInfo;
 import com.delfino.model.TableInfo;
 import com.delfino.util.AppException;
 import com.delfino.util.RequestUtil;
@@ -40,7 +40,7 @@ public class DbOldController extends ControllerBase {
 	public Route postConnectDb = (req, res) -> {
 
 		String userId = RequestUtil.getUsername(req);
-		DbInfo dbInfo = RequestUtil.extract(req, DbInfo.class);
+		DbConnInfo dbInfo = RequestUtil.extract(req, DbConnInfo.class);
 		try {
 			dbDao.connect(dbInfo);
 			dbInfo.setDriver(RequestUtil.getDbDriver(dbInfo.getUrl()));
@@ -56,7 +56,7 @@ public class DbOldController extends ControllerBase {
 
 		String userId = RequestUtil.getUsername(req);
 		String connId = req.queryParams("connId");
-		DbInfo dbInfo = (DbInfo) BeanUtils.cloneBean(dbDao.getDb(connId, userId));
+		DbConnInfo dbInfo = (DbConnInfo) BeanUtils.cloneBean(dbDao.getDb(connId, userId));
 		dbInfo.setPassword(null);
 		return gson.toJson(dbInfo);
 	};
@@ -64,14 +64,14 @@ public class DbOldController extends ControllerBase {
 	public Route postInfoUpdate = (req, res) -> {
 
 		String userId = RequestUtil.getUsername(req);
-		DbInfo dbInfoUpdate = RequestUtil.extract(req, DbInfo.class);
+		DbConnInfo dbInfoUpdate = RequestUtil.extract(req, DbConnInfo.class);
 		return dbDao.update(dbInfoUpdate, userId);
 	};
 
 	public Route deleteInfo = (req, res) -> {
 
 		String userId = RequestUtil.getUsername(req);
-		DbInfo dbInfoUpdate = RequestUtil.extract(req, DbInfo.class);
+		DbConnInfo dbInfoUpdate = RequestUtil.extract(req, DbConnInfo.class);
 		return dbDao.delete(dbInfoUpdate, userId);
 	};
 
@@ -86,14 +86,14 @@ public class DbOldController extends ControllerBase {
 		String userId = RequestUtil.getUsername(req);
 		Map map = new HashMap<>();
 		String connId = req.queryParams("connId");
-		try {
-			map.put("tables", dbDao.connect(connId, userId).getDbMetadata());
+//		try {
+//			map.put("tables", dbDao.connect(connId, userId).getDbMetadata());
 			return renderPage(req, map, "dbold/table_view.html");
-		} catch (SQLException ex) {
-			LOGGER.error(ex.getMessage(), ex);
-			map.put("exception", ex);
-			return renderPage(req, map, "dbold/error.html");
-		}
+//		} catch (SQLException ex) {
+//			LOGGER.error(ex.getMessage(), ex);
+//			map.put("exception", ex);
+//			return renderPage(req, map, "dbold/error.html");
+//		}
 	};
 
 	public Route getQuery = (req, res) -> {
@@ -101,7 +101,7 @@ public class DbOldController extends ControllerBase {
 		String userId = RequestUtil.getUsername(req);
 		String sql = req.queryParams("q");
 		String connId = req.queryParams("connId");
-		return dbDao.connect(connId, userId).executeQuery(sql);
+		return dbDao.connect(connId, userId).executeQuery(sql, "");
 	};
 
 	public Route getColumns = (req, res) -> {

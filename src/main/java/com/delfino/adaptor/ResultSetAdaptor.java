@@ -11,9 +11,10 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringEscapeUtils;
 
+import com.delfino.model.CatalogInfo;
 import com.delfino.model.Column;
 import com.delfino.model.DbCacheSchema;
-import com.delfino.model.DbInfo;
+import com.delfino.model.DbConnInfo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import spark.utils.StringUtils;
@@ -24,7 +25,7 @@ public class ResultSetAdaptor implements Adaptor<ResultSet, Map> {
 		return convert(rs, null);
 	}
     
-    public Map convert(ResultSet resultSet, DbInfo dbInfo) throws SQLException, JsonProcessingException {
+    public Map convert(ResultSet resultSet, CatalogInfo dbInfo) throws SQLException, JsonProcessingException {
 
         List<Column> columns = new ArrayList<Column>();
         List data = new ArrayList<>();

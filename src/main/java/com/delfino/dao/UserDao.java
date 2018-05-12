@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import com.delfino.db.JsonDb;
 import com.delfino.db.JsonDbFactory;
-import com.delfino.model.DbSchema;
+import com.delfino.model.DbConnSchema;
 import com.delfino.model.SqlLog;
 import com.delfino.model.User;
 import com.delfino.model.UserCacheSchema;
@@ -44,7 +44,7 @@ public class UserDao {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AppProperties.class);
 	private UserDbDao userDbDao = new UserDbDao();
 	
-	private JsonDb<DbSchema> jsonDb = JsonDbFactory.getInstance(Constants.DATA_JSON, DbSchema.class);
+	private JsonDb<DbConnSchema> jsonDb = JsonDbFactory.getInstance(Constants.DATA_JSON, DbConnSchema.class);
 	private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 	
 	public UserDao() {

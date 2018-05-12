@@ -1,12 +1,12 @@
 package com.delfino.controller;
 
 import java.util.List;
-
 import com.delfino.adaptor.ExceptionAdaptor;
 import com.delfino.dao.DbInfoDao;
 import com.delfino.dao.UserDao;
 import com.delfino.db.DbConnection;
-import com.delfino.model.DbInfo;
+import com.delfino.model.CatalogInfo;
+import com.delfino.model.DbConnInfo;
 import com.delfino.model.TableInfo;
 import com.delfino.model.TreeNode;
 import com.delfino.util.AppException;
@@ -16,6 +16,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import spark.Route;
+import spark.utils.StringUtils;
 
 public class TableController extends ControllerBase {
 	
@@ -31,14 +32,18 @@ public class TableController extends ControllerBase {
 		String userId = RequestUtil.getUsername(req);
 		String sqlQuery = req.queryParams("q");
 		String connId = req.queryParams("connId");
+		String catalogName = req.queryParams("catalog");
 		DbConnection dbConn = dbDao.connect(connId, userId);
 		String result = "";
 		sqlQuery = sqlQuery.replaceAll("\n", "");
 		for (String sql : sqlQuery.split(";")) {
 			sql = sql.trim();
-			if (sql.matches("(SELECT|select).*")) {
+			if (StringUtils.isEmpty(sql)) {
+				continue;
+			}
+			else if (sql.matches("(SELECT|select).*")) {
 				try {
-					result = dbConn.executeQuery(sql);
+					result = dbConn.executeQuery(sql, catalogName);
 					userDao.saveQuery(sql, userId);
 				} catch (Exception ex) {
 					return exAdaptor.convert(ex);
@@ -47,7 +52,7 @@ public class TableController extends ControllerBase {
 					+ "CREATE|create|ALTER|alter|DROP|drop).*") && 
 				RequestUtil.getUser(req).isAdmin()) {
 				try {
-					result = dbConn.executeUpdate(sql) + " row(s) updated";
+					result = dbConn.executeUpdate(sql, catalogName) + " row(s) updated";
 					result = gson.toJson(ImmutableMap.of("message", result));
 					userDao.saveQuery(sql, userId);
 				} catch (Exception ex) {
@@ -77,23 +82,32 @@ public class TableController extends ControllerBase {
 
 		String userId = RequestUtil.getUsername(req);
 		String connId = req.queryParams("id");
+		String catalogName = req.queryParams("catalog");
 		String tableName = req.queryParams("table");
-		DbInfo dbInfo = dbDao.getDb(connId, userId);
+		DbConnInfo dbInfo = dbDao.getDb(connId, userId);
 		if (dbInfo == null) {
-			throw new AppException("No database found with ID=" + connId);
+			throw new AppException("No db connection found with ID=" + connId);
 		}
 		req.attribute("dbInfo", dbInfo);
-		TableInfo tblInfo = dbInfo.getTable(tableName);
+		CatalogInfo catInfo = dbInfo.getCache().getCatalogs().get(catalogName);
+		if (catInfo == null) {
+			throw new AppException("No database found with name=" + catalogName);
+		}
+		req.attribute("catalog", catalogName);
+		TableInfo tblInfo = catInfo.getTable(tableName);
 		if (tblInfo == null) {
 			throw new AppException("No table found with name=" + tableName);
 		}
 		req.attribute("table", tblInfo);
 		
 		List<TreeNode> list = dbDao.getDbTree(userId);
-		TreeNode selectedDb = list.stream().filter(n -> n.getId().equals(connId)).findFirst().get();    
-		TreeNode selectedNode = selectedDb.getNodes().stream().filter(n -> n.getText().equals(tableName)).findFirst().get();
+		TreeNode selectedDb = list.stream().filter(n -> n.getId().equals(connId)).findFirst().get();
+		TreeNode selectedCat = selectedDb.getNodes().stream().filter(n -> n.getText().equals(catalogName)).findFirst().get();
+		TreeNode selectedNode = selectedCat.getNodes().stream().filter(n -> n.getText().equals(tableName)).findFirst().get();
 		selectedDb.setState("expanded", true);
 		selectedDb.setState("selected", true);
+		selectedCat.setState("expanded", true);
+		selectedCat.setState("selected", true);
 		selectedNode.setState("selected", true);
 		req.attribute("DB_TREE_DATA", gson.toJson(list));
 		return renderContent(req, "table/index.html");

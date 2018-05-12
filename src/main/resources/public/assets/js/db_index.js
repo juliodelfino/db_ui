@@ -2,11 +2,6 @@
 $(document).ready(function() {
 
 	$.getScript('/assets/js/conn_info_dialog.js');
-	$('#dbtree').treeview({
-		data: dbtree_data,
-		enableLinks: true,
-		selectedBackColor: '#5bc0de'
-	});
 	initTableActions('div');
 	
 });

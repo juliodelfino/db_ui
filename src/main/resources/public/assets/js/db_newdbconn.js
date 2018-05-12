@@ -9,7 +9,9 @@ $(document).ready(function() {
         	if (result.error) {
         		alert(result.message);
         	} else {
-        		window.location.href = '/db/dbinfo?id=' + result.connId
+        		alert(JSON.stringify(result));
+        		window.location.href = '/db/dbinfo?id=' + result.connId 
+        			+ "&catalog="+result.defaultCatalog;
         	}
         });
     });
