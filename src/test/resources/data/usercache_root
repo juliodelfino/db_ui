@@ -1,0 +1,16 @@
+{
+  "queryLogs": [
+    {
+      "timestamp": "2018-05-12 15:25:22",
+      "log": "SELECT * FROM system_user LIMIT 30"
+    },
+    {
+      "timestamp": "2018-05-12 15:25:09",
+      "log": "SELECT * FROM ar_internal_metadata LIMIT 30"
+    },
+    {
+      "timestamp": "2018-05-10 00:56:57",
+      "log": "SELECT COUNT(*) AS \"COUNT\" FROM system_user"
+    }
+  ]
+}

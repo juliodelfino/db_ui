@@ -1,0 +1,31 @@
+{
+  "catalogs": {
+    "information_schema": {
+      "tables": {},
+      "name": "information_schema"
+    },
+    "mysql": {
+      "tables": {
+        "fb_users": {
+          "name": "fb_users",
+          "rowCount": 2,
+          "tableCatalog": "mysql",
+          "tableType": "TABLE",
+          "remarks": "",
+          "primaryKeys": [
+            "id"
+          ]
+        }
+      },
+      "name": "mysql"
+    },
+    "performance_schema": {
+      "tables": {},
+      "name": "performance_schema"
+    },
+    "sys": {
+      "tables": {},
+      "name": "sys"
+    }
+  }
+}
