@@ -41,7 +41,7 @@ public class JsonDbFactoryTest {
 		
 
 		JsonDb<UserCacheSchema> jsonUserCache = 
-				JsonDbFactory.getInstance("usercache_root", UserCacheSchema.class);
+				JsonDbFactory.getInstance("usercache_" + username, UserCacheSchema.class);
 		UserCacheSchema userSchema = jsonUserCache.get();
 		assertEquals(3, userSchema.getQueryLogs().size());
 		
