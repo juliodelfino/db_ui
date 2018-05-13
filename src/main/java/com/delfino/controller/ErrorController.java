@@ -1,7 +1,5 @@
 package com.delfino.controller;
 
-import com.delfino.util.AppException;
-
 import spark.Request;
 import spark.Route;
 
