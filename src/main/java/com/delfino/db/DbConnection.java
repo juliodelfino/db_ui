@@ -34,11 +34,12 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 public class DbConnection {
+	
+    private static final Logger LOGGER = LoggerFactory.getLogger(DbConnection.class);
 
     private ResultSetAdaptor adaptor = new ResultSetAdaptor();
     private CatalogInfoListAdaptor catInfoAdaptor = new CatalogInfoListAdaptor();
     private TableInfoListAdaptor tblInfoAdaptor = new TableInfoListAdaptor();
-    private static final Logger LOGGER = LoggerFactory.getLogger(DbConnection.class);
     private Gson gson = new GsonBuilder()
     		.setDateFormat("yyyy-MM-dd HH:mm:ss").create();
     private DbConnInfo dbInfo;
@@ -46,8 +47,6 @@ public class DbConnection {
 
     public DbConnection(DbConnInfo dbInfo) throws SQLException {
         this.dbInfo = dbInfo;
-        //test connection
-        getConnection();
     }
     
     public Connection getConnection() throws SQLException {
@@ -57,6 +56,11 @@ public class DbConnection {
     	}
     	return conn;
     }
+
+	public boolean testConnection() throws SQLException {
+		getConnection();
+		return true;
+	}
 
     public String executeQuery(String sql, String catalogName) throws Exception  {
 

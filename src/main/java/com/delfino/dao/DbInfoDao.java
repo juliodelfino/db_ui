@@ -126,6 +126,7 @@ public class DbInfoDao {
 		DbConnection dbConn = dbConnMap.get(connId);
 		if (dbConn == null) {
 			dbConn = new DbConnection(getDb(connId, userId));
+			dbConn.testConnection();
 			dbConnMap.put(connId, dbConn);
 		}
 		return dbConn;
@@ -133,7 +134,9 @@ public class DbInfoDao {
 
 	public DbConnection connect(DbConnInfo dbInfo) throws SQLException {
 
-		return new DbConnection(dbInfo);
+		DbConnection conn = new DbConnection(dbInfo);
+		conn.testConnection();
+		return conn;
 	}
 
 	public List getDbTree(String userId) {

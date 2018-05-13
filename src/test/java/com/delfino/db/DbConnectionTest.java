@@ -4,12 +4,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -21,52 +20,44 @@ import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.Mockito;
 
 import com.delfino.model.DbConnInfo;
 import com.delfino.util.TestUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({DbConnection.class})
 public class DbConnectionTest {
 
 	private Connection conn;
-	private DbConnInfo dbInfo;
+	private DbConnection sut;
 	private DatabaseMetaData dm;
 	
 	@Before
 	public void setup() throws SQLException {
 
-		mockStatic(DriverManager.class);
-		
 	    conn = mock(Connection.class);
-		dbInfo = new DbConnInfo();
+		DbConnInfo dbInfo = new DbConnInfo();
 		dbInfo.setUsername("root");
 		dbInfo.setPassword("yeah");
 		dbInfo.setUrl("jdbc:mysql://localhost");
 		
-		when(DriverManager.getConnection(dbInfo.getUrl(), dbInfo.getUsername(), dbInfo.getPassword()))
-        	.thenReturn(conn);
 		dm = mock(DatabaseMetaData.class);	
 		when(conn.getMetaData()).thenReturn(dm);
-		
+
+		DbConnection dbConn = new DbConnection(dbInfo);
+		sut = Mockito.spy(dbConn);
 	}
 	
 	@Test
 	public void testConnect() throws SQLException {
-		DbConnection sut = new DbConnection(dbInfo);
+		doReturn(conn).when(sut).getConnection();
 		assertEquals(conn, sut.getConnection());
 	}
 	
 	@Test
 	public void testGetDbCatalogs() throws SQLException {
 
-		DbConnection sut = new DbConnection(dbInfo);
+		doReturn(conn).when(sut).getConnection();
 		String catalog = "mysql";
 		ResultSet rs = mock(ResultSet.class);
 		when(dm.getCatalogs()).thenReturn(rs);
@@ -81,7 +72,7 @@ public class DbConnectionTest {
 	@Test
 	public void testGetPrimaryKeys() throws SQLException, JsonProcessingException {
 
-		DbConnection sut = new DbConnection(dbInfo);
+		doReturn(conn).when(sut).getConnection();
 		String catalog = "mysql";
 		String table = "fb_users";
 		int count = 1;
@@ -105,7 +96,7 @@ public class DbConnectionTest {
 	@Test
 	public void testGetDbTables() throws SQLException, JsonProcessingException {
 
-		DbConnection sut = new DbConnection(dbInfo);
+		doReturn(conn).when(sut).getConnection();
 		String catalog = "mysql";
 		String table = "fb_users";
 		int count = 1;
