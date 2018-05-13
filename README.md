@@ -1,4 +1,5 @@
-# Database UI Viewer [![Build Status](https://travis-ci.org/juliodelfino/db_ui.svg?branch=master)](https://travis-ci.org/juliodelfino/db_ui) [![Coverage Status](https://coveralls.io/repos/github/juliodelfino/db_ui/badge.png?branch=master)](https://coveralls.io/github/juliodelfino/db_ui?branch=master)
+# Database UI Viewer [![Build Status](https://travis-ci.org/juliodelfino/db_ui.svg?branch=master)](https://travis-ci.org/juliodelfino/db_ui) [![Coverage Status](https://coveralls.io/repos/github/juliodelfino/db_ui/badge.png?branch=master)](https://coveralls.io/github/juliodelfino/db_ui?branch=master) [![Coveralls github](https://img.shields.io/coveralls/github/juliodelfino/db_ui.svg)](https://coveralls.io/github/juliodelfino/db_ui?branch=master)
+
 
 Outdated badge: [![Coverage Status](https://coveralls.io/repos/github/juliodelfino/db_ui/badge.svg?branch=master)](https://coveralls.io/github/juliodelfino/db_ui?branch=master)
  
