@@ -2,6 +2,7 @@ package com.delfino.controller;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.BeforeClass;
@@ -15,9 +16,9 @@ import spark.Request;
 import spark.Response;
 import spark.Session;
 
-public class DbControllerTest {
+public class UserControllerTest {
 
-	private DbController testObj = new DbController();
+	private UserController testObj = new UserController();
 
 	private static Request req;
 	private static Response res;
@@ -37,19 +38,19 @@ public class DbControllerTest {
 	
 	@Test
 	public void testRoutes() throws Exception {
+
+		Mockito.when(req.queryParams("username")).thenReturn("root");
+		String html = (String)testObj.getInfo.handle(req, res);
+		assertFalse(html.contains(SERVER_ERROR));
+
+		html = (String)testObj.getLogout.handle(req, res);
+		assertNull(html);
+
+		html = (String)testObj.getLogin.handle(req, res);
+		assertNull(html);
 		
-		String html = (String)testObj.getIndex.handle(req, res);
-		assertFalse(html.contains(SERVER_ERROR));
-
-		Mockito.when(req.queryParams("id")).thenReturn("3e096c94");
-		html = (String)testObj.getDbConnInfo.handle(req, res);
-		assertFalse(html.contains(SERVER_ERROR));
-
-		Mockito.when(req.queryParams("catalog")).thenReturn("mysql");
-		html = (String)testObj.getDbInfo.handle(req, res);
-		assertFalse(html.contains(SERVER_ERROR));
-
-		html = (String)testObj.getNewDbConn.handle(req, res);
+		Mockito.when(req.session().attribute(Constants.SESSION_USER)).thenReturn(null);
+		html = (String)testObj.getLogin.handle(req, res);
 		assertFalse(html.contains(SERVER_ERROR));
 	}
 }
