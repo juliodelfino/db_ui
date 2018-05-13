@@ -38,12 +38,6 @@ public class AdminController extends ControllerBase {
 		req.attribute("users", userDao.getAll().stream()
 			.sorted((u1, u2) -> u1.getFullName().compareTo(u2.getFullName()))
 			.collect(Collectors.toList()));
-//		req.attribute("db_users", dbList.stream().collect(
-//			Collectors.toMap(db -> db.getConnId(), 
-//				db -> userDao.getDbUsers(db.getConnId())
-//					.stream().map(User::getUsername)
-//					.collect(Collectors.toList())
-//			)));
 		return renderContent(req, "admin/index.html");
 	};
 
