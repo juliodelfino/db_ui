@@ -1,4 +1,5 @@
 # Database UI Viewer
+[![Build Status](https://travis-ci.org/juliodelfino/db_ui.svg?branch=master)](https://travis-ci.org/juliodelfino/db_ui)
 
 The most lightweight, high-speed, highly configurable, web-based database client using Java's Spark Web,
 Velocity's HTML templating, and the Ruby on Rails framework concepts. It supports virtually all types of databases, including MySQL, PostgreSQL, Microsoft SQL, Phoenix, and Ignite Cache, among others (as long as you can provide the necessary JDBC driver jar files to /lib folder).
