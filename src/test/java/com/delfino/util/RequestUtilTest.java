@@ -19,7 +19,7 @@ public class RequestUtilTest {
 		User user = new User();
 		user.setUsername("jamie");
 
-	//	Mockito.when(req.session()).thenReturn(ses);
+		Mockito.when(req.session()).thenReturn(ses);
 		Mockito.when(req.session().attribute(Constants.SESSION_USER)).thenReturn(user);
 		assertEquals(user.getUsername(), RequestUtil.getUsername(req));
 		
