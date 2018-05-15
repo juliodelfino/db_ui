@@ -62,7 +62,7 @@ public class DbConnection {
 		return true;
 	}
 
-    public String executeQuery(String sql, String catalogName) throws Exception  {
+    public String executeQuery(String sql, String catalogName) throws SQLException, JsonProcessingException  {
 
         ResultSet rs = null;
         String result = "";

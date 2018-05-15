@@ -78,6 +78,9 @@ public class DbControllerTest {
 		String json = (String)testObj.postConnectDb.handle(req, res);
 		DbConnInfo dbInfo = new Gson().fromJson(json, DbConnInfo.class);
 		assertEquals("111", dbInfo.getConnId());
+
+		//test
+		assertTrue((boolean)testObj.postInfoUpdate.handle(req, res));
 		
 		//test
 		assertTrue((boolean)testObj.deleteInfo.handle(req, res));

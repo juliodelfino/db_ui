@@ -15,6 +15,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -25,6 +26,7 @@ import org.mockito.Mockito;
 import com.delfino.model.DbConnInfo;
 import com.delfino.util.TestUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.gson.Gson;
 
 public class DbConnectionTest {
 
@@ -122,5 +124,33 @@ public class DbConnectionTest {
 		Map map = sut.getDbTables(catalog);
 		assertEquals(count, map.size());
 		assertTrue(map.keySet().contains(table));
+	}
+	
+	@Test
+	public void testExecuteQuery() throws Exception {
+
+		doReturn(conn).when(sut).getConnection();
+		String catalog = "mysql";
+		String table = "fb_users";
+
+		ResultSet rs = TestUtils.getMockResultSet(new ArrayList());
+		when(dm.getPrimaryKeys(catalog, null, table)).thenReturn(rs);
+		
+		Statement stmt = mock(Statement.class);
+		when(conn.createStatement()).thenReturn(stmt);
+		ResultSet queryRs = TestUtils.getMockResultSet(
+				Arrays.asList(Arrays.asList(table, 1)));
+		when(stmt.executeQuery(any(String.class))).thenReturn(queryRs);
+
+		ResultSetMetaData rsmd = mock(ResultSetMetaData.class);
+		when(queryRs.getMetaData()).thenReturn(rsmd);
+		when(rsmd.getColumnCount()).thenReturn(0);
+		
+		//test
+		String json = sut.executeQuery("SELECT 1", catalog);
+		Map data = new Gson().fromJson(json, Map.class);
+
+		when(stmt.executeUpdate(any(String.class))).thenReturn(5);
+		assertEquals(5, sut.executeUpdate("INSERT INTO fb_users", catalog));
 	}
 }

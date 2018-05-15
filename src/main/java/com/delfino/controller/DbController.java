@@ -78,11 +78,11 @@ public class DbController extends ControllerBase {
 		return dbDao.delete(dbInfoUpdate, userId);
 	};
 
-	public Route getAllDb = (req, res) -> {
-
-		String userId = RequestUtil.getUsername(req);
-		return gson.toJson(dbDao.getAll(userId));
-	};
+//	public Route getAllDb = (req, res) -> {
+//
+//		String userId = RequestUtil.getUsername(req);
+//		return gson.toJson(dbDao.getAll(userId));
+//	};
 	
 	//new methods
 	public Route getIndex = (req, res) -> {
