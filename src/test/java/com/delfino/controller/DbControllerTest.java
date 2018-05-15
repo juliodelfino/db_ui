@@ -17,6 +17,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -35,6 +36,7 @@ import spark.Session;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({DbConnection.class})
+@PowerMockIgnore({"javax.crypto.*" })
 public class DbControllerTest {
 
 	private DbController testObj = new DbController();
@@ -89,11 +91,16 @@ public class DbControllerTest {
 	@Test
 	public void testRoutes() throws Exception {
 		
+		String connId = "3e096c94";
 		String html = (String)testObj.getIndex.handle(req, res);
 		assertFalse(html.contains(SERVER_ERROR));
 
-		when(req.queryParams("id")).thenReturn("3e096c94");
+		when(req.queryParams("id")).thenReturn(connId);
 		html = (String)testObj.getDbConnInfo.handle(req, res);
+		assertFalse(html.contains(SERVER_ERROR));
+
+		when(req.queryParams("connId")).thenReturn(connId);
+		html = (String)testObj.getInfo.handle(req, res);
 		assertFalse(html.contains(SERVER_ERROR));
 
 		when(req.queryParams("catalog")).thenReturn("mysql");

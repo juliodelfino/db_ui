@@ -1,7 +1,7 @@
 package com.delfino.dao;
 
+import java.security.GeneralSecurityException;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -12,6 +12,9 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.delfino.db.DbConnection;
 import com.delfino.db.JsonDb;
 import com.delfino.db.JsonDbFactory;
@@ -20,15 +23,15 @@ import com.delfino.model.DbCacheSchema;
 import com.delfino.model.DbConnInfo;
 import com.delfino.model.DbConnSchema;
 import com.delfino.model.TreeNode;
-import com.delfino.model.UserCacheSchema;
-import com.delfino.util.AppProperties;
 import com.delfino.util.Constants;
 import com.delfino.util.Constants.TreeNodeType;
+import com.delfino.util.CryptUtil;
 
 import spark.utils.StringUtils;
 
 public class DbInfoDao {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(DbInfoDao.class);
 	private JsonDb<DbConnSchema> jsonDb = 
 		JsonDbFactory.getInstance(Constants.DATA_JSON, DbConnSchema.class);
 	private Map<String, DbConnection> dbConnMap = new HashMap<>();
@@ -54,10 +57,23 @@ public class DbInfoDao {
 		if (StringUtils.isEmpty(dbInfo.getConnId())) {
 			dbInfo.setConnId(UUID.randomUUID().toString().substring(0, 8));
 		}
+		tryEncrypt(dbInfo);
 		jsonDb.get().getDatabases().put(dbInfo.getConnId(), dbInfo);
 		userDbDao.addUserDb(userId, dbInfo.getConnId());
 		
 		return jsonDb.save();
+	}
+
+	private void tryEncrypt(DbConnInfo dbInfo) {
+		if (!dbInfo.isEncrypted()) {
+			try {
+				dbInfo.setPassword(CryptUtil.encrypt(dbInfo.getPassword()));
+				dbInfo.setEncrypted(true);
+			} catch (GeneralSecurityException e) {
+				LOGGER.error("Error in encrypting db password", e);
+				e.printStackTrace();
+			}
+		}
 	}
 
 	public boolean update(DbConnInfo dbInfoUpdate, String userId) throws SQLException {
@@ -67,7 +83,13 @@ public class DbInfoDao {
 		dbInfoUpdate.setDriver(dbInfo.getDriver());
 		dbInfoUpdate.setUsername(dbInfo.getUsername());
 		dbInfoUpdate.setPassword(dbInfo.getPassword());
+		tryEncrypt(dbInfoUpdate);
 		jsonDb.get().getDatabases().put(dbInfoUpdate.getConnId(), dbInfoUpdate);
+		
+		//TODO: remove this all-encrypting snippet
+		jsonDb.get().getDatabases().values().forEach(db -> {
+			tryEncrypt(db);
+		});
 		return jsonDb.save();
 	}
 

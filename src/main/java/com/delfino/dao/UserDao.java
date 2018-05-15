@@ -3,12 +3,12 @@ package com.delfino.dao;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Date;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
@@ -31,8 +31,6 @@ import com.delfino.model.UserCacheSchema;
 import com.delfino.util.AppException;
 import com.delfino.util.AppProperties;
 import com.delfino.util.Constants;
-import com.delfino.util.RequestUtil;
-import com.google.gson.JsonElement;
 import com.unboundid.ldap.sdk.LDAPConnection;
 import com.unboundid.ldap.sdk.LDAPException;
 import com.unboundid.ldap.sdk.SimpleBindRequest;
@@ -41,7 +39,7 @@ import spark.utils.StringUtils;
 
 public class UserDao {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(AppProperties.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(UserDao.class);
 	private UserDbDao userDbDao = new UserDbDao();
 	
 	private JsonDb<DbConnSchema> jsonDb = JsonDbFactory.getInstance(Constants.DATA_JSON, DbConnSchema.class);

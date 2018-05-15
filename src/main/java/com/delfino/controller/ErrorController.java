@@ -1,14 +1,21 @@
 package com.delfino.controller;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import spark.Request;
 import spark.Route;
 
 public class ErrorController extends ControllerBase {
 
+	private Gson gson = new GsonBuilder().setPrettyPrinting().create();
+	
 	public Route internalServerError = (req, res) -> {
 		
 		generateExceptionMessage(req);
-		return renderContent(req, "error/500.html");
+		boolean ajax = "XMLHttpRequest".equals(req.headers("X-Requested-With"));
+		return ajax ? req.attribute("exceptionMessage") 
+				: renderContent(req, "error/500.html");
 	};
 
 	public Route notFound = (req, res) -> {
@@ -18,7 +25,9 @@ public class ErrorController extends ControllerBase {
 			req.attribute("exceptionMessage", 
 					"The web page " + req.pathInfo() + " doesn't exist.");
 		}
-		return renderContent(req, "error/404.html");
+		boolean ajax = "XMLHttpRequest".equals(req.headers("X-Requested-With"));
+		return ajax ? req.attribute("exceptionMessage") 
+				: renderContent(req, "error/404.html");
 	};
 
 	private void generateExceptionMessage(Request req) {

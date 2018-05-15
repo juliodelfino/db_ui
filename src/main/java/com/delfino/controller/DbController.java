@@ -51,14 +51,14 @@ public class DbController extends ControllerBase {
 		}
 	};
 
-//	public Route getInfo = (req, res) -> {
-//
-//		String userId = RequestUtil.getUsername(req);
-//		String connId = req.queryParams("connId");
-//		DbConnInfo dbInfo = (DbConnInfo) BeanUtils.cloneBean(dbDao.getDb(connId, userId));
-//		dbInfo.setPassword(null);
-//		return gson.toJson(dbInfo);
-//	};
+	public Route getInfo = (req, res) -> {
+
+		String userId = RequestUtil.getUsername(req);
+		String connId = req.queryParams("connId");
+		DbConnInfo dbInfo = (DbConnInfo) BeanUtils.cloneBean(dbDao.getDb(connId, userId));
+		dbInfo.setPassword(null);
+		return gson.toJson(dbInfo);
+	};
 
 	public Route postInfoUpdate = (req, res) -> {
 

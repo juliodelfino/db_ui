@@ -4,6 +4,8 @@ $(document).ready(function() {
         error: function (x, status, error) {
             if (x.status == 403 || x.status == 401) {
                 window.location.replace("/user/login");
+            } else if (x.status == 404 || x.status == 500) {
+            	alert("Error " + x.status + ": " + x.responseText);
             }
         }
     });

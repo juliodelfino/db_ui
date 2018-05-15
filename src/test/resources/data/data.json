@@ -17,7 +17,8 @@
       "driver": "mysql",
       "url": "jdbc:mysql://localhost",
       "username": "root",
-      "password": "yeah",
+      "password": "g/5nVYi2aM6jr97gd8DDrQ==",
+      "encrypted": true,
       "connectionName": "My Database",
       "connId": "3e096c94"
     }

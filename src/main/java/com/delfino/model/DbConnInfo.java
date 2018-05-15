@@ -6,6 +6,7 @@ public class DbConnInfo {
     private String url;
     private String username;
     private String password;
+    private boolean encrypted;
     private String connectionName;
     private String connId;
 	private String defaultCatalog;
@@ -99,5 +100,19 @@ public class DbConnInfo {
 	public String toString() {
 		return "DbInfo [driver=" + driver + ", url=" + url + ", username=" + username + ", password=" + password
 			+ ", connectionName=" + connectionName + ", connId=" + connId + "]";
+	}
+
+	/**
+	 * @return the encrypted
+	 */
+	public boolean isEncrypted() {
+		return encrypted;
+	}
+
+	/**
+	 * @param encrypted the encrypted to set
+	 */
+	public void setEncrypted(boolean encrypted) {
+		this.encrypted = encrypted;
 	}
 }

@@ -1,6 +1,7 @@
 package com.delfino.db;
 
 import java.lang.reflect.Method;
+import java.security.GeneralSecurityException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
@@ -28,6 +29,7 @@ import com.delfino.model.CatalogInfo;
 import com.delfino.model.Column;
 import com.delfino.model.DbConnInfo;
 import com.delfino.model.TableInfo;
+import com.delfino.util.CryptUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
@@ -51,8 +53,16 @@ public class DbConnection {
     
     public Connection getConnection() throws SQLException {
     	if (conn == null || conn.isClosed()) {
+    		String pass = dbInfo.getPassword();
+    		if (dbInfo.isEncrypted()) {
+    			try {
+					pass = CryptUtil.decrypt(pass);
+				} catch (GeneralSecurityException e) {
+					LOGGER.error("Error in decrypting db password", e);
+				}
+    		}
     		conn = DriverManager
-    	        .getConnection(dbInfo.getUrl(),dbInfo.getUsername(), dbInfo.getPassword());
+    	        .getConnection(dbInfo.getUrl(),dbInfo.getUsername(), pass);
     	}
     	return conn;
     }

@@ -40,6 +40,10 @@ $(document).ready(function() {
 	$( "#exec-sel-btn" ).tooltip();
 	
 	initQueryHistoryDialog();
+
+	$("#splitpanel").height(930).split({
+		orientation: 'vertical',limit:50, position: '15%'
+	});
 });
 
 function getUrlVars()

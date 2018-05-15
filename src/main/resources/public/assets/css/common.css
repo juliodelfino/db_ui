@@ -33,6 +33,10 @@
 	padding: 5px 8px !important;
 }
 
+.splitter_panel .vsplitter {
+	background: #eee !important;
+}
+
 #primary-photo {
 	width: 120px; 
 	margin: 0 10px

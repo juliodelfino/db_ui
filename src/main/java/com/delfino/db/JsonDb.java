@@ -20,7 +20,7 @@ public class JsonDb<T> {
 
     private static final Gson GSON = new GsonBuilder()
     		.setDateFormat("yyyy-MM-dd HH:mm:ss")
-    		.setPrettyPrinting().create();
+    		.setPrettyPrinting().disableHtmlEscaping().create();
 	private String dataFile;
 	private T dataCache;
 	
