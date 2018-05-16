@@ -175,9 +175,9 @@ public class DbConnection {
         rs.close();
 	}
 
-	public String getColumns(String table) throws SQLException, JsonProcessingException {
+	public String getColumns(String catalog, String table) throws SQLException, JsonProcessingException {
         DatabaseMetaData md = getConnection().getMetaData();
-        ResultSet rs = md.getColumns(null, null, table, "%");
+        ResultSet rs = md.getColumns(catalog, null, table, "%");
         try {
 			Map map = adaptor.convert(rs);
 			map = filterByColumns(map, 
@@ -257,15 +257,7 @@ public class DbConnection {
         					"data", Arrays.asList(Arrays.asList(tmp + ""))));
         		}
         	}
-        	else if (sql.startsWith("TYPEINFO")) {
-        		result = gson.toJson(adaptor.convert(md.getTypeInfo()));
-        	} else if (sql.startsWith("SCHEMAS")) {
-        		result = gson.toJson(adaptor.convert(md.getSchemas()));
-        	} else if (sql.startsWith("CATALOGS")) {
-        		result = gson.toJson(adaptor.convert(md.getCatalogs()));
-        	} else if (sql.startsWith("CLIENTINFO")) {
-        		result = gson.toJson(adaptor.convert(md.getClientInfoProperties()));
-        	} else {
+        	else {
         		throw new SQLException("unknown command: " + sql);
         	}
         }

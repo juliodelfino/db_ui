@@ -106,7 +106,8 @@ function getColumns(tableName, tabPanel) {
 	$(tabPanel + ' .dynamic-table').html(tableLoaderHtml);
 	var params = {
 		connId: dbConnId,
-		table: tableName
+		table: tableName,
+		catalog: catalogName
 	};
   	$.get("/table/columns", params, function(result){
   		result = JSON.parse(result);

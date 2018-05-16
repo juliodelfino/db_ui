@@ -88,7 +88,7 @@ public class TableControllerTest {
 		DbConnection conn = mock(DbConnection.class);
 		doReturn(conn).when(dbDao).connect(connId, userId);
 		TestUtils.setField(testObj, "dbDao", dbDao);
-		when(conn.getColumns(table)).thenReturn("");
+		when(conn.getColumns(null, table)).thenReturn("");
 
 		//test getIndex
 		String html = (String)testObj.getColumns.handle(req, res);

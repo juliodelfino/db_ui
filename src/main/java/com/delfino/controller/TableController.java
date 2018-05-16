@@ -71,8 +71,9 @@ public class TableController extends ControllerBase {
 		String userId = RequestUtil.getUsername(req);
 		String table = req.queryParams("table");
 		String connId = req.queryParams("connId");
+		String catalogName = req.queryParams("catalog");
 		try {
-			return dbDao.connect(connId, userId).getColumns(table);
+			return dbDao.connect(connId, userId).getColumns(catalogName, table);
 		} catch (Exception ex) {
 			return exAdaptor.convert(ex);
 		}

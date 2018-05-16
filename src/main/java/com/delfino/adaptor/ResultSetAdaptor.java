@@ -1,5 +1,8 @@
 package com.delfino.adaptor;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.sql.Blob;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -9,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 
 import com.delfino.model.CatalogInfo;
@@ -50,6 +54,14 @@ public class ResultSetAdaptor implements Adaptor<ResultSet, Map> {
             	if (value instanceof byte[]) {
             		value = Base64.getEncoder().encodeToString((byte[])value);
             		columns.get(i-1).setBlob(true);
+            	} else if (value instanceof Blob) {
+            		InputStream in = ((Blob) value).getBinaryStream();
+            		try {
+						value = Base64.getEncoder().encodeToString(IOUtils.toByteArray(in));
+	            		columns.get(i-1).setBlob(true);
+            		} catch (IOException e) {
+						throw new SQLException("Error in reading Blob object", e);
+					}
             	}
             	else if (value instanceof String) {
             		value = StringEscapeUtils.escapeHtml((String)value);

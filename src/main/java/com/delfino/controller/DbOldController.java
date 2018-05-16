@@ -109,6 +109,6 @@ public class DbOldController extends ControllerBase {
 		String userId = RequestUtil.getUsername(req);
 		String table = req.queryParams("table");
 		String connId = req.queryParams("connId");
-		return dbDao.connect(connId, userId).getColumns(table);
+		return dbDao.connect(connId, userId).getColumns(null, table);
 	};
 }

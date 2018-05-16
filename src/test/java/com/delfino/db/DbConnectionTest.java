@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -49,6 +50,11 @@ public class DbConnectionTest {
 		DbConnection dbConn = new DbConnection(dbInfo);
 		sut = Mockito.spy(dbConn);
 	}
+	
+    @After
+    public void teardown() throws SQLException {
+    	conn.close();
+    }
 	
 	@Test
 	public void testConnect() throws SQLException {
@@ -124,6 +130,10 @@ public class DbConnectionTest {
 		Map map = sut.getDbTables(catalog);
 		assertEquals(count, map.size());
 		assertTrue(map.keySet().contains(table));
+		
+		when(dm.getColumns(catalog, null, table, "%")).thenReturn(rs);
+		String result = sut.getColumns(catalog, table);
+		new Gson().fromJson(result, Map.class);
 	}
 	
 	@Test
@@ -145,12 +155,16 @@ public class DbConnectionTest {
 		ResultSetMetaData rsmd = mock(ResultSetMetaData.class);
 		when(queryRs.getMetaData()).thenReturn(rsmd);
 		when(rsmd.getColumnCount()).thenReturn(0);
+		Gson gson = new Gson();
 		
 		//test
 		String json = sut.executeQuery("SELECT 1", catalog);
-		Map data = new Gson().fromJson(json, Map.class);
+		Map data = gson.fromJson(json, Map.class);
 
 		when(stmt.executeUpdate(any(String.class))).thenReturn(5);
 		assertEquals(5, sut.executeUpdate("INSERT INTO fb_users", catalog));
+		
+		json = (String)sut.getData("getTypeInfo");
+		data = gson.fromJson(json, Map.class);
 	}
 }
