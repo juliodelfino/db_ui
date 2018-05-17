@@ -88,9 +88,9 @@ public class TableControllerTest {
 		DbConnection conn = mock(DbConnection.class);
 		doReturn(conn).when(dbDao).connect(connId, userId);
 		TestUtils.setField(testObj, "dbDao", dbDao);
-		when(conn.getColumns(null, table)).thenReturn("");
+		when(conn.getColumns(catalog, table)).thenReturn("");
 
-		//test getIndex
+		//test getColumns
 		String html = (String)testObj.getColumns.handle(req, res);
 		assertFalse(html.contains(SERVER_ERROR));
 	}
