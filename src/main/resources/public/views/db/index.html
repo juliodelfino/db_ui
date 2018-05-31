@@ -22,15 +22,15 @@
 	
 	<div class="row" id="splitpanel">
 	
-		<div id="dbtree" class="treeview col-sm-2 hidden-xs"></div>
+		<div id="dbtree" class="treeview hidden-xs"></div>
 	
-		<div class="row col-sm-10 col-xs-12">
-			<div class="col-lg-12" style="border-bottom: 1px solid #ccc; margin-bottom: 10px">
+		<div class="row">
+			<div class="col-lg-12 col-xs-11" style="border-bottom: 1px solid #ccc; margin-bottom: 10px">
 				<h4 style="font-style: italic; color: #bbb">DB CONNECTIONS ($dbList.size())</h4>
 			</div>
 			#foreach( $db in $dbList )
 			#set( $dbPhoto = $ViewUtil.getDbPhoto($db) )
-			<div class="col-md-4 col-sm-6 col-xs-12">
+			<div class="col-md-4 col-sm-6 col-xs-11">
 				<div class="db-info-box row">
 					<div class="cell">
 						<a href="/db/dbconninfo?id=$db.connId" class="db-info-header">
@@ -38,12 +38,12 @@
 					</div>
 					<div class="cell db-info-content">
 		
-						<div class="col-xs-4">
+						<div class="cell-img">
 							<a href="/db/dbconninfo?id=$db.connId">
 								<img src="$dbPhoto" />
 							</a>
 						</div>
-						<div class="col-xs-8" data-id="$db.connId">
+						<div class="cell-details" data-id="$db.connId">
 							<div><span class="text-muted">Status:</span> $db.status</div>
 							<div><span class="text-muted">DB count:</span> $db.catalogCount</div>
 							<a href="#" class="btn btn-default btn-xs conn-info-btn">Connection Info</a>

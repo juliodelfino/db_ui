@@ -6,15 +6,18 @@ var tableLoaderHtml = '<div><img class="center-block" src="/assets/images/loader
 
 var dbConnId = null;
 var catalogName = null;
+var schemaName = null;
 var rowData = null;
 
 $(document).ready(function() {
 
 	dbConnId = getUrlVars()["id"];
 	catalogName = getUrlVars()["catalog"];
+	schemaName = getUrlVars()["schema"];
 	initTableActions('div');
 	$('#modal-title').html($('#db-table-name').text() + ' - Row Details');
 	
+	dbtree_data = recomputeTreeModel(dbtree_data);
 	$('#dbtree').treeview({
 		data: dbtree_data,
 		enableLinks: true,
@@ -121,6 +124,7 @@ function executeQuery(sql, tabPanel) {
 	var params = {
 		connId: dbConnId,
 		catalog: catalogName,
+		schema: schemaName,
 		q: sql
 	};
   	$.get("/table/query", params, function(result){

@@ -2,6 +2,7 @@ package com.delfino.dao;
 
 import java.security.GeneralSecurityException;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -139,7 +140,7 @@ public class DbInfoDao {
 		JsonDb<DbCacheSchema> dbCache = 
 				JsonDbFactory.getInstance("dbcache_" + dbConnInfo.getConnId(), DbCacheSchema.class);
 		DbConnection dbConn = connect(dbConnInfo);
-		cat.setTables(dbConn.getDbTables(cat.getName()));
+		cat.setTables(dbConn.getDbTables(cat));
 		return dbCache.save();
 	}
 
@@ -164,7 +165,8 @@ public class DbInfoDao {
 	public List getDbTree(String userId) {
 		return getAll(userId).values()
 			.stream().map(db -> { 
-				TreeNode node = new TreeNode(db.getConnId(), null, null, db.getConnectionName(), TreeNodeType.DBCONN);
+				TreeNode node = new TreeNode(db.getConnId(), 
+					db.getConnectionName(), TreeNodeType.DBCONN);
 				node.setNodes(getCatalogTree(db, node));
 				return node;
 			}).sorted((n1, n2) -> n1.getText().compareTo(n2.getText()))
@@ -172,19 +174,36 @@ public class DbInfoDao {
 	}
 
 	private List<TreeNode> getCatalogTree(DbConnInfo db, TreeNode parent) {
-		return db.getCache().getCatalogs().values()
-		.stream().map(cat -> {
+		
+		Map<String, List<CatalogInfo>> groupedCatalogs = 
+			groupCatalogs(db.getCache().getCatalogs().values());
+		
+		return groupedCatalogs.entrySet().stream().map(e -> {
 			
-			TreeNode node = new TreeNode(db.getConnId(), cat.getName(), null, cat.getName(), TreeNodeType.CATALOG);
-			node.setNodes(getTableTree(db, cat, node));
+			TreeNode node = new TreeNode(e.getKey(), e.getKey(), TreeNodeType.CATALOG);
+			node.setNodes(getSchemaTree(db, e.getValue(), node));
 			return node;
 		})
 		.collect(Collectors.toList());
 	}
 
+	private List<TreeNode> getSchemaTree(DbConnInfo db, List<CatalogInfo> schemas, TreeNode parent) {
+		
+		return schemas.stream().map(cat -> {	
+			
+			TreeNode node = new TreeNode(cat.getSchema(), cat.getSchema(), TreeNodeType.SCHEMA);
+			node.setNodes(getTableTree(db, cat, node));
+			return node;
+		}).collect(Collectors.toList());
+	}
+
+	private Map<String, List<CatalogInfo>> groupCatalogs(Collection<CatalogInfo> values) {
+		return values.stream().collect(Collectors.groupingBy(CatalogInfo::getCatalog));
+	}
+
 	private List<TreeNode> getTableTree(DbConnInfo db, CatalogInfo cat, TreeNode node) {
 		return cat.getTables().values()
-		.stream().map(t -> new TreeNode(db.getConnId(), cat.getName(),  t.getName(), t.getName(), TreeNodeType.TABLE))
+		.stream().map(t -> new TreeNode(t.getName(), t.getName(), TreeNodeType.TABLE))
 		.collect(Collectors.toList());
 	}
 

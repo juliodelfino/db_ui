@@ -30,6 +30,7 @@ import com.delfino.model.Column;
 import com.delfino.model.DbConnInfo;
 import com.delfino.model.TableInfo;
 import com.delfino.util.CryptUtil;
+import com.delfino.util.DbUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
@@ -72,15 +73,15 @@ public class DbConnection {
 		return true;
 	}
 
-    public String executeQuery(String sql, String catalogName) throws SQLException, JsonProcessingException  {
+    public String executeQuery(String sql, CatalogInfo cat) throws SQLException, JsonProcessingException  {
 
         ResultSet rs = null;
         String result = "";
         try {
-        	getConnection().setCatalog(catalogName);
+        	DbUtil.setCatalogInfo(getConnection(), cat);
             Statement stmt = getConnection().createStatement();
             rs = stmt.executeQuery(sql);
-            Map resultMap = adaptor.convert(rs, dbInfo.getCache().getCatalogs().get(catalogName));
+            Map resultMap = adaptor.convert(rs, dbInfo.getCache().getCatalogs().get(cat.getCatalog()));
             result = gson.toJson(resultMap);
         }
         finally {
@@ -91,10 +92,10 @@ public class DbConnection {
         return result;
     }
 
-	public int executeUpdate(String sql, String catalogName) throws SQLException {
+	public int executeUpdate(String sql, CatalogInfo cat) throws SQLException {
 		
         int rs = 0;
-        getConnection().setCatalog(catalogName);
+    	DbUtil.setCatalogInfo(getConnection(), cat);
         Statement stmt = getConnection().createStatement();
         rs = stmt.executeUpdate(sql);
         stmt.close();
@@ -103,43 +104,43 @@ public class DbConnection {
 
 	public Map getDbCatalogs() throws SQLException {
         DatabaseMetaData md = getConnection().getMetaData();
-        Map<String, CatalogInfo> tableMap = new LinkedHashMap();
-        ResultSet rs = md.getCatalogs();
-        Collection<CatalogInfo> tables = catInfoAdaptor.convert(rs);
+        Map<String, CatalogInfo> catalogMap = new LinkedHashMap();
+        ResultSet rs = md.supportsSchemasInTableDefinitions() ? md.getSchemas() : md.getCatalogs();
+        Collection<CatalogInfo> catalogs = catInfoAdaptor.convert(rs);
         rs.close();
-        tables.stream().forEach(t -> {
-        	tableMap.put(t.getName(), t);
+        catalogs.stream().forEach(t -> {
+        	catalogMap.put(t.getName(), t);
         });
-        return tableMap;
+        return catalogMap;
     }
 
-	public Map<String, TableInfo> getDbTables(String catalogName) throws SQLException {
-		getConnection().setCatalog(catalogName);
+	public Map<String, TableInfo> getDbTables(CatalogInfo catInfo) throws SQLException {
 		DatabaseMetaData md = getConnection().getMetaData();
         Map<String, TableInfo> tableMap = new LinkedHashMap();
-        ResultSet rs = md.getTables(catalogName, null, "%", null);
-        List<TableInfo> tables = tblInfoAdaptor.convert(rs).stream()
-        		.filter(t -> "TABLE".equals(t.getTableType()))
-        		.collect(Collectors.toList());
+        ResultSet rs = md.getTables(catInfo.getCatalog(), catInfo.getSchema(), "%", null);
+        List<TableInfo> tableList = tblInfoAdaptor.convert(rs);
+//        List<TableInfo> tables = tableList.stream()
+//        		.filter(t -> "TABLE".equals(t.getTableType()))
+//        		.collect(Collectors.toList());
         rs.close();
-        for (TableInfo t : tables) {
-        	try {
-				t.setPrimaryKeys(getPrimaryKeys(catalogName, t.getName()));
-			} catch (JsonProcessingException e) {
-	        	LOGGER.error("Error retrieving primary keys of this table: " + t.getName(), e);
-			}
+        for (TableInfo t : tableList) {
+        	if (t.getTableType().equals("TABLE")) {
+	        	try {
+					t.setPrimaryKeys(getPrimaryKeys(catInfo, t.getName()));
+				} catch (JsonProcessingException e) {
+		        	LOGGER.error("Error retrieving primary keys of this table: " + t.getName(), e);
+				}
+        	}
         	tableMap.put(t.getName(), t);
         }
-        tables.stream().forEach(t -> {
-        	tableMap.put(t.getName(), t);
-        });
         
-        try {
-        	queryAllRowCounts(tableMap);
-        } catch (SQLException sqlEx) {
-        	LOGGER.error(sqlEx.getMessage(), sqlEx);
-        	queryRowCountOneByOne(tableMap);
-        }
+        //THIS SLOWS DOWN THE RETRIEVAL OF TABLES
+//        try {
+//        	queryAllRowCounts(tableMap);
+//        } catch (SQLException sqlEx) {
+//        	LOGGER.error(sqlEx.getMessage(), sqlEx);
+//        	queryRowCountOneByOne(tableMap);
+//        }
         return tableMap;
 	}
 
@@ -175,9 +176,9 @@ public class DbConnection {
         rs.close();
 	}
 
-	public String getColumns(String catalog, String table) throws SQLException, JsonProcessingException {
+	public String getColumns(CatalogInfo cat, String table) throws SQLException, JsonProcessingException {
         DatabaseMetaData md = getConnection().getMetaData();
-        ResultSet rs = md.getColumns(catalog, null, table, "%");
+        ResultSet rs = md.getColumns(cat.getCatalog(), cat.getSchema(), table, "%");
         try {
 			Map map = adaptor.convert(rs);
 			map = filterByColumns(map, 
@@ -191,9 +192,9 @@ public class DbConnection {
 		}
 	}
 	
-	public Set getPrimaryKeys(String catalog, String table) throws SQLException, JsonProcessingException   {
+	public Set getPrimaryKeys(CatalogInfo cat, String table) throws SQLException, JsonProcessingException   {
         DatabaseMetaData md = getConnection().getMetaData();
-        ResultSet rs = md.getPrimaryKeys(catalog, null, table);
+        ResultSet rs = md.getPrimaryKeys(cat.getCatalog(), cat.getName(), table);
         try {
 			Map map = adaptor.convert(rs);
 			List<List> keys = (List) filterByColumns(map, Arrays.asList("COLUMN_NAME")).get("data");

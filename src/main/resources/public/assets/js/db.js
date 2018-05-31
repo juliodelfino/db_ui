@@ -2,6 +2,8 @@
 $(document).ready(function() {
 
 	if (typeof dbtree_data !== 'undefined') {
+		
+		dbtree_data = recomputeTreeModel(dbtree_data);
 		$('#dbtree').treeview({
 			data: dbtree_data,
 			enableLinks: true,

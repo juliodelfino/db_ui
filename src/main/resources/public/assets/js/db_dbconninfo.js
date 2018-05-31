@@ -12,7 +12,7 @@ $(document).ready(function() {
 	initTableActions('div');
 
 	$('#refresh-btn').click(function(){
-		window.location.href = "/db/dbinfo?id=" + dbConnId + "&refresh=true";
+		window.location.href = "/db/dbconninfo?id=" + dbConnId + "&refresh=true";
 	});
 	
 	$('#delete-dbinfo-btn').click(function(){

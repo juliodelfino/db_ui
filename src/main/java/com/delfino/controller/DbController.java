@@ -16,6 +16,7 @@ import com.delfino.model.CatalogInfo;
 import com.delfino.model.DbConnInfo;
 import com.delfino.model.TreeNode;
 import com.delfino.util.AppException;
+import com.delfino.util.DbUtil;
 import com.delfino.util.RequestUtil;
 import com.delfino.util.ViewUtil;
 import com.google.gson.Gson;
@@ -109,7 +110,6 @@ public class DbController extends ControllerBase {
 		req.attribute("catalogs", dbInfo.getCache().getCatalogs());
 		List<TreeNode> list = dbDao.getDbTree(userId);
 		TreeNode selected = list.stream().filter(n -> n.getId().equals(connId)).findFirst().get();    
-		selected.setState("expanded", true);
 		selected.setState("selected", true);
 		req.attribute("DB_TREE_DATA", gson.toJson(list));
 		dbInfo.setStatus("Active");
@@ -120,6 +120,7 @@ public class DbController extends ControllerBase {
 		String userId = RequestUtil.getUsername(req);
 		String connId = req.queryParams("id");
 		String catalogName = req.queryParams("catalog");
+		String schemaName = req.queryParams("schema");
 		boolean refresh = req.queryParams("refresh") != null ? 
 				Boolean.parseBoolean(req.queryParams("refresh")) : false;
 		DbConnInfo dbConnInfo = dbDao.getDb(connId, userId, refresh);
@@ -128,10 +129,15 @@ public class DbController extends ControllerBase {
 		}
 		req.attribute("dbInfo", dbConnInfo);
 		req.attribute("catalog", catalogName);
+		req.attribute("schema", schemaName == null ? "" : schemaName);
 		
-		CatalogInfo cat = dbConnInfo.getCache().getCatalogs().get(catalogName);
+		String catSchema = DbUtil.getUniqueName(catalogName, schemaName);
+		CatalogInfo cat = dbConnInfo.getCache().getCatalogs().get(catSchema);
 		if (cat == null) {
-			throw new AppException("No catalog found with name=" + catalogName);
+			if (!dbConnInfo.getCache().getCatalogs().keySet().stream().anyMatch(key -> key.startsWith(catalogName))) {
+				throw new AppException("No catalog found with name=" + catalogName);
+			}
+			cat = new CatalogInfo(catalogName, "%");
 		}
 		if (cat.getTables().isEmpty()) {
 			dbDao.updateTableCache(dbConnInfo, cat);
@@ -140,8 +146,6 @@ public class DbController extends ControllerBase {
 		List<TreeNode> list = dbDao.getDbTree(userId);
 		TreeNode selected = list.stream().filter(n -> n.getId().equals(connId)).findFirst().get(); 
 		TreeNode selectedCat = selected.getNodes().stream().filter(n -> n.getText().equals(catalogName)).findFirst().get();    
-		selected.setState("expanded", true);
-		selected.setState("selected", true);
 		selectedCat.setState("selected", true);
 		req.attribute("DB_TREE_DATA", gson.toJson(list));
 		dbConnInfo.setStatus("Active");

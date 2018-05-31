@@ -23,6 +23,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.delfino.dao.DbInfoDao;
 import com.delfino.db.DbConnection;
+import com.delfino.model.CatalogInfo;
 import com.delfino.model.User;
 import com.delfino.util.Constants;
 import com.delfino.util.TestUtils;
@@ -45,7 +46,7 @@ public class TableControllerTest {
 
 	private static String connId = "3e096c94";
 	private static String userId = "root";
-	private static String catalog = "mysql";
+	private static CatalogInfo catalog = new CatalogInfo("mysql", null);
 	private static String table = "fb_users";
 	
 	@BeforeClass
@@ -63,7 +64,7 @@ public class TableControllerTest {
 		when(req.session().attribute(Constants.SESSION_USER)).thenReturn(user);	
 		
 		when(req.queryParams("id")).thenReturn(connId);
-		when(req.queryParams("catalog")).thenReturn(catalog);
+		when(req.queryParams("catalog")).thenReturn(catalog.getCatalog());
 		when(req.queryParams("table")).thenReturn(table);
 		when(req.queryParams("connId")).thenReturn(connId);
 	}

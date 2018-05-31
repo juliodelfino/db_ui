@@ -24,6 +24,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import com.delfino.model.CatalogInfo;
 import com.delfino.model.DbConnInfo;
 import com.delfino.util.TestUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -81,12 +82,12 @@ public class DbConnectionTest {
 	public void testGetPrimaryKeys() throws SQLException, JsonProcessingException {
 
 		doReturn(conn).when(sut).getConnection();
-		String catalog = "mysql";
+		CatalogInfo cat = new CatalogInfo("mysql", null);
 		String table = "fb_users";
 		int count = 1;
 		String colname = "id";
 		ResultSet rs = mock(ResultSet.class);
-		when(dm.getPrimaryKeys(catalog, null, table)).thenReturn(rs);
+		when(dm.getPrimaryKeys(cat.getCatalog(), cat.getSchema(), table)).thenReturn(rs);
 		ResultSetMetaData rsmd = mock(ResultSetMetaData.class);
 		when(rs.getMetaData()).thenReturn(rsmd);
 		when(rsmd.getColumnCount()).thenReturn(count);
@@ -96,7 +97,7 @@ public class DbConnectionTest {
 		when(rs.getObject(any(Integer.class))).thenReturn(colname);
 		
 		//test
-		Set set = sut.getPrimaryKeys(catalog, table);
+		Set set = sut.getPrimaryKeys(cat, table);
 		assertEquals(count, set.size());
 		assertTrue(set.contains(colname));
 	}
@@ -105,17 +106,17 @@ public class DbConnectionTest {
 	public void testGetDbTables() throws SQLException, JsonProcessingException {
 
 		doReturn(conn).when(sut).getConnection();
-		String catalog = "mysql";
+		CatalogInfo cat = new CatalogInfo("mysql", null);
 		String table = "fb_users";
 		int count = 1;
 		ResultSet rs = mock(ResultSet.class);
 		when(rs.next()).thenAnswer(TestUtils.getMockResultSet_next(1));
 		when(rs.getString("TABLE_NAME")).thenReturn(table);
 		when(rs.getString("TABLE_TYPE")).thenReturn("TABLE");
-		when(dm.getTables(catalog, null, "%", null)).thenReturn(rs);
+		when(dm.getTables(cat.getCatalog(), cat.getSchema(), "%", null)).thenReturn(rs);
 
 		rs = TestUtils.getMockResultSet(new ArrayList());
-		when(dm.getPrimaryKeys(catalog, null, table)).thenReturn(rs);
+		when(dm.getPrimaryKeys(cat.getCatalog(), cat.getSchema(), table)).thenReturn(rs);
 		ResultSetMetaData rsmd = mock(ResultSetMetaData.class);
 		when(rs.getMetaData()).thenReturn(rsmd);
 		when(rsmd.getColumnCount()).thenReturn(0);
@@ -127,12 +128,12 @@ public class DbConnectionTest {
 		when(stmt.executeQuery(any(String.class))).thenReturn(queryRs);
 		
 		//test
-		Map map = sut.getDbTables(catalog);
+		Map map = sut.getDbTables(cat);
 		assertEquals(count, map.size());
 		assertTrue(map.keySet().contains(table));
 		
-		when(dm.getColumns(catalog, null, table, "%")).thenReturn(rs);
-		String result = sut.getColumns(catalog, table);
+		when(dm.getColumns(cat.getCatalog(), cat.getSchema(), table, "%")).thenReturn(rs);
+		String result = sut.getColumns(cat, table);
 		new Gson().fromJson(result, Map.class);
 	}
 	
@@ -140,11 +141,11 @@ public class DbConnectionTest {
 	public void testExecuteQuery() throws Exception {
 
 		doReturn(conn).when(sut).getConnection();
-		String catalog = "mysql";
+		CatalogInfo cat = new CatalogInfo("mysql", null);
 		String table = "fb_users";
 
 		ResultSet rs = TestUtils.getMockResultSet(new ArrayList());
-		when(dm.getPrimaryKeys(catalog, null, table)).thenReturn(rs);
+		when(dm.getPrimaryKeys(cat.getCatalog(), cat.getSchema(), table)).thenReturn(rs);
 		
 		Statement stmt = mock(Statement.class);
 		when(conn.createStatement()).thenReturn(stmt);
@@ -158,11 +159,11 @@ public class DbConnectionTest {
 		Gson gson = new Gson();
 		
 		//test
-		String json = sut.executeQuery("SELECT 1", catalog);
+		String json = sut.executeQuery("SELECT 1", cat);
 		Map data = gson.fromJson(json, Map.class);
 
 		when(stmt.executeUpdate(any(String.class))).thenReturn(5);
-		assertEquals(5, sut.executeUpdate("INSERT INTO fb_users", catalog));
+		assertEquals(5, sut.executeUpdate("INSERT INTO fb_users", cat));
 		
 		json = (String)sut.getData("getTypeInfo");
 		data = gson.fromJson(json, Map.class);

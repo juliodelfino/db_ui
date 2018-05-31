@@ -22,6 +22,11 @@ body {
 	overflow: auto;
 }
 
+#mainpane {
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
 
 #query-history-dialog .list-group {
 	counter-reset: my-counter;
@@ -38,4 +43,16 @@ body {
 	border-radius: 4px;
 	padding: 6px 8px;
 	border: 1px solid #eee;
+}
+
+
+@media screen and (max-width: 767px) {
+	
+	#splitpanel .vsplitter {
+		display: none
+	}
+	
+	#splitpanel .right_panel {
+		width: 100% !important;
+	}
 }

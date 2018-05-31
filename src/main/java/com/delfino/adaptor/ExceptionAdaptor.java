@@ -18,7 +18,7 @@ public class ExceptionAdaptor implements Adaptor<Exception, String> {
 
         Map resultMap = new HashMap();
         resultMap.put("error", true);
-        resultMap.put("message", ex.getMessage());
+        resultMap.put("message", ex.getClass().getSimpleName() + ": " + ex.getMessage());
         
         try {
 			return mapper.writeValueAsString(resultMap);

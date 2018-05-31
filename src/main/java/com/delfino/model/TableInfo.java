@@ -1,5 +1,6 @@
 package com.delfino.model;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class TableInfo {
@@ -72,10 +73,13 @@ public class TableInfo {
 	}
 
 	public Set getPrimaryKeys() {
+		if (primaryKeys == null) {
+			primaryKeys = new HashSet<>();
+		}
 		return primaryKeys;
 	}
 	
-	public void setPrimaryKeys(Set primaryKeys) {
+	public void setPrimaryKeys(Set<String> primaryKeys) {
 		this.primaryKeys = primaryKeys;
 	}
 }

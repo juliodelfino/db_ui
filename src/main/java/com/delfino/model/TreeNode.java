@@ -15,37 +15,18 @@ public class TreeNode {
 	String id;
 	String text;
 	String href;
-	String icon;
 	List<TreeNode> nodes;
+	TreeNodeType type;
 	Map<String, Boolean> state;
 	
-	public TreeNode(String connId, String catalogName, String tableName, String text, TreeNodeType type) {
+	public TreeNode(String id, String text, TreeNodeType type) {
 		setText(text);
+		this.type = type;
 		state = new HashMap();
 		state.put("expanded", false);
-		if (type == TreeNodeType.DBCONN) {
-			this.id = connId;
-			setHref("/db/dbconninfo?id=" + id);
-			setIcon("glyphicon glyphicon-briefcase");
-		} else if (type == TreeNodeType.CATALOG) {
-			this.id = connId + catalogName;
-			setHref("/db/dbinfo?id=" + connId + "&catalog=" + catalogName);
-			setIcon("glyphicon glyphicon-book");
-		}
-		else if (type == TreeNodeType.TABLE) {
-			this.id = connId + catalogName + tableName;
-			setHref("/table?id=" + connId + "&catalog=" + catalogName + "&table=" + tableName);
-			setIcon("glyphicon glyphicon-th-list");
-		}
-		else {
-			throw new IllegalStateException("Invalid TreeNodeType: " + type);
-		}
+		this.id = id;
 	}
 	
-	private void setIcon(String iconCss) {
-		this.icon = iconCss;
-	}
-
 	public String getId() {
 		return id;
 	}
@@ -72,10 +53,6 @@ public class TreeNode {
 
 	public void setHref(String href) {
 		this.href = href;
-	}
-	
-	public static enum NodeType {
-		DB, TABLE
 	}
 
 	public void setState(String prop, boolean value) {

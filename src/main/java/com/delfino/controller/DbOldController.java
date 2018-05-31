@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import com.delfino.adaptor.ExceptionAdaptor;
 import com.delfino.dao.DbInfoDao;
 import com.delfino.main.Application;
+import com.delfino.model.CatalogInfo;
 import com.delfino.model.DbConnInfo;
 import com.delfino.model.TableInfo;
 import com.delfino.util.AppException;
@@ -101,7 +102,7 @@ public class DbOldController extends ControllerBase {
 		String userId = RequestUtil.getUsername(req);
 		String sql = req.queryParams("q");
 		String connId = req.queryParams("connId");
-		return dbDao.connect(connId, userId).executeQuery(sql, "");
+		return dbDao.connect(connId, userId).executeQuery(sql, new CatalogInfo());
 	};
 
 	public Route getColumns = (req, res) -> {
