@@ -97,6 +97,5 @@ function createLink(node) {
 	if (treeHrefMap[node.type] != null) {
 		url = treeHrefMap[node.type] + url;
 	}
-	console.log(url);
 	return url;	
 }

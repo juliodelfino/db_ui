@@ -149,7 +149,10 @@ function updateDynamicTable(result, tabPanel) {
 
 	$(tabPanel + ' .dynamic-table').html(
 			'<table class="hover"><thead><tr>' + tableHeaders + '</tr></thead></table>');
-
+	
+	result.columns[0].render = function(data, type, row, meta) {
+		return '<button class="btn btn-xs btn-primary id-btn">' + data + '</button>';
+	};
 	table = $(tabPanel + ' .dynamic-table table').DataTable({
 		destroy: true,
 		dom: 'Bfrtip',
@@ -168,32 +171,43 @@ function updateDynamicTable(result, tabPanel) {
 	
 	$(tabPanel + ' .dynamic-table tbody').on('dblclick', 'tr', function(){
 
-		var urlVars = getUrlVars();
 		rowData = table.row( this ).data();
-		var rowCols = table.settings().init().columns;
-		var div = $("<div>", {id: "somevalue", "class": "form-horizontal"});
-		for (i = 0; i < rowData.length; i++) {
-			
-			var isMultiline = rowData[i] == null || typeof rowData[i] != "string" ? 
-					false : (rowData[i].indexOf("\n") > -1);
-			var longText = rowData[i] == null || typeof rowData[i] != "string" ? 
-					false : rowData[i].length > 255;
-			var dlLink = rowCols[i].blob || isMultiline || longText? "<a href='javascript:downloadData(" 
-					+ i + ", " + rowCols[i].blob + ");'>Download data</a>" : "";
-
-			var readonly = rowCols[i].primaryKey ? "readonly='readonly'" : "";
-			var cellData = rowData[i] == null ? "" : rowData[i];
-			div.append("<div class='form-group'><label class='control-label col-xs-3'>"
-				+ rowCols[i].title + "</label><div class='col-xs-9'><input type='text' " 
-				+ " class='form-control' " + readonly + " value='" 
-				+ cellData + "' />" + dlLink + "</div></div>");
-		}
-		$('#myModal .modal-body').html(div);
-		$('#myModal').modal('show');
-		$('#myModal').on('shown.bs.modal', function () {
-		    $('#myModal').find('input:text').first().focus();
-		})  
+		displayRowDataDialog(rowData);
 	});
+	
+	$(tabPanel + ' .dynamic-table tbody').on('click', '.id-btn', function(){
+
+		rowData = table.row( $(this).parent() ).data();
+		displayRowDataDialog(rowData);
+	});
+}
+
+function displayRowDataDialog(rowData) {
+	
+	var urlVars = getUrlVars();
+	var rowCols = table.settings().init().columns;
+	var div = $("<div>", {id: "somevalue", "class": "form-horizontal"});
+	for (i = 0; i < rowData.length; i++) {
+		
+		var isMultiline = rowData[i] == null || typeof rowData[i] != "string" ? 
+				false : (rowData[i].indexOf("\n") > -1);
+		var longText = rowData[i] == null || typeof rowData[i] != "string" ? 
+				false : rowData[i].length > 255;
+		var dlLink = rowCols[i].blob || isMultiline || longText? "<a href='javascript:downloadData(" 
+				+ i + ", " + rowCols[i].blob + ");'>Download data</a>" : "";
+
+		var readonly = rowCols[i].primaryKey ? "readonly='readonly'" : "";
+		var cellData = rowData[i] == null ? "" : rowData[i];
+		div.append("<div class='form-group'><label class='control-label col-xs-3'>"
+			+ rowCols[i].title + "</label><div class='col-xs-9'><input type='text' " 
+			+ " class='form-control' " + readonly + " value='" 
+			+ cellData + "' />" + dlLink + "</div></div>");
+	}
+	$('#myModal .modal-body').html(div);
+	$('#myModal').modal('show');
+	$('#myModal').on('shown.bs.modal', function () {
+	    $('#myModal').find('input:text').first().focus();
+	}); 
 }
 
 function initQueryHistoryDialog() {
