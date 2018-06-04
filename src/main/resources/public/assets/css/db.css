@@ -67,10 +67,6 @@ body {
 		height: 100px;
 	}
 	
-	.db-info-box img {
-		width: 48px
-	}
-	
 	#splitpanel .vsplitter {
 		display: none
 	}

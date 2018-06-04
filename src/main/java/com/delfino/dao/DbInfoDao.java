@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -141,6 +143,11 @@ public class DbInfoDao {
 				JsonDbFactory.getInstance("dbcache_" + dbConnInfo.getConnId(), DbCacheSchema.class);
 		DbConnection dbConn = connect(dbConnInfo);
 		cat.setTables(dbConn.getDbTables(cat));
+		ExecutorService executor = Executors.newSingleThreadExecutor();
+		executor.submit(() -> {
+			dbConn.updateRowCount(cat.getTables());
+			dbCache.save();
+		});
 		return dbCache.save();
 	}
 

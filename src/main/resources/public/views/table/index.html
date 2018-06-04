@@ -4,7 +4,8 @@
 	<div class="row">
 		<table>
 			<tr>
-				<td><img id="primary-photo" src="/assets/images/db/table.png" /></td>
+			   #set ($pngFile = ${table.tableType.toLowerCase().replaceAll(' ', '_')})
+				<td><img id="primary-photo" src="/assets/images/db/${pngFile}.png" /></td>
 				<td width="100%">
 					<h2>$table.name</h2>
 
@@ -13,8 +14,14 @@
 							<li class="breadcrumb-item"><a href="/db">Home</a></li>
 							<li class="breadcrumb-item"><a
 								href="/db/dbconninfo?id=$dbInfo.connId">$dbInfo.connectionName</a></li>
+							#if ($StringUtils.isNotEmpty($catalog))							
 							<li class="breadcrumb-item"><a
 								href="/db/dbinfo?id=$dbInfo.connId&catalog=$catalog">$catalog</a></li>
+							#end
+							#if ($StringUtils.isNotEmpty($schema))							
+							<li class="breadcrumb-item"><a
+								href="/db/dbinfo?id=$dbInfo.connId&catalog=$catalog&schema=$schema">$schema</a></li>
+							#end
 							<li class="breadcrumb-item active" id="db-table-name"
 								aria-current="page">$table.name</li>
 						</ol>

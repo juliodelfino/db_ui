@@ -16,7 +16,9 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -119,9 +121,6 @@ public class DbConnection {
         Map<String, TableInfo> tableMap = new LinkedHashMap();
         ResultSet rs = md.getTables(catInfo.getCatalog(), catInfo.getSchema(), "%", null);
         List<TableInfo> tableList = tblInfoAdaptor.convert(rs);
-//        List<TableInfo> tables = tableList.stream()
-//        		.filter(t -> "TABLE".equals(t.getTableType()))
-//        		.collect(Collectors.toList());
         rs.close();
         for (TableInfo t : tableList) {
         	if (t.getTableType().equals("TABLE")) {
@@ -134,14 +133,22 @@ public class DbConnection {
         	tableMap.put(t.getName(), t);
         }
         
-        //THIS SLOWS DOWN THE RETRIEVAL OF TABLES
-//        try {
-//        	queryAllRowCounts(tableMap);
-//        } catch (SQLException sqlEx) {
-//        	LOGGER.error(sqlEx.getMessage(), sqlEx);
-//        	queryRowCountOneByOne(tableMap);
-//        }
         return tableMap;
+	}
+	
+	public void updateRowCount(Map<String, TableInfo> allTables) {
+		
+		Map<String, TableInfo> tableMap = allTables.entrySet().stream()
+				.filter(e -> e.getValue().getTableType().equals("TABLE"))
+				.collect(Collectors.toMap(Entry::getKey, Entry::getValue, 
+						(t1, t2) -> t1, LinkedHashMap::new));
+        //THIS SLOWS DOWN THE RETRIEVAL OF TABLES
+        try {
+        	queryAllRowCounts(tableMap);
+        } catch (SQLException sqlEx) {
+        	LOGGER.error(sqlEx.getMessage(), sqlEx);
+        	queryRowCountOneByOne(tableMap);
+        }
 	}
 
 	private void queryRowCountOneByOne(Map<String, TableInfo> tableMap) {
@@ -194,7 +201,7 @@ public class DbConnection {
 	
 	public Set getPrimaryKeys(CatalogInfo cat, String table) throws SQLException, JsonProcessingException   {
         DatabaseMetaData md = getConnection().getMetaData();
-        ResultSet rs = md.getPrimaryKeys(cat.getCatalog(), cat.getName(), table);
+        ResultSet rs = md.getPrimaryKeys(cat.getCatalog(), cat.getSchema(), table);
         try {
 			Map map = adaptor.convert(rs);
 			List<List> keys = (List) filterByColumns(map, Arrays.asList("COLUMN_NAME")).get("data");

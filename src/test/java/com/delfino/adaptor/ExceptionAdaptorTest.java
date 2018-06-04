@@ -23,6 +23,6 @@ public class ExceptionAdaptorTest {
 		
 		String result = adaptor.convert(ex);
 		Map map = gson.fromJson(result, Map.class);
-		assertEquals(ex.getMessage(), map.get("message"));
+		assertEquals(ex.getClass().getSimpleName() + ": " + ex.getMessage(), map.get("message"));
 	}
 }

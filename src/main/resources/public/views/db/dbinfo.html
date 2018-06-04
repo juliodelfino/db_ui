@@ -13,7 +13,12 @@
 					<li class="breadcrumb-item"><a href="/db">Home</a></li>
 					<li class="breadcrumb-item"><a
 						href="/db/dbconninfo?id=$dbInfo.connId">$dbInfo.connectionName</a></li>
+					#if ($StringUtils.isNotEmpty($catalog))
 					<li class="breadcrumb-item active" aria-current="page">$catalog</a></li>
+					#end
+					#if ($StringUtils.isNotEmpty($schema))
+					<li class="breadcrumb-item active" aria-current="page">$schema</a></li>
+					#end
 				</ol>
 			</nav>
 			<div class="col-12 menu-bar">
@@ -44,13 +49,15 @@
 					</div>
 					<div class="cell db-info-content">
 		
+		
+			   			#set ($pngFile = ${tbl.tableType.toLowerCase().replaceAll(' ', '_')})
 						<div class="cell-img">
-						<a href="/table?id=$dbInfo.connId&catalog=$catalog&schema=$schema&table=$tbl.name">
-							<img src="/assets/images/db/table.png" />
+						<a href="/table?id=$dbInfo.connId&catalog=$catalog&schema=${tbl.tableSchema}&table=$tbl.name">
+							<img src="/assets/images/db/${pngFile}.png" />
 						</a>
 						</div>
 						<div class="cell-details" style="overflow: hidden; min-height: 50px">
-							<div><span class="text-muted">Type:</span> $!tbl.tableType</div>
+							<div><span class="text-muted">Type:</span> $tbl.tableType</div>
 							<p><span class="text-muted">Row count:</span> $tbl.rowCount</p>
 						</div>
 					</div>

@@ -73,6 +73,33 @@ public class DbConnectionTest {
 		when(rs.getString("TABLE_CAT")).thenReturn(catalog);
 		when(rs.next()).thenAnswer(TestUtils.getMockResultSet_next(1));
 		
+		ResultSetMetaData rsmd = mock(ResultSetMetaData.class);
+		when(rs.getMetaData()).thenReturn(rsmd);
+		when(rsmd.getColumnCount()).thenReturn(1);
+		when(rsmd.getColumnLabel(1)).thenReturn("TABLE_CAT");
+		
+		//test
+		Map map = sut.getDbCatalogs();
+		assertTrue(map.keySet().contains(catalog));
+	}
+	
+	@Test
+	public void testGetDbCatalogAndSchema() throws SQLException {
+
+		doReturn(conn).when(sut).getConnection();
+		String catalog = "mysql";
+		ResultSet rs = mock(ResultSet.class);
+		when(dm.getCatalogs()).thenReturn(rs);
+		when(rs.getString("TABLE_CATALOG")).thenReturn(catalog);
+		when(rs.getString("TABLE_SCHEM")).thenReturn("");
+		when(rs.next()).thenAnswer(TestUtils.getMockResultSet_next(1));
+		
+		ResultSetMetaData rsmd = mock(ResultSetMetaData.class);
+		when(rs.getMetaData()).thenReturn(rsmd);
+		when(rsmd.getColumnCount()).thenReturn(2);
+		when(rsmd.getColumnLabel(1)).thenReturn("TABLE_CATALOG");
+		when(rsmd.getColumnLabel(2)).thenReturn("TABLE_SCHEM");
+		
 		//test
 		Map map = sut.getDbCatalogs();
 		assertTrue(map.keySet().contains(catalog));

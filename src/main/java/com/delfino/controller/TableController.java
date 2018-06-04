@@ -107,6 +107,7 @@ public class TableController extends ControllerBase {
 			throw new AppException("No database found with name=" + catSchema);
 		}
 		req.attribute("catalog", catalogName);
+		req.attribute("schema", schemaName);
 		TableInfo tblInfo = catInfo.getTable(tableName);
 		if (tblInfo == null) {
 			throw new AppException("No table found with name=" + tableName);
@@ -116,7 +117,7 @@ public class TableController extends ControllerBase {
 		List<TreeNode> dbTree = dbDao.getDbTree(userId);
 		TreeNode selectedNode = dbTree.stream().filter(n -> n.getId().equals(connId)).findFirst().get()
 			.getNodes().stream().filter(n -> n.getText().equals(catalogName)).findFirst().get()
-			.getNodes().stream().filter(n -> n.getText().equals(schemaName)).findFirst().get()
+			.getNodes().stream().filter(n -> StringUtils.isNotEmpty(schemaName) ? n.getText().equals(schemaName) : true).findFirst().get()
 			.getNodes().stream().filter(n -> n.getText().equals(tableName)).findFirst().get();
 
 		selectedNode.setState("selected", true);

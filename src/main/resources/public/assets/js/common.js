@@ -77,6 +77,9 @@ function createLink(node) {
 	var tmpNode = node;
 	while (tmpNode != null) {
 		
+		if (typeof tmpNode.id === 'undefined') {
+			tmpNode.id = "";
+		}
 		if (tmpNode.type == "TABLE") {
 			url = "&table=" + tmpNode.id + url;	
 		}	

@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.exception.VelocityException;
 import org.slf4j.Logger;
@@ -52,6 +53,7 @@ public abstract class ControllerBase {
         req.session().attributes().stream().forEach(
         		attr -> model.put(attr, req.session().attribute(attr)));
         model.put("ViewUtil", ViewUtil.class);
+        model.put("StringUtils", StringUtils.class);
         try {
         return TEMPLATE.render(
         		new ModelAndView(model, templatePath));

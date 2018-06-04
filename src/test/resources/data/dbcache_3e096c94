@@ -2,7 +2,7 @@
   "catalogs": {
     "information_schema": {
       "tables": {},
-      "name": "information_schema"
+      "catalog": "information_schema"
     },
     "mysql": {
       "tables": {
@@ -17,15 +17,15 @@
           ]
         }
       },
-      "name": "mysql"
+      "catalog": "mysql"
     },
     "performance_schema": {
       "tables": {},
-      "name": "performance_schema"
+      "catalog": "performance_schema"
     },
     "sys": {
       "tables": {},
-      "name": "sys"
+      "catalog": "sys"
     }
   }
 }

@@ -139,7 +139,7 @@ public class DbController extends ControllerBase {
 			}
 			cat = new CatalogInfo(catalogName, "%");
 		}
-		if (cat.getTables().isEmpty()) {
+		if (refresh || cat.getTables().isEmpty()) {
 			dbDao.updateTableCache(dbConnInfo, cat);
 		}
 		req.attribute("tables", cat.getTables());

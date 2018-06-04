@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -89,7 +91,7 @@ public class TableControllerTest {
 		DbConnection conn = mock(DbConnection.class);
 		doReturn(conn).when(dbDao).connect(connId, userId);
 		TestUtils.setField(testObj, "dbDao", dbDao);
-		when(conn.getColumns(catalog, table)).thenReturn("");
+		when(conn.getColumns(any(CatalogInfo.class), eq(table))).thenReturn("");
 
 		//test getColumns
 		String html = (String)testObj.getColumns.handle(req, res);
@@ -115,7 +117,7 @@ public class TableControllerTest {
 		
 		//test getQuery - SELECT
 		when(req.queryParams("q")).thenReturn(selectQuery);
-		when(conn.executeQuery(selectQuery, catalog)).thenReturn("{\"error\": false}");
+		when(conn.executeQuery(eq(selectQuery), any(CatalogInfo.class))).thenReturn("{\"error\": false}");
 		html = (String)testObj.getQuery.handle(req, res);
 		JsonObject json = new Gson().fromJson(html, JsonObject.class);
 		assertFalse(json.getAsJsonObject().get("error").getAsBoolean());
