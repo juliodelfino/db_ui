@@ -14,7 +14,6 @@ public class TreeNode {
 
 	String id;
 	String text;
-	String href;
 	List<TreeNode> nodes;
 	TreeNodeType type;
 	Map<String, Boolean> state;
@@ -31,10 +30,6 @@ public class TreeNode {
 		return id;
 	}
 
-	public void setId(String id) {
-		this.id = id;
-	}
-
 	public String getText() {
 		return text;
 	}
@@ -46,13 +41,6 @@ public class TreeNode {
 	}
 	public void setNodes(List<TreeNode> nodes) {
 		this.nodes = nodes;
-	}
-	public String getHref() {
-		return href;
-	}
-
-	public void setHref(String href) {
-		this.href = href;
 	}
 
 	public void setState(String prop, boolean value) {
