@@ -11,9 +11,11 @@ var rowData = null;
 
 $(document).ready(function() {
 
-	dbConnId = getUrlVars()["id"];
-	catalogName = getUrlVars()["catalog"];
-	schemaName = getUrlVars()["schema"];
+	var urlParams = getUrlVars();
+	dbConnId = urlParams["id"];
+	catalogName = urlParams["catalog"];
+	schemaName = urlParams["schema"];
+	var queryText = urlParams["q"];
 	initTableActions('div');
 	$('#modal-title').html($('#db-table-name').text() + ' - Row Details');
 	
@@ -24,7 +26,12 @@ $(document).ready(function() {
 		selectedBackColor: '#5bc0de'
 	});
 	
-	$('.q-alldata-btn').trigger('click');
+	if (typeof queryText === 'undefined') {
+		$('.q-alldata-btn').trigger('click');
+	} else {
+		$('.qbox').val(decodeURIComponent(queryText));
+		$('.exec-sql-form').trigger('submit'); 
+	}
 	
 	$('.qbox').keydown(function (e) {
 
@@ -43,6 +50,11 @@ $(document).ready(function() {
 	$( "#exec-sel-btn" ).tooltip();
 	
 	initQueryHistoryDialog();
+	
+	$("#share-btn").click(function(){
+		
+		copyToClipboard(getUrlToShare());
+	});
 
 	$("#splitpanel").height(930).split({
 		orientation: 'vertical',limit:50, position: '15%'
@@ -60,6 +72,23 @@ function getUrlVars()
         vars[hash[0]] = hash[1];
     }
     return vars;
+}
+
+function getUrlToShare()
+{
+	var url = window.location.href.slice(0, window.location.href.indexOf('?') + 1);
+	
+    var vars = [], hash;   
+    var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+    for(var i = 0; i < hashes.length; i++)
+    {
+        hash = hashes[i].split('=');
+        if (hash[0] !== 'q') {
+        	vars.push(hashes[i]);
+        }
+    }
+   	vars.push('q=' + $('.qbox').val());
+    return url + vars.join('&');
 }
 
 function initTableActions(tabPanel) {
@@ -169,11 +198,12 @@ function updateDynamicTable(result, tabPanel) {
 		}
 	});
 	
-	$(tabPanel + ' .dynamic-table tbody').on('dblclick', 'tr', function(){
-
-		rowData = table.row( this ).data();
-		displayRowDataDialog(rowData);
-	});
+	//enable display of Row details on double-clicking the row
+//	$(tabPanel + ' .dynamic-table tbody').on('dblclick', 'tr', function(){
+//
+//		rowData = table.row( this ).data();
+//		displayRowDataDialog(rowData);
+//	});
 	
 	$(tabPanel + ' .dynamic-table tbody').on('click', '.id-btn', function(){
 
@@ -251,7 +281,7 @@ function initQueryHistoryDialog() {
 	$("#query-history-dialog .modal-body").on('dblclick', '.list-group-item', function(){
 		var log = $(this).find('.log').text();
 		$('.qbox').val(function(i, text) {
-		    return text + log + "; ";
+		    return text + log + " ";
 		});
 		$('#query-history-dialog').modal('hide');
 	});

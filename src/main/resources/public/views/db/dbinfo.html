@@ -44,7 +44,7 @@
 			<div class="col-md-4 col-sm-6 col-xs-11">
 				<div class="db-info-box row">
 					<div class="cell">
-						<a href="/table?id=$dbInfo.connId&catalog=$catalog&schema=$schema&table=$tbl.name"
+						<a href="/table?id=$dbInfo.connId&catalog=$catalog&schema=${tbl.tableSchema}&table=$tbl.name"
 							class="db-info-header">$tbl.name</a>
 					</div>
 					<div class="cell db-info-content">

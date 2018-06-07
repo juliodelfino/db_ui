@@ -51,7 +51,7 @@
 					<div class="input-group-btn" style="vertical-align: top;">
 						<button
 							class="exec-btn btn btn-primary glyphicon glyphicon-flash" 
-							title="[Ctrl+Enter] Execute all">
+							data-placement="bottom" title="[Ctrl+Enter] Execute all">
 						</button><br/>
 						<button class="btn btn-default dropdown-toggle"
 							style=" padding: 1px 15px"
@@ -59,9 +59,11 @@
 							<span class="caret"></span>
 						</button>
 						<ul class="dropdown-menu dropdown-menu-right">
-							<li id="exec-sel-btn" title="[Alt+X] Execute selected text"><a href="#">Execute selected text</a></li>
+							<li id="exec-sel-btn" title="[Ctrl+E] Execute selected text"><a href="#">Execute selected text</a></li>
 							<li role="separator" class="divider"></li>
-							<li id="query-history-btn"><a href="#">Show query history</a></li>
+							<li id="query-history-btn"><a>Show query history</a></li>
+							<li role="separator" class="divider"></li>
+							<li id="share-btn"><a>Share URL (Copy to Clipboard)</a></li>
 						</ul>
 					</div>
 

@@ -9,6 +9,7 @@ import java.util.Map;
 import org.junit.Test;
 
 import com.delfino.model.User;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.Gson;
 
 public class ExceptionAdaptorTest {
