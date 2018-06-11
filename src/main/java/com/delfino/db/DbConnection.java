@@ -55,6 +55,7 @@ public class DbConnection {
     }
     
     public Connection getConnection() throws SQLException {
+    	try {
     	if (conn == null || conn.isClosed()) {
     		String pass = dbInfo.getPassword();
     		if (dbInfo.isEncrypted()) {
@@ -68,6 +69,10 @@ public class DbConnection {
     	        .getConnection(dbInfo.getUrl(),dbInfo.getUsername(), pass);
     	}
     	return conn;
+    	} catch (SQLException ex) {
+    		LOGGER.error("Error in connecting to {}", dbInfo.getUrl());
+    		throw ex;
+    	}
     }
 
 	public boolean testConnection() throws SQLException {
@@ -113,6 +118,32 @@ public class DbConnection {
         catalogs.stream().forEach(t -> {
         	catalogMap.put(t.getName(), t);
         });
+        catalogMap.putAll(getEmptyCatalogs());
+        return catalogMap;
+    }
+	
+	private Map getEmptyCatalogs() throws SQLException {
+        DatabaseMetaData md = getConnection().getMetaData();
+        Map<String, CatalogInfo> catalogMap = new LinkedHashMap();
+        ResultSet rs = md.getTables("", "", "%", null);
+        List<TableInfo> tableList = tblInfoAdaptor.convert(rs);
+        rs.close();
+        for (TableInfo t : tableList) {
+        	String catSchema = DbUtil.getUniqueName(t.getTableCatalog(), t.getTableSchema());
+        	CatalogInfo cat = catalogMap.get(catSchema);
+        	if (cat == null) {
+        		cat = new CatalogInfo(t.getTableCatalog(), t.getTableSchema());
+        		catalogMap.put(catSchema, cat);
+        	}
+        	cat.getTables().put(t.getName(), t);
+        	if (t.getTableType().equals("TABLE")) {
+	        	try {
+					t.setPrimaryKeys(getPrimaryKeys(cat, t.getName()));
+				} catch (JsonProcessingException e) {
+		        	LOGGER.error("Error retrieving primary keys of this table: " + t.getName(), e);
+				}
+        	}
+        }
         return catalogMap;
     }
 
