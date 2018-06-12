@@ -139,9 +139,9 @@ public class DbController extends ControllerBase {
 			}
 			cat = new CatalogInfo(catalogName, "%");
 		}
-		if (refresh || cat.getTables().isEmpty()) {
-			dbDao.updateTableCache(dbConnInfo, cat);
-		}
+//		if (refresh || cat.getTables().isEmpty()) {
+//			dbDao.updateTableCache(dbConnInfo, cat);
+//		}
 		req.attribute("tables", cat.getTables());
 		List<TreeNode> list = dbDao.getDbTree(userId);
 		TreeNode selected = list.stream().filter(n -> n.getId().equals(connId)).findFirst().get(); 

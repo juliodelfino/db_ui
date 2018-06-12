@@ -127,6 +127,7 @@ public class DbConnection {
         Map<String, CatalogInfo> catalogMap = new LinkedHashMap();
         ResultSet rs = md.getTables("", "", "%", null);
         List<TableInfo> tableList = tblInfoAdaptor.convert(rs);
+        tableList.sort((t1, t2) -> t1.getName().compareTo(t2.getName()));
         rs.close();
         for (TableInfo t : tableList) {
         	String catSchema = DbUtil.getUniqueName(t.getTableCatalog(), t.getTableSchema());

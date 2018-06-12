@@ -10,6 +10,8 @@ import org.apache.commons.lang.StringUtils;
 import com.delfino.util.DbUtil;
 
 public class CatalogInfo {
+	
+	private static final String NO_LABEL = "_NULL";
 
 	private Map<String, TableInfo> tables = new HashMap<>();
 
@@ -51,6 +53,10 @@ public class CatalogInfo {
 	public String getCatalog() {
 		return catalog;
 	}
+	
+	public String getCatalogLabel() {
+		return StringUtils.isEmpty(catalog) ? NO_LABEL : catalog;
+	}
 
 	/**
 	 * @param catalog the catalog to set
@@ -64,6 +70,10 @@ public class CatalogInfo {
 	 */
 	public String getSchema() {
 		return schema;
+	}
+	
+	public String getSchemaLabel() {
+		return StringUtils.isEmpty(schema) ? NO_LABEL : schema;
 	}
 
 	/**

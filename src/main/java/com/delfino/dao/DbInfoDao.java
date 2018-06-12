@@ -133,16 +133,15 @@ public class DbInfoDao {
 		DbConnection dbConn = connect(dbInfo);
 		dbCache.get().setCatalogs(dbConn.getDbCatalogs());
 		boolean result = dbCache.save();
-		dbInfo.setCache(dbCache.get());
 		return result;
 	}
 
-	public boolean updateTableCache(DbConnInfo dbConnInfo, CatalogInfo cat) throws SQLException {
+	private boolean updateTableCache(DbConnInfo dbConnInfo, CatalogInfo cat) throws SQLException {
 		
 		JsonDb<DbCacheSchema> dbCache = 
 				JsonDbFactory.getInstance("dbcache_" + dbConnInfo.getConnId(), DbCacheSchema.class);
 		DbConnection dbConn = connect(dbConnInfo);
-		cat.setTables(dbConn.getDbTables(cat));
+	//	cat.setTables(dbConn.getDbTables(cat));
 		ExecutorService executor = Executors.newSingleThreadExecutor();
 		executor.submit(() -> {
 			dbConn.updateRowCount(cat.getTables());
@@ -187,7 +186,8 @@ public class DbInfoDao {
 		
 		return groupedCatalogs.entrySet().stream().map(e -> {
 			
-			TreeNode node = new TreeNode(e.getKey(), e.getKey(), TreeNodeType.CATALOG);
+			TreeNode node = new TreeNode(e.getKey(), e.getValue().get(0).getCatalogLabel(), 
+					TreeNodeType.CATALOG);
 			node.setNodes(getSchemaTree(db, e.getValue(), node));
 			return node;
 		})
@@ -198,7 +198,7 @@ public class DbInfoDao {
 		
 		return schemas.stream().map(cat -> {	
 			
-			TreeNode node = new TreeNode(cat.getSchema(), cat.getSchema(), TreeNodeType.SCHEMA);
+			TreeNode node = new TreeNode(cat.getSchema(), cat.getSchemaLabel(), TreeNodeType.SCHEMA);
 			node.setNodes(getTableTree(db, cat, node));
 			return node;
 		}).collect(Collectors.toList());
