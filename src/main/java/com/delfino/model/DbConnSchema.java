@@ -1,14 +1,14 @@
 package com.delfino.model;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
 public class DbConnSchema {
 
-	private Map<String, User> users = new HashMap<>();
-	private Map<String, Set> userDbMap = new HashMap<>();
-	private Map<String, DbConnInfo> databases = new HashMap<>();
+	private Map<String, User> users = new LinkedHashMap<>();
+	private Map<String, Set> userDbMap = new LinkedHashMap<>();
+	private Map<String, DbConnInfo> databases = new LinkedHashMap<>();
 
 	public Map<String, User> getUsers() {
 		return users;

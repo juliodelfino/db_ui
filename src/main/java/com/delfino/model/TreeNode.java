@@ -21,7 +21,7 @@ public class TreeNode {
 	public TreeNode(String id, String text, TreeNodeType type) {
 		setText(text);
 		this.type = type;
-		state = new HashMap();
+		state = new HashMap<>();
 		state.put("expanded", false);
 		this.id = id;
 	}

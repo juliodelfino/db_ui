@@ -1,11 +1,11 @@
 package com.delfino.model;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class DbCacheSchema {
 	
-	private Map<String, CatalogInfo> catalogs = new HashMap<>();
+	private Map<String, CatalogInfo> catalogs = new LinkedHashMap<>();
 
 	/**
 	 * @return the catalogs

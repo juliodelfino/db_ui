@@ -1,9 +1,7 @@
 package com.delfino.model;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -11,9 +9,9 @@ import com.delfino.util.DbUtil;
 
 public class CatalogInfo {
 	
-	private static final String NO_LABEL = "_NULL";
+	private static final String NO_LABEL = "DEFAULT";
 
-	private Map<String, TableInfo> tables = new HashMap<>();
+	private Map<String, TableInfo> tables = new LinkedHashMap<>();
 
 	private String catalog;
 	private String schema;

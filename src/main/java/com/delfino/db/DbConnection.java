@@ -246,7 +246,7 @@ public class DbConnection {
 		}
 	}
 
-	private Map filterByColumns(Map map, List<String> filterCols) {
+	private static Map filterByColumns(Map map, List<String> filterCols) {
 		Map newMap = new HashMap();
 		List newCols = new ArrayList();
 		List newData = new ArrayList();

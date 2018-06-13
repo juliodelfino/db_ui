@@ -100,13 +100,13 @@ function initTableActions(tabPanel) {
 	});
 	
 	$(tabPanel + ' .q-rowcount-btn').click(function(){
-		var sql = 'SELECT COUNT(*) AS "COUNT" FROM ' + tableName;
+		var sql = 'SELECT COUNT(*) AS "COUNT" FROM "' + tableName + '"';
 		$(tabPanel + ' .qbox').val(sql);
 		$(tabPanel + ' .exec-sql-form').trigger('submit');
 	});
 	
 	$(tabPanel + ' .q-alldata-btn').click(function(){
-		var sql = 'SELECT * FROM ' + tableName + ' LIMIT 30';
+		var sql = 'SELECT * FROM "' + tableName + '" LIMIT 30';
 		$(tabPanel + ' .qbox').val(sql);
 		$(tabPanel + ' .exec-sql-form').trigger('submit');
 	});
