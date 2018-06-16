@@ -12,6 +12,7 @@ import static spark.Spark.post;
 import static spark.Spark.staticFiles;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.NoRouteToHostException;
 import java.sql.Driver;
@@ -41,7 +42,7 @@ public class Application {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Application.class);
 
-	public static void main(String[] args) throws ReflectiveOperationException {
+	public static void main(String[] args) throws ReflectiveOperationException, IOException {
 		
 		port(AppProperties.getInt("port"));
 		initExceptionHandler(e -> {
@@ -97,6 +98,7 @@ public class Application {
 	
 		String dataDir = new File(AppProperties.get("data_dir")).getAbsolutePath();
 		AppProperties.getInstance().put("data_dir_absolute", dataDir);
+		AppProperties.getInstance().put("home_dir", new File(".").getCanonicalPath());
 		
 		Reflections reflections = new Reflections();
 		Set<Class<? extends Driver>> drivers = reflections.getSubTypesOf(Driver.class);
