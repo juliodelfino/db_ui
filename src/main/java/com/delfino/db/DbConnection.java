@@ -116,7 +116,12 @@ public class DbConnection {
         Collection<CatalogInfo> catalogs = catInfoAdaptor.convert(rs);
         rs.close();
         catalogs.stream().forEach(t -> {
-        	catalogMap.put(t.getName(), t);
+			try {
+				t.setTables(getDbTables(t));
+			} catch (SQLException e) {
+				LOGGER.error("Error retrieving tables for this catalog: " + t.getName(), e);
+			}
+			catalogMap.put(t.getName(), t);
         });
         catalogMap.putAll(getEmptyCatalogs());
         return catalogMap;
@@ -140,7 +145,7 @@ public class DbConnection {
         	if (t.getTableType().equals("TABLE")) {
 	        	try {
 					t.setPrimaryKeys(getPrimaryKeys(cat, t.getName()));
-				} catch (JsonProcessingException e) {
+				} catch (JsonProcessingException | SQLException e) {
 		        	LOGGER.error("Error retrieving primary keys of this table: " + t.getName(), e);
 				}
         	}
@@ -158,7 +163,7 @@ public class DbConnection {
         	if (t.getTableType().equals("TABLE")) {
 	        	try {
 					t.setPrimaryKeys(getPrimaryKeys(catInfo, t.getName()));
-				} catch (JsonProcessingException e) {
+				} catch (JsonProcessingException | SQLException e) {
 		        	LOGGER.error("Error retrieving primary keys of this table: " + t.getName(), e);
 				}
         	}

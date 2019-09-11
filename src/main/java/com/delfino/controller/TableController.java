@@ -49,7 +49,7 @@ public class TableController extends ControllerBase {
 				sql = sql.trim();
 				if (StringUtils.isEmpty(sql)) {
 					continue;
-				} else if (sql.matches("(SELECT|select).*")) {
+				} else if (sql.matches("(SELECT|select|SHOW|show|WITH|with).*")) {
 
 					result = dbConn.executeQuery(sql, cat);
 					userDao.saveQuery(sql, userId);
