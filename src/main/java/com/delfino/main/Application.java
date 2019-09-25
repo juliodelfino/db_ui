@@ -1,15 +1,18 @@
 package com.delfino.main;
 
-import static spark.Spark.before;
-import static spark.Spark.delete;
-import static spark.Spark.exception;
-import static spark.Spark.get;
-import static spark.Spark.initExceptionHandler;
-import static spark.Spark.internalServerError;
-import static spark.Spark.notFound;
-import static spark.Spark.port;
-import static spark.Spark.post;
-import static spark.Spark.staticFiles;
+import com.delfino.annotation.AppRoute;
+import com.delfino.controller.ErrorController;
+import com.delfino.filter.RequestDataFilter;
+import com.delfino.filter.RequireAdminFilter;
+import com.delfino.filter.SkipAuthFilter;
+import com.delfino.util.AppProperties;
+import com.delfino.util.Constants;
+import org.reflections.Reflections;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import spark.Route;
+import spark.Spark;
+import spark.utils.IOUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,28 +25,23 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.reflections.Reflections;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.delfino.annotation.AppRoute;
-import com.delfino.controller.ErrorController;
-import com.delfino.filter.RequestDataFilter;
-import com.delfino.filter.RequireAdminFilter;
-import com.delfino.filter.SkipAuthFilter;
-import com.delfino.util.AppProperties;
-import com.delfino.util.Constants;
-
-import spark.Route;
-import spark.Spark;
-import spark.utils.IOUtils;
+import static spark.Spark.before;
+import static spark.Spark.delete;
+import static spark.Spark.exception;
+import static spark.Spark.get;
+import static spark.Spark.initExceptionHandler;
+import static spark.Spark.internalServerError;
+import static spark.Spark.notFound;
+import static spark.Spark.port;
+import static spark.Spark.post;
+import static spark.Spark.staticFiles;
 
 public class Application {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Application.class);
 
 	public static void main(String[] args) throws ReflectiveOperationException, IOException {
-		
+
 		port(AppProperties.getInt("port"));
 		initExceptionHandler(e -> {
 			LOGGER.error(e.getMessage(), e);

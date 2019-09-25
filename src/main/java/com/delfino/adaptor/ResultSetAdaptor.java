@@ -1,5 +1,12 @@
 package com.delfino.adaptor;
 
+import com.delfino.model.CatalogInfo;
+import com.delfino.model.Column;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringEscapeUtils;
+import spark.utils.StringUtils;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Array;
@@ -12,17 +19,6 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringEscapeUtils;
-
-import com.delfino.model.CatalogInfo;
-import com.delfino.model.Column;
-import com.delfino.model.DbCacheSchema;
-import com.delfino.model.DbConnInfo;
-import com.fasterxml.jackson.core.JsonProcessingException;
-
-import spark.utils.StringUtils;
 
 public class ResultSetAdaptor implements Adaptor<ResultSet, Map> {
 	
@@ -57,6 +53,7 @@ public class ResultSetAdaptor implements Adaptor<ResultSet, Map> {
             		columns.get(i-1).setBlob(true);
             	} else if (value instanceof Array) {
                     value = ((Array) value).getArray();
+                    value = convertAllElementsToStrings((Object[])value);
                 } else if (value instanceof Blob) {
             		InputStream in = ((Blob) value).getBinaryStream();
             		try {
@@ -81,5 +78,13 @@ public class ResultSetAdaptor implements Adaptor<ResultSet, Map> {
         resultMap.put("data", data);
 
         return resultMap;
+    }
+
+    private String[] convertAllElementsToStrings(Object[] values) {
+	    String[] strValues = new String[values.length];
+	    for (int i = 0; i < strValues.length; i++) {
+	        strValues[i] = String.valueOf(values[i]);
+        }
+	    return strValues;
     }
 }

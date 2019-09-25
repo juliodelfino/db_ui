@@ -70,7 +70,7 @@
 		<dependency>
 			<groupId>org.reflections</groupId>
 			<artifactId>reflections</artifactId>
-			<version>0.9.9-RC1</version>
+			<version>LATEST</version>
 		</dependency>
 		<dependency>
 			<groupId>com.unboundid</groupId>
@@ -107,6 +107,13 @@
 			<version>3.18.2-GA</version>
 			<scope>test</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>com.facebook.presto</groupId>
+			<artifactId>presto-jdbc</artifactId>
+			<version>0.223.1</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
