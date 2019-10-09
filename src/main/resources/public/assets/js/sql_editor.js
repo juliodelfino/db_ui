@@ -1,5 +1,8 @@
 
-var tableLoaderHtml = '<div><img class="center-block" src="/assets/images/loader1.gif"/></div>';
+var tableLoaderHtml = '<div id="loader-div"><img class="center-block" src="/assets/images/loader1-small.gif"/>'
+    + '<input type="button" class="center-block btn btn-sm btn-info" id="cancel-query-btn" value="Cancel"/>'
+    + '<input type="hidden" id="query-id" value=""/>'
+    + '</div>';
 var dbConnId = null;
 var catalogName = null;
 var schemaName = null;
@@ -53,15 +56,18 @@ function initEditorActions(tabPanel) {
 
 }
 
-
 function executeQuery(sql, dbConnectionId, tabPanel) {
 
+	var queryId = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 	$(tabPanel + ' .dynamic-table').html(tableLoaderHtml);
+	$('#loader-div #query-id').val(queryId);
+	$('#cancel-query-btn').click(onCancelQuery);
 	var params = {
 		connId: dbConnectionId,
 		catalog: catalogName,
 		schema: schemaName,
-		q: sql
+		q: sql,
+		qId: queryId
 	};
 	var startTime = new Date().getTime();
   	$("#exec-time-info").text("");
@@ -78,6 +84,17 @@ function executeQuery(sql, dbConnectionId, tabPanel) {
   	  		updateDynamicTable(result, tabPanel);
   		}
   	});
+}
+
+function onCancelQuery() {
+    var queryId = $('#loader-div #query-id').val();
+	var params = {
+	    connId: dbConnId,
+		qId: queryId
+	};
+    $.get("/table/cancelquery", params, function(result){
+
+    });
 }
 
 function updateDynamicTable(result, tabPanel) {
@@ -151,7 +168,6 @@ function getColumns(tableName, tabPanel) {
 
 function displayRowDataDialog(rowData) {
 
-	var urlVars = getUrlVars();
 	var rowCols = table.settings().init().columns;
 	var div = $("<div>", {id: "somevalue", "class": "form-horizontal"});
 	for (i = 0; i < rowData.length; i++) {

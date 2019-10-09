@@ -15,7 +15,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import org.apache.commons.lang.WordUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,6 +36,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.UUID;
+import java.util.WeakHashMap;
 import java.util.stream.Collectors;
 
 public class DbConnection {
@@ -51,7 +52,9 @@ public class DbConnection {
     private DbConnInfo dbInfo;
     private Connection conn = null;
 
-    public DbConnection(DbConnInfo dbInfo) throws SQLException {
+    private Map<String, Statement> stmtMap = new WeakHashMap();
+
+    public DbConnection(DbConnInfo dbInfo) {
         this.dbInfo = dbInfo;
     }
 
@@ -91,30 +94,42 @@ public class DbConnection {
     }
 
     public String executeQuery(String sql, CatalogInfo cat) throws SQLException, JsonProcessingException {
+        return executeQuery(sql, cat, UUID.randomUUID().toString());
+    }
+
+    public String executeQuery(String sql, CatalogInfo cat, String queryId) throws SQLException, JsonProcessingException {
 
         ResultSet rs = null;
         String result = "";
         try {
             DbUtil.setCatalogInfo(getConnection(), cat);
             Statement stmt = getConnection().createStatement();
+            stmtMap.put(queryId, stmt);
             rs = stmt.executeQuery(sql);
             Map resultMap = adaptor.convert(rs, dbInfo.getCache().getCatalogs().get(cat.getCatalog()));
             result = gson.toJson(resultMap);
         } finally {
             if (rs != null) {
                 rs.close();
+                stmtMap.remove(queryId);
             }
         }
         return result;
     }
 
     public int executeUpdate(String sql, CatalogInfo cat) throws SQLException {
+        return executeUpdate(sql, cat, UUID.randomUUID().toString());
+    }
+
+    public int executeUpdate(String sql, CatalogInfo cat, String queryId) throws SQLException {
 
         int rs = 0;
         DbUtil.setCatalogInfo(getConnection(), cat);
         Statement stmt = getConnection().createStatement();
+        stmtMap.put(queryId, stmt);
         rs = stmt.executeUpdate(sql);
         stmt.close();
+        stmtMap.remove(queryId);
         return rs;
     }
 
@@ -220,13 +235,13 @@ public class DbConnection {
         String sql = tableMap.keySet().stream()
                 .map(t -> String.format(" SELECT '%s', COUNT(*) FROM %s ", t, t))
                 .collect(Collectors.joining(" UNION ALL "));
-        Statement stmt = getConnection().createStatement();
-        ResultSet rs = stmt.executeQuery(sql);
-        while (rs.next()) {
-            String tableName = rs.getString(1);
-            tableMap.get(tableName).setRowCount(rs.getInt(2));
+        try (Statement stmt = getConnection().createStatement();
+            ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                String tableName = rs.getString(1);
+                tableMap.get(tableName).setRowCount(rs.getInt(2));
+            }
         }
-        rs.close();
     }
 
     public String getColumns(CatalogInfo cat, String table) throws SQLException, JsonProcessingException {
@@ -275,7 +290,7 @@ public class DbConnection {
             }
         }
         for (List row : data) {
-            newData.add(colIndices.stream().map(i -> row.get(i))
+            newData.add(colIndices.stream().map(row::get)
                     .collect(Collectors.toList()));
         }
 
@@ -319,5 +334,12 @@ public class DbConnection {
             }
         }
         return result;
+    }
+
+    public void cancelQueryById(String queryId) throws SQLException {
+        Statement stmt = stmtMap.remove(queryId);
+        if (stmt != null) {
+            stmt.cancel();
+        }
     }
 }

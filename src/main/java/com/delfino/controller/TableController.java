@@ -37,6 +37,7 @@ public class TableController extends ControllerBase {
 
 		String userId = RequestUtil.getUsername(req);
 		String sqlQuery = req.queryParams("q");
+		String queryId = req.queryParams("qId");
 		String connId = req.queryParams("connId");
 		String catalogName = req.queryParams("catalog");
 		String schemaName = req.queryParams("schema");
@@ -51,13 +52,13 @@ public class TableController extends ControllerBase {
 					continue;
 				} else if (sql.matches("(SELECT|select|SHOW|show|WITH|with).*")) {
 
-					result = dbConn.executeQuery(sql, cat);
+					result = dbConn.executeQuery(sql, cat, queryId);
 					userDao.saveQuery(sql, userId);
 
 				} else if (sql.matches(
 						"(INSERT|insert|UPDATE|update|DELETE|delete|" + "CREATE|create|ALTER|alter|DROP|drop).*")
 						&& RequestUtil.getUser(req).isAdmin()) {
-					result = dbConn.executeUpdate(sql, cat) + " row(s) updated";
+					result = dbConn.executeUpdate(sql, cat, queryId) + " row(s) updated";
 					result = gson.toJson(ImmutableMap.of("message", result));
 					userDao.saveQuery(sql, userId);
 
@@ -136,5 +137,20 @@ public class TableController extends ControllerBase {
 		String timestamp = req.queryParams("t");
 		String userId = RequestUtil.getUsername(req);
 		return userDao.deleteQueryLog(userId, timestamp);
+	};
+
+	public Route getCancelQuery = (req, res) -> {
+
+		String queryId = req.queryParams("qId");
+		String userId = RequestUtil.getUsername(req);
+		String connId = req.queryParams("connId");
+		try {
+			DbConnection dbConn = dbDao.connect(connId, userId);
+			dbConn.cancelQueryById(queryId);
+			return 0;
+		} catch (Exception ex) {
+			LOGGER.error("Error cancelling query: " + queryId, ex);
+			return exAdaptor.convert(ex);
+		}
 	};
 }
