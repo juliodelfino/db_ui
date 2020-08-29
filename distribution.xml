@@ -56,6 +56,12 @@
                 <exclude>*/**</exclude>
             </excludes>
         </fileSet>
+        <fileSet>
+            <directory>data</directory>
+            <outputDirectory>data</outputDirectory>
+            <directoryMode>0775</directoryMode>
+            <fileMode>0755</fileMode>
+        </fileSet>
     </fileSets>
 
     <dependencySets>

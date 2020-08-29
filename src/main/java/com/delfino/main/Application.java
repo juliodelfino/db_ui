@@ -87,7 +87,6 @@ public class Application {
 				.map(r -> r.path).collect(Collectors.toList());
 		before(new SkipAuthFilter(skipAuthPaths), new RequireAdminFilter(adminPaths),
 				new RequestDataFilter());
-		
 		registerRoutes(routes);
 		registerRoute("get", "/", (req, res) -> { 
 			res.redirect("/db"); return null; });
