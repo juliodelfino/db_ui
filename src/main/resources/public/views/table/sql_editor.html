@@ -1,0 +1,30 @@
+<div class="col-lg-12 col-xs-12 top-buffer">
+    <form class="input-group exec-sql-form dropdown">
+					<textarea id="qbox" class="qbox form-control" style="resize: vertical; min-height: 58px"
+                              placeholder="Enter your SQL query here" autocomplete="on">
+						</textarea>
+        <div class="input-group-btn" style="vertical-align: top;">
+            <button
+                    class="exec-btn btn btn-primary glyphicon glyphicon-flash"
+                    data-placement="bottom" title="[Ctrl+Enter] Execute all">
+            </button>
+            <br/>
+            <button class="btn btn-default dropdown-toggle"
+                    style=" padding: 1px 15px"
+                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-right">
+                <li id="exec-sel-btn" title="[Ctrl+E] Execute selected text"><a href="#">Execute selected text</a></li>
+                <li role="separator" class="divider"></li>
+                <li id="query-history-btn"><a>Show query history</a></li>
+                <li role="separator" class="divider"></li>
+                <li id="share-btn"><a>Share URL (Copy to Clipboard)</a></li>
+            </ul>
+        </div>
+
+    </form>
+</div>
+<div class="col-lg-12 col-xs-12 top-buffer"><span id="exec-time-info"></span></div>
+<div class="col-lg-12 top-buffer dynamic-table hover"></div>
+

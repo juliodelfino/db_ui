@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="INFO">
+    <Appenders>
+        <RollingFile name="fileLogger" fileName="log/db-ui.log" filePattern="log/db-ui-%d{yyyy-MM-dd}.%i.log">
+            <PatternLayout>
+                <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p [%t] %c{1}:%L - %m%n</pattern>
+            </PatternLayout>
+            <Policies>
+                <OnStartupTriggeringPolicy />
+                <TimeBasedTriggeringPolicy filePattern="log/db-ui-%d{yyyy-MM-dd}.log" />
+                <SizeBasedTriggeringPolicy size="50 MB" />
+            </Policies>
+
+            <DefaultRolloverStrategy max="999" />
+        </RollingFile>
+
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %-5p [%t] %c{1}:%L - %m%n" />
+        </Console>
+    </Appenders>
+    <Loggers>
+        <Root level="INFO" additivity="false">
+            <AppenderRef ref="console" />
+            <AppenderRef ref="fileLogger" />
+        </Root>
+        <logger name="org.reflections" level="ERROR">
+            <AppenderRef ref="console"/>
+        </logger>
+    </Loggers>
+</Configuration>

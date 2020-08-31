@@ -5,7 +5,11 @@ import java.util.List;
 
 public interface Constants {
 
-    List<String> HTTP_METHODS = Arrays.asList("post","get","delete");
+	String GET = "get";
+	String POST = "post";
+	String DELETE = "delete";
+
+    List<String> HTTP_METHODS = Arrays.asList(GET, POST, DELETE);
 
 	String STATIC_FILES = "/public";
 
@@ -19,7 +23,7 @@ public interface Constants {
 	
 	String DATA_JSON = "data.json";
 	
-	static enum TreeNodeType {
+	enum TreeNodeType {
 		DBCONN, CATALOG, SCHEMA, TABLE
-	};
+	}
 }

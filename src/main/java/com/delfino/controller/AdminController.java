@@ -42,10 +42,7 @@ public class AdminController extends ControllerBase {
 	};
 
 	@AppRoute(requireAdmin=true)
-	public Route getUserlist = (req, res) -> {
-		
-		return listAdaptor.convert(new ArrayList(userDao.getAll()));
-	};
+	public Route getUserlist = (req, res) -> listAdaptor.convert(new ArrayList(userDao.getAll()));
 
 	@AppRoute(requireAdmin=true)
 	public Route getDblist = (req, res) -> {

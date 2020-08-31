@@ -33,10 +33,11 @@ public class TableController extends ControllerBase {
 	private Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").setPrettyPrinting().disableHtmlEscaping()
 			.create();
 
-	public Route getQuery = (req, res) -> {
+	public final Route getQuery = (req, res) -> {
 
 		String userId = RequestUtil.getUsername(req);
 		String sqlQuery = req.queryParams("q");
+		String queryId = req.queryParams("qId");
 		String connId = req.queryParams("connId");
 		String catalogName = req.queryParams("catalog");
 		String schemaName = req.queryParams("schema");
@@ -49,15 +50,15 @@ public class TableController extends ControllerBase {
 				sql = sql.trim();
 				if (StringUtils.isEmpty(sql)) {
 					continue;
-				} else if (sql.matches("(SELECT|select).*")) {
+				} else if (sql.matches("(SELECT|select|SHOW|show|WITH|with).*")) {
 
-					result = dbConn.executeQuery(sql, cat);
+					result = dbConn.executeQuery(sql, cat, queryId);
 					userDao.saveQuery(sql, userId);
 
 				} else if (sql.matches(
 						"(INSERT|insert|UPDATE|update|DELETE|delete|" + "CREATE|create|ALTER|alter|DROP|drop).*")
 						&& RequestUtil.getUser(req).isAdmin()) {
-					result = dbConn.executeUpdate(sql, cat) + " row(s) updated";
+					result = dbConn.executeUpdate(sql, cat, queryId) + " row(s) updated";
 					result = gson.toJson(ImmutableMap.of("message", result));
 					userDao.saveQuery(sql, userId);
 
@@ -75,7 +76,7 @@ public class TableController extends ControllerBase {
 		}
 	};
 
-	public Route getColumns = (req, res) -> {
+	public final Route getColumns = (req, res) -> {
 
 		String userId = RequestUtil.getUsername(req);
 		String table = req.queryParams("table");
@@ -89,7 +90,7 @@ public class TableController extends ControllerBase {
 		}
 	};
 
-	public Route getIndex = (req, res) -> {
+	public final Route getIndex = (req, res) -> {
 
 		String userId = RequestUtil.getUsername(req);
 		String connId = req.queryParams("id");
@@ -115,8 +116,9 @@ public class TableController extends ControllerBase {
 		req.attribute("table", tblInfo);
 
 		List<TreeNode> dbTree = dbDao.getDbTree(userId);
+		String catalogLabel = StringUtils.isEmpty(catalogName) ? CatalogInfo.NO_LABEL : catalogName;
 		TreeNode selectedNode = dbTree.stream().filter(n -> n.getId().equals(connId)).findFirst().get()
-			.getNodes().stream().filter(n -> n.getText().equals(catalogName)).findFirst().get()
+			.getNodes().stream().filter(n -> n.getText().equals(catalogLabel)).findFirst().get()
 			.getNodes().stream().filter(n -> StringUtils.isNotEmpty(schemaName) ? n.getText().equals(schemaName) : true).findFirst().get()
 			.getNodes().stream().filter(n -> n.getText().equals(tableName)).findFirst().get();
 
@@ -125,16 +127,31 @@ public class TableController extends ControllerBase {
 		return renderContent(req, "table/index.html");
 	};
 
-	public Route getQueryHistory = (req, res) -> {
+	public final Route getQueryHistory = (req, res) -> {
 
 		String userId = RequestUtil.getUsername(req);
 		return gson.toJson(userDao.getQueryHistory(userId));
 	};
 
-	public Route deleteQueryHistory = (req, res) -> {
+	public final Route deleteQueryHistory = (req, res) -> {
 
 		String timestamp = req.queryParams("t");
 		String userId = RequestUtil.getUsername(req);
 		return userDao.deleteQueryLog(userId, timestamp);
+	};
+
+	public final Route getCancelQuery = (req, res) -> {
+
+		String queryId = req.queryParams("qId");
+		String userId = RequestUtil.getUsername(req);
+		String connId = req.queryParams("connId");
+		try {
+			DbConnection dbConn = dbDao.connect(connId, userId);
+			dbConn.cancelQueryById(queryId);
+			return 0;
+		} catch (Exception ex) {
+			LOGGER.error("Error cancelling query: " + queryId, ex);
+			return exAdaptor.convert(ex);
+		}
 	};
 }

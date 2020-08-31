@@ -33,16 +33,17 @@
 				<h4 style="font-style: italic; color: #bbb">DATABASES ($catalogs.size())</h4>
 			</div>
 			#foreach( $cat in $catalogs )
+			#set ($db_schema = "#if( $cat.schema )&schema=$cat.schema#end")
+			#set ($db_url = "/db/dbinfo?id=$dbInfo.connId&catalog=$cat.catalog$db_schema")
 			<div class="col-md-4 col-sm-6 col-xs-11">
 				<div class="db-info-box row">
 					<div class="cell">
-						<a href="/db/dbinfo?id=$dbInfo.connId&catalog=$cat.catalog"
-							class="db-info-header">$cat.name</a>
+						<a href="$db_url" class="db-info-header">$cat.name</a>
 					</div>
 					<div class="cell db-info-content">
 		
 						<div class="cell-img">
-						<a href="/db/dbinfo?id=$dbInfo.connId&catalog=$cat.catalog">
+						<a href="$db_url">
 							<img src="/assets/images/db/catalog.png" />
 						</a>
 						</div>

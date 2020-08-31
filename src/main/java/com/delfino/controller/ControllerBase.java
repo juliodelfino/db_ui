@@ -1,48 +1,40 @@
 package com.delfino.controller;
 
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
+import com.delfino.util.AppProperties;
+import com.delfino.util.Constants;
+import com.delfino.util.ViewUtil;
 import org.apache.commons.lang.StringUtils;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.exception.VelocityException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.delfino.adaptor.ExceptionAdaptor;
-import com.delfino.util.AppProperties;
-import com.delfino.util.Constants;
-import com.delfino.util.ViewUtil;
-
 import spark.ModelAndView;
 import spark.Request;
 import spark.template.velocity.VelocityTemplateEngine;
+
+import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public abstract class ControllerBase {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(ControllerBase.class);
 	private static final VelocityTemplateEngine TEMPLATE;
-	private static VelocityEngine VELOCITY_ENG;
-	private static String VIEWS = Constants.STATIC_FILES + "/views";
+	private static VelocityEngine velocityEngine;
+	private static final String VIEWS = Constants.STATIC_FILES + "/views";
 	
 	static {
 		TEMPLATE = new VelocityTemplateEngine();
 		try {
 			Field f = TEMPLATE.getClass().getDeclaredField("velocityEngine");
 			f.setAccessible(true);
-			VELOCITY_ENG = (VelocityEngine)f.get(TEMPLATE);
+			velocityEngine = (VelocityEngine)f.get(TEMPLATE);
 		} catch (SecurityException | ReflectiveOperationException e) {
 			LOGGER.error(e.getMessage(), e);
-			VELOCITY_ENG = null;
+			velocityEngine = null;
 		}
 	}
 	
@@ -63,11 +55,11 @@ public abstract class ControllerBase {
         }
     }
 
-	protected String renderPage(Request req, String pageName) throws IOException {
+	protected String renderPage(Request req, String pageName) {
 		return renderPage(req, new HashMap(), pageName);
 	}
 
-	protected String renderPage(Request req, Map<String, Object> model, String pageName) throws IOException {
+	protected String renderPage(Request req, Map<String, Object> model, String pageName) {
 		return render(req, model, VIEWS + "/" + pageName);
 	}
 
@@ -94,13 +86,13 @@ public abstract class ControllerBase {
 	
 	private String extractMethodName(String contentPage) {
 
-		int startIdx = contentPage.indexOf("/");
-		return contentPage.substring(startIdx + 1, contentPage.indexOf("."));
+		int startIdx = contentPage.indexOf('/');
+		return contentPage.substring(startIdx + 1, contentPage.indexOf('.'));
 	}
 
 	private List<String> filterNonexistentFiles(String dir, List<String> files) {
 		return files.stream().filter(f -> {
-			boolean exists = VELOCITY_ENG.resourceExists(dir + f);
+			boolean exists = velocityEngine.resourceExists(dir + f);
 			LOGGER.debug(dir + f + " exists? " + exists);
 			return exists;
 		}).collect(Collectors.toList());
