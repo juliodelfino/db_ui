@@ -116,8 +116,9 @@ public class TableController extends ControllerBase {
 		req.attribute("table", tblInfo);
 
 		List<TreeNode> dbTree = dbDao.getDbTree(userId);
+		String catalogLabel = StringUtils.isEmpty(catalogName) ? CatalogInfo.NO_LABEL : catalogName;
 		TreeNode selectedNode = dbTree.stream().filter(n -> n.getId().equals(connId)).findFirst().get()
-			.getNodes().stream().filter(n -> n.getText().equals(catalogName)).findFirst().get()
+			.getNodes().stream().filter(n -> n.getText().equals(catalogLabel)).findFirst().get()
 			.getNodes().stream().filter(n -> StringUtils.isNotEmpty(schemaName) ? n.getText().equals(schemaName) : true).findFirst().get()
 			.getNodes().stream().filter(n -> n.getText().equals(tableName)).findFirst().get();
 

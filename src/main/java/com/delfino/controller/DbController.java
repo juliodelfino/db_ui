@@ -144,8 +144,9 @@ public class DbController extends ControllerBase {
 //		}
 		req.attribute("tables", cat.getTables());
 		List<TreeNode> list = dbDao.getDbTree(userId);
-		TreeNode selected = list.stream().filter(n -> n.getId().equals(connId)).findFirst().get(); 
-		TreeNode selectedCat = selected.getNodes().stream().filter(n -> n.getText().equals(catalogName)).findFirst().get();    
+		TreeNode selected = list.stream().filter(n -> n.getId().equals(connId)).findFirst().get();
+		String catalogLabel = StringUtils.isEmpty(catalogName) ? CatalogInfo.NO_LABEL : catalogName;
+		TreeNode selectedCat = selected.getNodes().stream().filter(n -> n.getText().equals(catalogLabel)).findFirst().get();
 		selectedCat.setState("selected", true);
 		req.attribute("DB_TREE_DATA", gson.toJson(list));
 		dbConnInfo.setStatus("Active");

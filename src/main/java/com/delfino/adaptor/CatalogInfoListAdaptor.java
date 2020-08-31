@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import com.delfino.model.CatalogInfo;
@@ -19,16 +20,25 @@ public class CatalogInfoListAdaptor implements Adaptor<ResultSet, List<CatalogIn
 		List<CatalogInfo> values = new ArrayList<>();
         while (rs.next()) {
         	CatalogInfo cat = new CatalogInfo();
-        	if (colNames.contains("TABLE_CAT")) {
-            	cat.setCatalog(rs.getString("TABLE_CAT"));
+        	//Resolve the column name whether it's TABLE_CAT or table_cat
+        	String catalogColName = colNames.stream().filter(c -> c.equalsIgnoreCase("table_cat")).findFirst().orElse(null);
+			String schemaColName = colNames.stream().filter(c -> c.equalsIgnoreCase("table_schem")).findFirst().orElse(null);
+
+        	if (Objects.nonNull(catalogColName)) {
+            	cat.setCatalog(rs.getString(catalogColName));
         	}
-        	if (colNames.contains("TABLE_SCHEM")) {
-            	cat.setCatalog(rs.getString("TABLE_CATALOG"));
-            	cat.setSchema(rs.getString("TABLE_SCHEM"));
+        	if (Objects.nonNull(schemaColName)) {
+				cat.setSchema(rs.getString(schemaColName));
+				//try to replace TABLE_CAT with TABLE_CATALOG if there's any
+				catalogColName = colNames.stream().filter(c -> c.equalsIgnoreCase("table_catalog")).findFirst().orElse(null);
+        		if (Objects.nonNull(catalogColName)) {
+					cat.setCatalog(rs.getString(catalogColName));
+				}
         	}
         	values.add(cat);
         }
-        values.sort((x, y) -> x.getCatalog().compareTo(y.getCatalog()));
+        values.sort((x, y) -> x.getCatalog() != null || y.getCatalog() != null ?
+				x.getCatalog().compareTo(y.getCatalog()) : 0);
         return values;
 	}
 

@@ -21,10 +21,14 @@ import java.net.NoRouteToHostException;
 import java.sql.Driver;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.delfino.util.Constants.DELETE;
+import static com.delfino.util.Constants.GET;
+import static com.delfino.util.Constants.POST;
 import static spark.Spark.before;
 import static spark.Spark.delete;
 import static spark.Spark.exception;
@@ -38,7 +42,7 @@ import static spark.Spark.staticFiles;
 
 public class Application {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Application.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(Application.class);
 
 	public static void main(String[] args) throws ReflectiveOperationException, IOException {
 
@@ -77,7 +81,7 @@ public class Application {
 				} catch (Exception ex) {
 					return null;
 				}
-			}).filter(cl -> cl != null).collect(Collectors.toList());
+			}).filter(Objects::nonNull).collect(Collectors.toList());
 		List<RouteInfo> routes = scanRoutes(controllerClasses);
 		List<String> skipAuthPaths = routes.stream()
 				.filter(r -> r.appRoute != null && r.appRoute.skipAuthentication())
@@ -88,7 +92,7 @@ public class Application {
 		before(new SkipAuthFilter(skipAuthPaths), new RequireAdminFilter(adminPaths),
 				new RequestDataFilter());
 		registerRoutes(routes);
-		registerRoute("get", "/", (req, res) -> { 
+		registerRoute(GET, "/", (req, res) -> {
 			res.redirect("/db"); return null; });
 		get("/favicon.ico", "image/x-icon", 
 				(req, res) -> IOUtils.toString(Spark.class.getResourceAsStream("/public/assets/images/favicon.ico")));
@@ -122,7 +126,7 @@ public class Application {
 					
 					 String name = f.getName().toLowerCase();
 					 final String fName = name;
-					if (!Constants.HTTP_METHODS.stream().anyMatch(m -> fName.startsWith(m))) {
+					if (Constants.HTTP_METHODS.stream().noneMatch(fName::startsWith)) {
 						throw new IllegalStateException(controllerClass + "." 
 								+ f.getName() + ": invalid route name. "
 								+ "route names must start with either 'get', 'post' or 'delete'");
@@ -139,8 +143,8 @@ public class Application {
 	
 	private static String createPath(String module, String methodName) {
 		
-		String prefix = methodName.startsWith("get") ? "get" :
-			methodName.startsWith("post") ? "post" : "delete";
+		String prefix = methodName.startsWith(GET) ? GET :
+			methodName.startsWith(POST) ? POST : DELETE;
 
 		String fname = methodName.replace(prefix, "");
 		fname = fname.equals("index") ? "" : "/" + fname;
@@ -149,16 +153,16 @@ public class Application {
 
 	private static void registerRoute(String name, String path, Route route) {
 
-		String prefix = name.startsWith("get") ? "get" :
-			name.startsWith("post") ? "post" : "delete";
+		String prefix = name.startsWith(GET) ? GET :
+			name.startsWith(POST) ? POST : DELETE;
         
-		if (name.startsWith("get")) {
+		if (name.startsWith(GET)) {
 			get(path, route);
 		}
-		else if (name.startsWith("post")) {
+		else if (name.startsWith(POST)) {
 			post(path, route);
 		}
-		else if (name.startsWith("delete")) {
+		else if (name.startsWith(DELETE)) {
 			delete(path, route);
 		}
         LOGGER.info("Added route " + prefix.toUpperCase() + " " + path);

@@ -9,7 +9,7 @@ import com.delfino.util.DbUtil;
 
 public class CatalogInfo {
 	
-	private static final String NO_LABEL = "DEFAULT";
+	public static final String NO_LABEL = "DEFAULT";
 
 	private Map<String, TableInfo> tables = new LinkedHashMap<>();
 

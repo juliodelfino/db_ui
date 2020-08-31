@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
@@ -181,12 +182,12 @@ public class DbInfoDao {
 
 	private List<TreeNode> getCatalogTree(DbConnInfo db, TreeNode parent) {
 		
-		Map<String, List<CatalogInfo>> groupedCatalogs = 
+		Map<Optional<String>, List<CatalogInfo>> groupedCatalogs =
 			groupCatalogs(db.getCache().getCatalogs().values());
 		
 		return groupedCatalogs.entrySet().stream().map(e -> {
 			
-			TreeNode node = new TreeNode(e.getKey(), e.getValue().get(0).getCatalogLabel(), 
+			TreeNode node = new TreeNode(e.getKey().orElse(""), e.getValue().get(0).getCatalogLabel(),
 					TreeNodeType.CATALOG);
 			node.setNodes(getSchemaTree(db, e.getValue(), node));
 			return node;
@@ -204,8 +205,8 @@ public class DbInfoDao {
 		}).collect(Collectors.toList());
 	}
 
-	private Map<String, List<CatalogInfo>> groupCatalogs(Collection<CatalogInfo> values) {
-		return values.stream().collect(Collectors.groupingBy(CatalogInfo::getCatalog));
+	private Map<Optional<String>, List<CatalogInfo>> groupCatalogs(Collection<CatalogInfo> values) {
+		return values.stream().collect(Collectors.groupingBy(c -> Optional.ofNullable(c.getCatalog())));
 	}
 
 	private List<TreeNode> getTableTree(DbConnInfo db, CatalogInfo cat, TreeNode node) {

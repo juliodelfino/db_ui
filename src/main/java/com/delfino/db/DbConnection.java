@@ -166,7 +166,7 @@ public class DbConnection {
                 catalogMap.put(catSchema, cat);
             }
             cat.getTables().put(t.getName(), t);
-            if (t.getTableType().equals("TABLE")) {
+            if ("TABLE".equals(t.getTableType())) {
                 try {
                     t.setPrimaryKeys(getPrimaryKeys(cat, t.getName()));
                 } catch (JsonProcessingException | SQLException e) {

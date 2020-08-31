@@ -14,6 +14,8 @@ public class CryptUtil {
 	private static final String AES = "AES";
 	private static final Key AESKEY = new SecretKeySpec(
 			ExceptionAdaptor.class.getSimpleName().getBytes(), AES); // 128 bit key
+
+    private CryptUtil() {}
 	
 
 	public static String encrypt(String plainText) throws GeneralSecurityException {
