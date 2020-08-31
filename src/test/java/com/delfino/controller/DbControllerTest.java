@@ -9,6 +9,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
+import java.sql.Connection;
 import java.sql.DriverManager;
 
 import org.junit.BeforeClass;
@@ -27,7 +28,6 @@ import com.delfino.model.User;
 import com.delfino.util.Constants;
 import com.delfino.util.TestUtils;
 import com.google.gson.Gson;
-import com.mysql.jdbc.Connection;
 
 import spark.Request;
 import spark.Response;
