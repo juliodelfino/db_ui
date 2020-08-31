@@ -91,9 +91,7 @@ public class DbInfoDao {
 		jsonDb.get().getDatabases().put(dbInfoUpdate.getConnId(), dbInfoUpdate);
 		
 		//TODO: remove this all-encrypting snippet
-		jsonDb.get().getDatabases().values().forEach(db -> {
-			tryEncrypt(db);
-		});
+		jsonDb.get().getDatabases().values().forEach(db -> tryEncrypt(db) );
 		return jsonDb.save();
 	}
 

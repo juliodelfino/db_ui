@@ -34,7 +34,7 @@ public class DbController extends ControllerBase {
 	private Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 	private ExceptionAdaptor exAdaptor = new ExceptionAdaptor();
 
-	public Route postConnectDb = (req, res) -> {
+	public final Route postConnectDb = (req, res) -> {
 
 		String userId = RequestUtil.getUsername(req);
 		DbConnInfo dbInfo = RequestUtil.extract(req, DbConnInfo.class);
@@ -52,7 +52,7 @@ public class DbController extends ControllerBase {
 		}
 	};
 
-	public Route getInfo = (req, res) -> {
+	public final Route getInfo = (req, res) -> {
 
 		String userId = RequestUtil.getUsername(req);
 		String connId = req.queryParams("connId");
@@ -61,7 +61,7 @@ public class DbController extends ControllerBase {
 		return gson.toJson(dbInfo);
 	};
 
-	public Route postInfoUpdate = (req, res) -> {
+	public final Route postInfoUpdate = (req, res) -> {
 
 		String userId = RequestUtil.getUsername(req);
 		DbConnInfo dbInfoUpdate = RequestUtil.extract(req, DbConnInfo.class);
@@ -86,7 +86,7 @@ public class DbController extends ControllerBase {
 //	};
 	
 	//new methods
-	public Route getIndex = (req, res) -> {
+	public final Route getIndex = (req, res) -> {
 		String userId = RequestUtil.getUsername(req);
 		List<DbConnInfo> userDbs = new ArrayList(dbDao.getAll(userId).values());
 		userDbs.sort((c1, c2) -> c1.getConnectionName().compareTo(c2.getConnectionName()));
@@ -95,7 +95,7 @@ public class DbController extends ControllerBase {
 		return renderContent(req, "db/index.html");
 	};
 	
-	public Route getDbConnInfo = (req, res) -> {
+	public final Route getDbConnInfo = (req, res) -> {
 		String userId = RequestUtil.getUsername(req);
 		String connId = req.queryParams("id");
 		boolean refresh = req.queryParams("refresh") != null ? 
@@ -116,7 +116,7 @@ public class DbController extends ControllerBase {
 		return renderContent(req, "db/dbconninfo.html");
 	};
 
-	public Route getDbInfo = (req, res) -> {
+	public final Route getDbInfo = (req, res) -> {
 		String userId = RequestUtil.getUsername(req);
 		String connId = req.queryParams("id");
 		String catalogName = req.queryParams("catalog");
@@ -153,7 +153,7 @@ public class DbController extends ControllerBase {
 		return renderContent(req, "db/dbinfo.html");
 	};
 
-	public Route getNewDbConn = (req, res) -> {
+	public final Route getNewDbConn = (req, res) -> {
 		return renderContent(req, "db/newdbconn.html");
 	};
 

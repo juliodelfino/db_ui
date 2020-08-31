@@ -313,25 +313,19 @@ public class DbConnection {
 
         ResultSet rs = null;
         String result = "";
-        try {
-            DatabaseMetaData md = getConnection().getMetaData();
-            Method m = md.getClass().getMethod(sql);
-            if (m != null) {
-                Object tmp = m.invoke(md);
-                if (tmp instanceof ResultSet) {
-                    result = gson.toJson(adaptor.convert((ResultSet) tmp));
-                } else {
-                    result = gson.toJson(ImmutableMap.of(
-                            "columns", Arrays.asList(new Column("col1")),
-                            "data", Arrays.asList(Arrays.asList(tmp + ""))));
-                }
+        DatabaseMetaData md = getConnection().getMetaData();
+        Method m = md.getClass().getMethod(sql);
+        if (m != null) {
+            Object tmp = m.invoke(md);
+            if (tmp instanceof ResultSet) {
+                result = gson.toJson(adaptor.convert((ResultSet) tmp));
             } else {
-                throw new SQLException("unknown command: " + sql);
+                result = gson.toJson(ImmutableMap.of(
+                        "columns", Arrays.asList(new Column("col1")),
+                        "data", Arrays.asList(Arrays.asList(tmp + ""))));
             }
-        } finally {
-            if (rs != null) {
-                rs.close();
-            }
+        } else {
+            throw new SQLException("unknown command: " + sql);
         }
         return result;
     }

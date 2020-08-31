@@ -33,7 +33,7 @@ public class TableController extends ControllerBase {
 	private Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").setPrettyPrinting().disableHtmlEscaping()
 			.create();
 
-	public Route getQuery = (req, res) -> {
+	public final Route getQuery = (req, res) -> {
 
 		String userId = RequestUtil.getUsername(req);
 		String sqlQuery = req.queryParams("q");
@@ -76,7 +76,7 @@ public class TableController extends ControllerBase {
 		}
 	};
 
-	public Route getColumns = (req, res) -> {
+	public final Route getColumns = (req, res) -> {
 
 		String userId = RequestUtil.getUsername(req);
 		String table = req.queryParams("table");
@@ -90,7 +90,7 @@ public class TableController extends ControllerBase {
 		}
 	};
 
-	public Route getIndex = (req, res) -> {
+	public final Route getIndex = (req, res) -> {
 
 		String userId = RequestUtil.getUsername(req);
 		String connId = req.queryParams("id");
@@ -127,20 +127,20 @@ public class TableController extends ControllerBase {
 		return renderContent(req, "table/index.html");
 	};
 
-	public Route getQueryHistory = (req, res) -> {
+	public final Route getQueryHistory = (req, res) -> {
 
 		String userId = RequestUtil.getUsername(req);
 		return gson.toJson(userDao.getQueryHistory(userId));
 	};
 
-	public Route deleteQueryHistory = (req, res) -> {
+	public final Route deleteQueryHistory = (req, res) -> {
 
 		String timestamp = req.queryParams("t");
 		String userId = RequestUtil.getUsername(req);
 		return userDao.deleteQueryLog(userId, timestamp);
 	};
 
-	public Route getCancelQuery = (req, res) -> {
+	public final Route getCancelQuery = (req, res) -> {
 
 		String queryId = req.queryParams("qId");
 		String userId = RequestUtil.getUsername(req);
