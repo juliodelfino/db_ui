@@ -6,9 +6,11 @@ Take note, this is only a DATABASE VIEWER, and not a DATABASE ADMIN UI! Unless i
 
 ![Home Page](https://raw.githubusercontent.com/juliodelfino/db_ui/master/wiki/db-info-page.png)
 
-Query Editor page:
+Database Info page:
+![Database Info](https://raw.githubusercontent.com/juliodelfino/db_ui/master/wiki/db-info-page.png)
 
-![Query Editor](https://raw.githubusercontent.com/juliodelfino/db_ui/master/wiki/query-editor.png)
+Query Editor page:
+![Query Editor](https://raw.githubusercontent.com/juliodelfino/db_ui/master/wiki/table-page.png)
 
 ## High speed
 This application boots up in around 1000 milliseconds!
